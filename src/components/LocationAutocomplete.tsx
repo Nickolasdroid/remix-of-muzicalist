@@ -291,7 +291,10 @@ const LocationAutocomplete = ({
       internalChangeRef.current = false;
       return;
     }
+    // A value set from outside (reset, or a prefilled edit form) is not a search
+    if (value !== query) justSelectedRef.current = true;
     setQuery(value);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   // Load the viewer's county once (Romania only) for the "near you" suggestions

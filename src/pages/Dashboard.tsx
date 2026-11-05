@@ -276,6 +276,8 @@ const Dashboard = () => {
     budget: ""
   });
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
+  // Collaboration being edited (opened from its ⋯ menu)
+  const [editOpp, setEditOpp] = useState<{ row: any; lockCore: boolean } | null>(null);
   const [showPostDialog, setShowPostDialog] = useState(false);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
   const announcementTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -2681,9 +2683,15 @@ const Dashboard = () => {
                             }
                           />
                           <OpportunityComposer
-                            open={showAnnouncementDialog}
-                            onOpenChange={setShowAnnouncementDialog}
+                            open={showAnnouncementDialog || !!editOpp}
+                            onOpenChange={(o) => {
+                              if (o) return;
+                              setShowAnnouncementDialog(false);
+                              setEditOpp(null);
+                            }}
                             isArtist
+                            editing={editOpp}
+                            onUpdated={() => loadAnnouncements()}
                             blockedReason={sharedUsed >= STANDARD_POST_LIMIT ? "You have used all the posts in your plan for this period." : null}
                             meta={Number.isFinite(STANDARD_POST_LIMIT) ? (
                               <>
@@ -2704,6 +2712,7 @@ const Dashboard = () => {
                               disabled={isSaving}
                               onClose={handleCloseAnnouncement}
                               onDelete={(id) => setDeleteAnnouncementId(id)}
+                              onEdit={(row, lockCore) => setEditOpp({ row, lockCore })}
                               empty={
                                 <SectionEmptyState
                                   icon={<Users className="h-10 w-10 opacity-50" />}

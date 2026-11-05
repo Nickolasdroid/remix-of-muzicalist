@@ -69,6 +69,8 @@ const UserDashboard = () => {
     budget: ""
   });
   const [showAnnouncementDialog, setShowAnnouncementDialog] = useState(false);
+  // Event being edited (opened from its ⋯ menu)
+  const [editOpp, setEditOpp] = useState<{ row: any; lockCore: boolean } | null>(null);
 
   // Announcement limits: organizers post event announcements for free, up to 5 open at a time
   const STANDARD_AD_LIMIT = ORGANIZER_OPEN_LIMIT;
@@ -535,6 +537,7 @@ const UserDashboard = () => {
                         isArtist={false}
                         onClose={handleCloseAnnouncement}
                         onDelete={(id) => setDeleteAnnouncementId(id)}
+                        onEdit={(row, lockCore) => setEditOpp({ row, lockCore })}
                         empty={
                           <div className="rounded-lg border border-dashed border-border/60 bg-background/20 p-4 text-center">
                           <Megaphone className="h-6 w-6 mx-auto mb-1.5 text-muted-foreground/60" />
@@ -629,10 +632,16 @@ const UserDashboard = () => {
 
               {/* ===== Announcement Dialog ===== */}
               <OpportunityComposer
-                open={showAnnouncementDialog}
-                onOpenChange={setShowAnnouncementDialog}
+                open={showAnnouncementDialog || !!editOpp}
+                onOpenChange={(o) => {
+                  if (o) return;
+                  setShowAnnouncementDialog(false);
+                  setEditOpp(null);
+                }}
                 isArtist={false}
-                blockedReason={!canPublish ? "You already have 5 open announcements. Close one or wait for an event to pass." : null}
+                editing={editOpp}
+                onUpdated={() => loadAnnouncements()}
+                blockedReason={!canPublish ? "You already have 5 open events. Close one or wait for an event to pass." : null}
                 meta={<span className="text-accent">Free for organizers</span>}
                 onPublished={() => loadAnnouncements()}
               />

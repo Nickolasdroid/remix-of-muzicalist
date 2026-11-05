@@ -47,6 +47,12 @@ interface OpportunityComposerProps {
   /** Blocks publishing (e.g. quota used) with this reason under the button */
   blockedReason?: string | null;
   onPublished: (announcement: { id: string; kind: OpportunityKind }) => void | Promise<void>;
+  /**
+   * Edit an existing event / collaboration instead of creating one. When it already
+   * got offers or messages (lockCore), what is sought and the date can't change.
+   */
+  editing?: { row: any; lockCore: boolean } | null;
+  onUpdated?: (id: string) => void | Promise<void>;
 }
 
 
@@ -64,7 +70,7 @@ const amountOrNull = (s: string) => {
  * "New event" (organizers: artists answer with a priced offer) or
  * "New collaboration" (artists: answered by message). Same names as the feed filters and card tags.
  */
-const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason, onPublished }: OpportunityComposerProps) => {
+const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason, onPublished, editing, onUpdated }: OpportunityComposerProps) => {
   const { i18n } = useTranslation();
   const { toast } = useToast();
   const lang = i18n.language || i18n.resolvedLanguage || "ro";
@@ -97,26 +103,35 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   const [titleEdited, setTitleEdited] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Fresh form every time the dialog opens
+  // Fresh form every time the dialog opens (or the row being edited)
+  const editRow = editing?.row ?? null;
+  const lockCore = !!editing?.lockCore;
   useEffect(() => {
     if (!open) return;
-    setSeeking(null);
-    setRoleDetail("");
-    setOtherInstrument(false);
-    setEventType("");
-    setEventOn(undefined);
-    setEventEndOn(undefined);
-    setPlaceLabel("");
-    setStartTime("");
-    setEndTime("");
+    const ymd = (v?: string | null) => {
+      if (!v) return undefined;
+      const [y, m, d] = v.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    };
+    const hm = (v?: string | null) => (v ? String(v).slice(0, 5) : "");
+    const role = editRow?.role_detail || "";
+    setSeeking((editRow?.seeking as OpportunitySeeking) ?? null);
+    setRoleDetail(role);
+    setOtherInstrument(!!role && !(INSTRUMENTS as readonly string[]).includes(role));
+    setEventType(editRow?.event_type || "");
+    setEventOn(ymd(editRow?.event_on));
+    setEventEndOn(editRow?.event_end_on && editRow.event_end_on > editRow.event_on ? ymd(editRow.event_end_on) : undefined);
+    setPlaceLabel(editRow ? formatPlace(editRow.city, editRow.county) : "");
+    setStartTime(hm(editRow?.start_time));
+    setEndTime(hm(editRow?.end_time));
     setBudgetMode("range");
     setBudgetRange(false);
-    setBudgetMin("");
+    setBudgetMin(editRow?.budget_min != null ? String(Number(editRow.budget_min)) : "");
     setBudgetMax("");
-    setCurrency("RON");
+    setCurrency(editRow?.budget_currency || "RON");
     setTitle("");
     setTitleEdited(false);
-  }, [open]);
+  }, [open, editRow]);
 
   const place = useMemo(() => parseRomanianPlace(placeLabel), [placeLabel]);
   const isGig = kind === "gig";
@@ -176,14 +191,33 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
   if (needsSchedule && (!startTime || !endTime)) missing.push("times");
   if (!place.county) missing.push("place");
   if (title.trim().length < 3) missing.push("title");
-  const canSubmit = missing.length === 0 && !budgetInvalid && !timesHalf && !saving && !blockedReason;
+  const canSubmitBase = missing.length === 0 && !budgetInvalid && !timesHalf && !saving && (!!editRow || !blockedReason);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
   // Full-screen on phones: Back / Cancel close it, asking first when something was filled in
   const [confirmDiscard, setConfirmDiscard] = useState(false);
-  const isDirty = !!(seeking || roleDetail.trim() || eventType.trim() || eventOn || placeLabel.trim() || startTime || endTime || budgetMin || budgetMax || (titleEdited && title.trim()));
+  const snapshot = [seeking, roleDetail.trim(), eventType.trim(), eventOnYmd, eventEndOn ? toYMD(eventEndOn) : null, placeLabel.trim(), startTime, endTime, budgetMin, currency].join("|");
+  const editSnapshot = editRow
+    ? [
+        editRow.seeking ?? null,
+        (editRow.role_detail || "").trim(),
+        (editRow.event_type || "").trim(),
+        editRow.event_on ?? null,
+        editRow.event_end_on && editRow.event_end_on > editRow.event_on ? editRow.event_end_on : null,
+        formatPlace(editRow.city, editRow.county),
+        editRow.start_time ? String(editRow.start_time).slice(0, 5) : "",
+        editRow.end_time ? String(editRow.end_time).slice(0, 5) : "",
+        editRow.budget_min != null ? String(Number(editRow.budget_min)) : "",
+        editRow.budget_currency || "RON",
+      ].join("|")
+    : null;
+  const isDirty = editRow
+    ? snapshot !== editSnapshot
+    : !!(seeking || roleDetail.trim() || eventType.trim() || eventOn || placeLabel.trim() || startTime || endTime || budgetMin || budgetMax || (titleEdited && title.trim()));
+  // Editing: Save only once something changed
+  const canSubmit = canSubmitBase && (!editRow || isDirty);
   const releaseHistory = useCloseOnBack(open, () => {
     if (saving) return false;
     if (isDirty) {
@@ -247,6 +281,26 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
         budget: formatOpportunityBudget(budget, lang),
       };
 
+      if (editRow) {
+        const { profile_id: _p, date: _d, is_premium: _i, kind: _k, ...changes } = row;
+        // Answers stay valid: once offers / messages came in, the role and the date are kept
+        const patch: Record<string, unknown> = lockCore
+          ? (({ seeking: _s, role_detail: _r, event_on: _e, event_end_on: _ee, event_date: _ed, ...rest }) => rest)(changes as any)
+          : changes;
+        if (!lockCore && eventOnYmd) {
+          // Takes answers until the night after the last day
+          const last = multiDay ? eventEndOn! : eventOn!;
+          const exp = new Date(last.getFullYear(), last.getMonth(), last.getDate() + 1);
+          patch.expires_at = exp.toISOString();
+        }
+        const { error } = await (supabase as any).from("announcements").update(patch).eq("id", editRow.id);
+        if (error) throw error;
+        await onUpdated?.(editRow.id);
+        toast({ title: isGig ? "Event updated" : "Collaboration updated" });
+        releaseHistory();
+        onOpenChange(false);
+        return;
+      }
       const { data, error } = await (supabase as any).from("announcements").insert(row).select("id").single();
       if (error) throw error;
       await onPublished({ id: data.id, kind });
@@ -255,7 +309,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
       onOpenChange(false);
     } catch (error) {
       toast({
-        title: isGig ? "Event not published" : "Collaboration not published",
+        title: editRow ? "Changes not saved" : isGig ? "Event not published" : "Collaboration not published",
         description: opportunityErrorText(error) || (error as Error)?.message || "Something went wrong. Please try again.",
         variant: "destructive",
       });
@@ -300,9 +354,9 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
     <Dialog open={open} onOpenChange={handleOpenChange} manageHistory={false}>
       <DialogContent className={cn("max-w-[440px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-2xl overflow-hidden max-h-[90vh] flex flex-col", FULLSCREEN_ON_MOBILE)}>
         <MobileComposerHeader
-          title={isGig ? "New event" : "New collaboration"}
+          title={editRow ? (isGig ? "Edit event" : "Edit collaboration") : isGig ? "New event" : "New collaboration"}
           onCancel={() => handleOpenChange(false)}
-          actionLabel="Publish"
+          actionLabel={editRow ? "Save" : "Publish"}
           onAction={handlePublish}
           disabled={!canSubmit}
           busy={saving}
@@ -313,7 +367,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
           </span>
           <div className="min-w-0 flex-1">
             <DialogTitle className="text-[17px] font-semibold leading-tight">
-              {isGig ? "New event" : "New collaboration"}
+              {editRow ? (isGig ? "Edit event" : "Edit collaboration") : isGig ? "New event" : "New collaboration"}
             </DialogTitle>
             <DialogDescription asChild>
               <div className="text-sm text-muted-foreground">
@@ -326,11 +380,19 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
 
         {/* Every field the same: label above, same height, same spacing */}
         <div key={kind} className="flex-1 overflow-y-auto px-5 pt-2 max-md:pt-4 pb-5 max-md:pb-[calc(1.25rem+env(safe-area-inset-bottom))] space-y-3.5">
+          {lockCore && (
+            <p className="rounded-lg bg-muted px-3 py-2 text-xs text-muted-foreground">
+              {isGig
+                ? "Offers already came in, so what you're looking for and the date can't change."
+                : "Messages already came in, so who you're looking for and the date can't change."}
+            </p>
+          )}
           <div className="space-y-1.5">
             <Label htmlFor="opp-seeking" className={labelCls}>
               {isGig ? "What are you looking for" : "Who are you looking for"}
             </Label>
             <Select
+              disabled={lockCore}
               value={seeking ?? undefined}
               onValueChange={(v) => {
                 setSeeking(v as OpportunitySeeking);
@@ -359,6 +421,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
                 Instrument
               </Label>
               <Select
+                disabled={lockCore}
                 value={otherInstrument ? "__other" : roleDetail || undefined}
                 onValueChange={(v) => {
                   if (v === "__other") {
@@ -387,6 +450,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
               {otherInstrument && (
                 <Input
                   autoFocus
+                  disabled={lockCore}
                   maxLength={80}
                   value={roleDetail}
                   onChange={(e) => setRoleDetail(e.target.value)}
@@ -408,11 +472,12 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
             <Label htmlFor="opp-date" className={labelCls}>
               Date
             </Label>
-            <Popover open={dateOpen} onOpenChange={setDateOpen}>
+            <Popover open={dateOpen} onOpenChange={(o) => !lockCore && setDateOpen(o)}>
               <PopoverTrigger asChild>
                 <button
                   id="opp-date"
                   type="button"
+                  disabled={lockCore}
                   className={cn(FIELD, "flex w-full items-center gap-2.5 border border-input px-3 text-left text-sm")}
                 >
                   <CalendarDays className="h-4 w-4 shrink-0 text-accent" />
@@ -467,7 +532,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
                   <span>Ends the next day</span>
                 </p>
               )}
-              {multiDay ? (
+              {lockCore ? null : multiDay ? (
                 <p className="flex flex-wrap items-center gap-x-2 gap-y-1">
                   <CalendarRange className="h-3.5 w-3.5 shrink-0 text-accent" />
                   <span className="text-foreground">
@@ -562,7 +627,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
               className="h-12 w-full rounded-xl bg-accent text-[15px] font-bold text-accent-foreground hover:bg-accent/90"
             >
               {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Publish
+              {editRow ? "Save" : "Publish"}
             </Button>
           </div>
 
@@ -571,7 +636,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
       </DialogContent>
       <DiscardDraftDialog
         open={confirmDiscard}
-        title={isGig ? "Discard this event?" : "Discard this collaboration?"}
+        title={editRow ? "Discard your changes?" : isGig ? "Discard this event?" : "Discard this collaboration?"}
         onKeep={() => setConfirmDiscard(false)}
         onDiscard={() => {
           setConfirmDiscard(false);

@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Ban, CalendarDays, CheckCircle2, ChevronRight, MapPin, Megaphone, Trash2 } from "lucide-react";
+import { Ban, CalendarDays, CheckCircle2, ChevronRight, MapPin, Megaphone, Pencil, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
 import PostActionsMenu, { type PostAction } from "@/components/PostActionsMenu";
@@ -20,6 +20,8 @@ interface OwnerAnnouncementsListProps {
   disabled?: boolean;
   onClose: (id: string) => void;
   onDelete: (id: string) => void;
+  /** Opens the composer on this event / collaboration; lockCore when answers already came in */
+  onEdit?: (row: any, lockCore: boolean) => void;
   empty?: ReactNode;
   /** Wrapper of the cards, to match the posts list width */
   listClassName?: string;
@@ -38,7 +40,7 @@ type Tab = "active" | "ended";
  * The owner's announcements in the dashboards: what each one asks for, its status,
  * what came in (offers or messages) and where to go next. Active and ended are split.
  */
-const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, onDelete, empty, listClassName }: OwnerAnnouncementsListProps) => {
+const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, onDelete, onEdit, empty, listClassName }: OwnerAnnouncementsListProps) => {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
   const lang = i18n.language || i18n.resolvedLanguage || "ro";
@@ -143,7 +145,9 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
     const place = formatPlace(a.city, a.county);
     const budget = formatOpportunityBudget(a, lang);
 
+    const answered = isGig ? (stats?.offers || 0) > 0 || !!stats?.accepted : msgCount > 0;
     const actions: PostAction[] = [
+      ...(open && onEdit ? [{ key: "edit", label: "Edit", icon: Pencil, onSelect: () => onEdit(a, answered) }] : []),
       ...(open ? [{ key: "close", label: "Close", icon: Ban, onSelect: () => onClose(a.id) }] : []),
       { key: "delete", label: "Delete", icon: Trash2, destructive: true, onSelect: () => onDelete(a.id) },
     ];

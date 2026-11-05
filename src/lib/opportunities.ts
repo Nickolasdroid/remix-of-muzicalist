@@ -72,17 +72,36 @@ const eventTypePhrase = (type: string, lang: string) => {
  *   gig:    "DJ pentru nuntă" / "DJ for a wedding"
  *   collab: "Tobe pentru nuntă", "Saxofon pentru o înlocuire la botez", "Tobe permanent în trupă"
  */
+const SEEKING_EN_PHRASE: Record<OpportunitySeeking, string> = {
+  DJ: "a DJ",
+  Band: "a band",
+  Singer: "a singer",
+  Instrumentalist: "an instrumentalist",
+};
+
+/** "DJ", "formație", "solist vocal" / "a DJ", "a band"… (object of "Caut" / "Looking for") */
+const seekingPhrase = (s: OpportunitySeeking, lang: string) =>
+  isRo(lang) ? lowerFirst(seekingLabel(s, lang)) : SEEKING_EN_PHRASE[s] ?? s;
+
+/** Known instrument -> "instrumentist la tobe" / "a drums player"; free text (e.g. "Saxofonist") as typed. */
+const instrumentRolePhrase = (instrument: string, lang: string) => {
+  const known = instrument in INSTRUMENT_RO;
+  if (!known) return isRo(lang) ? lowerFirst(instrument) : instrument;
+  return isRo(lang) ? `instrumentist la ${lowerFirst(instrumentLabel(instrument, lang))}` : `a ${instrument.toLowerCase()} player`;
+};
+
 export const buildOpportunityTitle = (o: OpportunityTitleInput, lang = "ro"): string => {
   if (!o.seeking) return "";
   const ro = isRo(lang);
   const instrument = (o.roleDetail || "").trim();
-  const role = instrument ? instrumentLabel(instrument, lang) : seekingLabel(o.seeking, lang);
+  const role = instrument ? instrumentRolePhrase(instrument, lang) : seekingPhrase(o.seeking, lang);
   const type = (o.eventType || "").trim();
 
+  // Written by the author, so it says who is looking: "Caut DJ pentru nuntă" / "Looking for a DJ for a wedding"
   if (o.kind === "gig") {
     let title = role;
     if (type) title += ro ? ` pentru ${eventTypePhrase(type, lang)}` : ` for ${eventTypePhrase(type, lang)}`;
-    return title.slice(0, 120);
+    return (ro ? "Caut " : "Looking for ") + title.slice(0, 110);
   }
 
   let title = role;
@@ -98,7 +117,7 @@ export const buildOpportunityTitle = (o: OpportunityTitleInput, lang = "ro"): st
       if (type) title += ro ? ` pentru ${eventTypePhrase(type, lang)}` : ` for ${eventTypePhrase(type, lang)}`;
       else title += ro ? " pentru un eveniment" : " for one event";
   }
-  return title.slice(0, 120);
+  return (ro ? "Caut " : "Looking for ") + title.slice(0, 110);
 };
 
 /** "Florești, Cluj, Romania" (LocationAutocomplete label) -> { city, county } */
