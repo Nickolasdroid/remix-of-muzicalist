@@ -41,7 +41,7 @@ const ContentKindChips = ({
           className={cn(
             "shrink-0 rounded-full border px-3.5 py-1.5 text-[13px] transition-colors",
             value === k
-              ? "border-accent bg-accent/15 font-semibold text-accent"
+              ? "border-foreground/15 bg-foreground/[0.1] font-semibold text-foreground"
               : "border-border text-muted-foreground hover:text-foreground",
           )}
         >

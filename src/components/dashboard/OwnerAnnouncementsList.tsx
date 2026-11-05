@@ -298,7 +298,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
             className={cn(
               "-mb-px border-b-2 pb-2 text-[13px] transition-colors",
               tab === t.k
-                ? "border-accent font-semibold text-foreground"
+                ? "border-foreground font-semibold text-foreground"
                 : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >

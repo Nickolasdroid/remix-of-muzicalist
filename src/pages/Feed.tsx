@@ -614,7 +614,7 @@ const Feed = () => {
                   data-active={filter === f.k ? "true" : undefined}
                   onClick={() => setFilter(f.k)}
                   className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm transition-colors ${
-                    filter === f.k ? "border-accent bg-accent/15 text-accent font-medium" : "border-border text-muted-foreground hover:text-foreground"
+                    filter === f.k ? "border-foreground/15 bg-foreground/[0.1] font-semibold text-foreground" : "border-border text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {f.label}

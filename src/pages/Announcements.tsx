@@ -194,7 +194,7 @@ const Announcements = ({ embeddedKind }: { embeddedKind?: "gig" | "collab" } = {
                   aria-pressed={feedFilter === f.k}
                   className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm transition-colors ${
                     feedFilter === f.k
-                      ? "border-accent bg-accent/15 text-accent font-medium"
+                      ? "border-foreground/15 bg-foreground/[0.1] font-semibold text-foreground"
                       : "border-border text-muted-foreground hover:text-foreground"
                   }`}
                 >

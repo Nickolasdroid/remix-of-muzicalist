@@ -69,7 +69,7 @@ export function PostsViewSwitcher({ mode, onChange }: { mode: PostsViewMode; onC
                   onClick={() => onChange(option.mode)}
                   className={cn(
                     "h-7 w-7 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground",
-                    active && "bg-accent/15 text-accent hover:bg-accent/20 hover:text-accent",
+                    active && "bg-foreground/[0.1] text-foreground hover:bg-foreground/[0.12] hover:text-foreground",
                   )}
                 >
                   <Icon className="h-4 w-4" />
