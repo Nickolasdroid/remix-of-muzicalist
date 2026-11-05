@@ -130,9 +130,9 @@ const OpportunityCard = ({
           verified={author.verified}
           specialization={author.specialization ?? author.subtitle?.split(" · ")[0]}
           specializationTranslatable={author.subtitleTranslatable}
-          // The place is in the card body; the megaphone takes the county + flag spot
-          placeSlot={<AnnouncementTypeBadge label={isGig ? "Event" : "Collaboration"} />}
+          // Like posts: specialization · time · icon (the place is in the card body)
           time={formatSmartDate(o.created_at)}
+          extra={<><span>·</span><AnnouncementTypeBadge label={isGig ? "Event" : "Collaboration"} /></>}
           onClick={onAuthorClick}
         />
         {menu}
