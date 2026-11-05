@@ -1,7 +1,8 @@
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Ban, CalendarDays, CheckCircle2, ChevronRight, MapPin, Megaphone, Pencil, Trash2 } from "lucide-react";
+import { Ban, CalendarDays, CheckCircle2, ChevronRight, MapPin, Megaphone, MessageCircle, Pencil, Trash2 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
 import PostActionsMenu, { type PostAction } from "@/components/PostActionsMenu";
@@ -48,6 +49,8 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
   const [tab, setTab] = useState<Tab>("active");
   const [gigStats, setGigStats] = useState<Record<string, GigStats>>({});
   const [messages, setMessages] = useState<Record<string, number>>({});
+  // People who replied to each collaboration (newest first), with their conversation
+  const [repliers, setRepliers] = useState<Record<string, { convId: string; name: string; avatar: string | null }[]>>({});
 
   const items = useMemo(() => announcements.filter((a) => !a.is_premium), [announcements]);
   const active = items.filter((a) => !isAdExpired(a));
@@ -91,11 +94,31 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
       if (collabIds.length) {
         const { data } = await (supabase as any)
           .from("conversations")
-          .select("announcement_id")
-          .in("announcement_id", collabIds);
+          .select("id, announcement_id, artist_id, participant_id, updated_at")
+          .in("announcement_id", collabIds)
+          .order("updated_at", { ascending: false });
+        const rows = (data || []) as any[];
         const counts: Record<string, number> = {};
-        for (const r of (data || []) as any[]) counts[r.announcement_id] = (counts[r.announcement_id] || 0) + 1;
-        if (!cancelled) setMessages(counts);
+        for (const r of rows) counts[r.announcement_id] = (counts[r.announcement_id] || 0) + 1;
+        // The other person in each conversation (not the collaboration's owner)
+        const ownerOf: Record<string, string> = {};
+        for (const a of items) ownerOf[a.id] = a.profile_id;
+        const otherOf = (r: any) => (r.artist_id === ownerOf[r.announcement_id] ? r.participant_id : r.artist_id);
+        const otherIds = Array.from(new Set(rows.map(otherOf).filter(Boolean)));
+        const people: Record<string, { name: string; avatar: string | null }> = {};
+        if (otherIds.length) {
+          const { data: profs } = await supabase.from("profiles").select("id, stage_name, first_name, avatar_url").in("id", otherIds);
+          for (const p of (profs || []) as any[]) people[p.id] = { name: p.stage_name || p.first_name || "", avatar: p.avatar_url };
+        }
+        const byAd: Record<string, { convId: string; name: string; avatar: string | null }[]> = {};
+        for (const r of rows) {
+          const who = people[otherOf(r)] || { name: "", avatar: null };
+          (byAd[r.announcement_id] ||= []).push({ convId: r.id, name: who.name, avatar: who.avatar });
+        }
+        if (!cancelled) {
+          setMessages(counts);
+          setRepliers(byAd);
+        }
       }
     })();
     return () => {
@@ -184,18 +207,19 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
         summary = <span>No offers yet</span>;
       }
     } else {
+      // Who replied is shown on the card (see below); with none, just say so
       summary =
         msgCount > 0 ? (
           <>
             <b className="text-foreground tabular-nums">{msgCount}</b>{" "}
-            <span>{msgCount === 1 ? "message received" : "messages received"}</span>
+            <span>{msgCount === 1 ? "reply" : "replies"}</span>
           </>
         ) : (
           <span>No messages yet</span>
         );
-      // Replies to a collaboration live in Messages → Announcements → Requests, filtered to this one
-      link = { label: "See replies", to: `/messages?forAd=${a.id}` };
+      link = msgCount > 3 ? { label: "See all", to: `/messages?forAd=${a.id}` } : null;
     }
+    const people = !isGig ? (repliers[a.id] || []).slice(0, 3) : [];
 
     return (
       <div
@@ -259,6 +283,26 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
         )}
         {budget && (
           <p className="inline-flex w-fit items-center rounded-full bg-accent/15 px-3 py-1.5 text-[14px] font-bold leading-none text-accent notranslate tabular-nums" translate="no">{budget}</p>
+        )}
+
+        {people.length > 0 && (
+          <div className="space-y-1 border-t border-border/60 pt-2">
+            {people.map((p) => (
+              <button
+                key={p.convId}
+                type="button"
+                onClick={() => navigate(`/messages?c=${p.convId}`)}
+                className="flex w-full items-center gap-2.5 rounded-lg px-1.5 py-1.5 text-left transition-colors hover:bg-foreground/[0.05]"
+              >
+                <Avatar className="h-7 w-7">
+                  {p.avatar && <AvatarImage src={p.avatar} alt="" />}
+                  <AvatarFallback className="bg-accent/10 text-[11px] font-semibold text-accent">{(p.name || "?").charAt(0).toUpperCase()}</AvatarFallback>
+                </Avatar>
+                <span className="min-w-0 flex-1 truncate text-[13.5px] text-foreground notranslate" translate="no">{p.name || "Artist"}</span>
+                <MessageCircle className="h-4 w-4 shrink-0 text-muted-foreground" />
+              </button>
+            ))}
+          </div>
         )}
 
         <div className="flex items-center justify-between gap-3 border-t border-border/60 pt-2.5 text-[12.5px] text-muted-foreground whitespace-nowrap">

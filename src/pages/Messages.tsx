@@ -125,6 +125,8 @@ const Messages = () => {
   const messagesCache = useRef<Record<string, Message[]>>({});
   const artistId = searchParams.get("artistId");
   const adId = searchParams.get("adId");
+  // ?c=<conversation id>: open that conversation (e.g. a reply on a collaboration card)
+  const convParam = searchParams.get("c");
   // Opened from a dashboard announcement: show only the replies to that announcement
   const [forAd, setForAd] = useState<string | null>(searchParams.get("forAd"));
   // Title of the filtered event / collaboration when no conversation about it exists yet
@@ -514,6 +516,16 @@ const Messages = () => {
     return !isSameDay(currentDate, prevDate);
   };
 
+  const convParamDoneRef = useRef(false);
+  useEffect(() => {
+    if (!convParam || convParamDoneRef.current) return;
+    const conv = conversations.find((x) => x.id === convParam);
+    if (!conv) return;
+    convParamDoneRef.current = true;
+    setSelectedConversation(conv);
+    setAnnouncementContext(conv.announcement_context || null);
+  }, [convParam, conversations]);
+
   // One inbox, like Facebook / Instagram. Conversations about an event or collaboration
   // carry a megaphone line with its title; ?forAd= narrows the list to the replies to one.
   const renderConversationList = () => {
@@ -634,7 +646,7 @@ const Messages = () => {
   // A chat opened straight from a profile/announcement ("Message" button) goes
   // back to that page instead, as before.
   const isMobile = useIsMobile();
-  const [openedDirectly, setOpenedDirectly] = useState(!!(artistId || adId));
+  const [openedDirectly, setOpenedDirectly] = useState(!!(artistId || adId || convParam));
   const wasActiveRef = useRef(conversationActive);
   useEffect(() => {
     if (wasActiveRef.current && !conversationActive) setOpenedDirectly(false);
