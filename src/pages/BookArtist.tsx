@@ -212,7 +212,7 @@ const BookArtist = () => {
 
   if (loading || !artist) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background md:ml-64">
         <Navigation />
         <div className="container mx-auto px-4 py-8">
           <div className="h-64 animate-pulse bg-muted rounded-lg" />
@@ -227,8 +227,8 @@ const BookArtist = () => {
   const selectedFullyBooked = !!selectedDate && isBusyDate(selectedDate) && isDayFullyBooked(selectedSlots);
 
   return (
-    <div className="min-h-screen bg-background">
-      <Navigation mobileTitle="Book Artist" mobileBackPath={`/artist/${id}`} />
+    <div className="min-h-screen bg-background md:ml-64">
+      <Navigation mobileTitle="Book Artist" mobileBackPath={`/artist/${id}`} hideMobileNotifications />
       <div className="container mx-auto px-4 pt-20 md:pt-6 py-6 pb-32 md:pb-12 max-w-3xl">
         <Button variant="ghost" size="sm" onClick={() => goBack(navigate, `/artist/${id}`)} className="mb-4 -ml-2 hidden md:inline-flex">
           <ArrowLeft className="h-4 w-4 mr-1" /> Back
@@ -241,19 +241,21 @@ const BookArtist = () => {
               <AvatarFallback>{artist.stage_name?.[0]}</AvatarFallback>
             </Avatar>
           </Link>
-          <div>
-            <Link to={`/artist/${artist.id}`} className="text-xl font-display font-bold hover:text-accent notranslate" data-user-content="true" data-no-translate="true" translate="no">
+          <div className="min-w-0">
+            <p className="text-xs text-muted-foreground">Booking request</p>
+            <Link to={`/artist/${artist.id}`} className="block truncate text-xl font-display font-bold hover:text-accent notranslate" data-user-content="true" data-no-translate="true" translate="no">
               {artist.stage_name}
             </Link>
           </div>
         </div>
 
         {/* Calendar Section */}
-        <div className="rounded-lg border border-border bg-card p-4 mb-6">
-          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+        <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 mb-4">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
             <CalendarIcon className="h-5 w-5 text-accent" />
-            Select Availability
+            Choose the date
           </h2>
+          <p className="mt-0.5 mb-4 text-sm text-muted-foreground">Days without a color are free.</p>
 
           <div className="flex flex-col items-center gap-4">
             <Calendar
@@ -261,11 +263,12 @@ const BookArtist = () => {
               selected={selectedDate}
               defaultMonth={selectedDate}
               onSelect={setSelectedDate}
-              className="rounded-lg border border-border shadow-sm pointer-events-auto"
+              className="rounded-xl border border-border pointer-events-auto"
               classNames={{
+                // Selected day in white (gold is already "partially booked"); today only underlined
                 day_selected:
-                  "bg-emerald-500 text-white hover:bg-emerald-500 hover:text-white focus:bg-emerald-500 focus:text-white",
-                day_today: "bg-emerald-500/30 text-foreground",
+                  "bg-foreground text-background font-semibold hover:bg-foreground hover:text-background focus:bg-foreground focus:text-background",
+                day_today: "font-semibold underline decoration-accent decoration-2 underline-offset-4",
               }}
               modifiers={{
                 busy: busyDates.filter((d) => !hasFreeHours(d)),
@@ -280,8 +283,7 @@ const BookArtist = () => {
               disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
             />
 
-            <div className="grid w-full max-w-xs grid-cols-2 gap-x-4 gap-y-2 text-xs sm:flex sm:max-w-none sm:flex-wrap sm:justify-center sm:gap-3">
-              <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-emerald-500" />Available</div>
+            <div className="flex w-full flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
               <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-500/80" />Partially booked</div>
               <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-destructive/70" />Booked</div>
               <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-muted/80" />Unavailable</div>
@@ -291,10 +293,8 @@ const BookArtist = () => {
         </div>
 
         {/* Booking form */}
-        <div className="rounded-2xl border border-border bg-popover p-4 sm:p-5">
-          {!selectedDate ? (
-            <p className="text-sm text-muted-foreground">Pick a date above to start your booking request.</p>
-          ) : selectedBlocked ? (
+        {selectedDate && <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+          {selectedBlocked ? (
             <p className="text-sm text-muted-foreground">The artist has marked this day as unavailable. Choose another date.</p>
           ) : selectedFullyBooked ? (
             <p className="text-sm text-muted-foreground">The artist is booked for the whole day. Choose another date.</p>
@@ -308,7 +308,7 @@ const BookArtist = () => {
               busySlots={isBusyDate(selectedDate) ? selectedSlots : []}
             />
           )}
-        </div>
+        </div>}
       </div>
     </div>
   );
