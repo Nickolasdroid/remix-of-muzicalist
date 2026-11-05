@@ -134,11 +134,11 @@ const fmtAmount = (n: number, lang: string) =>
 
 /**
  * "1.000 – 1.800 RON", "de la 1.000 RON" / "from 1,000 RON", "până la 1.800 RON" / "up to 1,800 RON",
- * "Negociabil" / "Negotiable", or null when there is no budget.
+ * or null when no amount was given ("negotiable" rows included: the author only left the field empty,
+ * so the card says the fee is not specified instead of promising a negotiation).
  */
 export const formatOpportunityBudget = (b: OpportunityBudget, lang = "ro"): string | null => {
   const ro = isRo(lang);
-  if (b.budget_mode === "negotiable") return ro ? "Negociabil" : "Negotiable";
   if (b.budget_mode !== "range") return null;
   const cur = b.budget_currency || "RON";
   const min = b.budget_min != null && b.budget_min !== "" ? Number(b.budget_min) : null;

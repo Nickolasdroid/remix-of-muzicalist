@@ -102,7 +102,7 @@ describe("formatOpportunityBudget", () => {
   });
 
   it("handles negotiable and none", () => {
-    expect(formatOpportunityBudget({ budget_mode: "negotiable" }, "ro")).toBe("Negociabil");
+    expect(formatOpportunityBudget({ budget_mode: "negotiable" }, "ro")).toBeNull();
     expect(formatOpportunityBudget({ budget_mode: "none" }, "ro")).toBeNull();
     expect(formatOpportunityBudget({}, "ro")).toBeNull();
   });

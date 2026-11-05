@@ -170,9 +170,14 @@ const OpportunityCard = ({
         </div>
       )}
 
-      {budget && (
+      {budget ? (
         <p className="inline-flex w-fit items-center rounded-full bg-accent/15 px-3 py-1.5 text-[14px] font-bold leading-none text-accent notranslate tabular-nums" translate="no">
           {budget}
+        </p>
+      ) : (
+        // No amount given: say so plainly, in grey, so only real amounts stand out
+        <p className="inline-flex w-fit items-center rounded-full bg-muted px-3 py-1.5 text-[13px] font-medium leading-none text-muted-foreground">
+          {isGig ? "Budget not specified" : "Fee not specified"}
         </p>
       )}
 
