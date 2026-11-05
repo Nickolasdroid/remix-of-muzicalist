@@ -106,6 +106,13 @@
       "when": 1793915422516,
       "tag": "0014_plan_limits_shared_post_collab_quota",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1793916077987,
+      "tag": "0015_plan_limits_zero_promotions",
+      "breakpoints": true
     }
   ]
 }
