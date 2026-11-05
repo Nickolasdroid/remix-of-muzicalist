@@ -147,7 +147,8 @@ const BookingRequests = () => {
   const requesterAvatars = useProfileAvatars(receivedRequests.map((r) => r.requester_user_id));
 
   const filtered = useMemo(() => {
-    if (filter === "all") return requests;
+    // There is no filter for declined / cancelled ones anymore; they show under All
+    if (filter === "all" || filter === "rejected") return requests;
     return requests.filter((r) => categorize(r) === filter);
   }, [requests, filter]);
 
@@ -262,7 +263,6 @@ const BookingRequests = () => {
               { k: "pending", ro: "În așteptare", en: "Pending" },
               { k: "accepted", ro: "Confirmate", en: "Confirmed" },
               { k: "completed", ro: "Finalizate", en: "Completed" },
-              { k: "rejected", ro: "Respinse / anulate", en: "Declined / cancelled" },
             ] as { k: FilterKey; ro: string; en: string }[])
               .filter((f) => f.k === "all" || f.k === filter || counts[f.k] > 0)
               .map((f) => (
