@@ -187,15 +187,17 @@ const ERROR_TEXT: Record<string, string> = {
   OPPORTUNITY_BUDGET_INVALID: "The minimum budget can't be higher than the maximum.",
   OPPORTUNITY_COLLAB_ARTISTS_ONLY: "Only artists can look for collaborators.",
   USER_ANNOUNCEMENT_GIG_ONLY: "Only artists can look for collaborators.",
-  USER_ANNOUNCEMENT_TEXT_ONLY: "Announcements from organizers can't include photos or videos.",
-  USER_ANNOUNCEMENT_LIMIT_REACHED: "You already have 5 open announcements. Close one or wait for an event to pass.",
-  ANNOUNCEMENT_PLAN_REQUIRED: "Announcements are available on the Standard and Premium plans.",
-  ANNOUNCEMENT_LIMIT_REACHED: "You have used all the announcements in your plan for this period.",
+  USER_ANNOUNCEMENT_TEXT_ONLY: "Events from organizers can't include photos or videos.",
+  USER_ANNOUNCEMENT_LIMIT_REACHED: "You already have 5 open events. Close one or wait for an event to pass.",
+  ANNOUNCEMENT_PLAN_REQUIRED: "Collaborations are available on the Standard and Premium plans.",
+  ANNOUNCEMENT_LIMIT_REACHED: "You have used all the posts in your plan for this period.",
+  // Posts, availability and collaborations share one allowance
+  POST_LIMIT_REACHED: "You have used all the posts in your plan for this period.",
   OPPORTUNITY_ARTISTS_ONLY: "Only artists can send offers.",
-  OPPORTUNITY_NOT_FOUND: "This announcement could not be found.",
-  OPPORTUNITY_OWN: "You can't send an offer to your own announcement.",
-  OPPORTUNITY_CLOSED: "This announcement is no longer taking offers.",
-  OPPORTUNITY_ALREADY_ANSWERED: "You have already answered this announcement.",
+  OPPORTUNITY_NOT_FOUND: "This event could not be found.",
+  OPPORTUNITY_OWN: "You can't send an offer to your own event.",
+  OPPORTUNITY_CLOSED: "This event is no longer taking offers.",
+  OPPORTUNITY_ALREADY_ANSWERED: "You have already answered this event.",
 };
 
 /** Maps a database error to a user-facing English sentence (translated by the RO dictionary). */

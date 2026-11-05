@@ -64,15 +64,15 @@ export const mapEntitlementError = (error: unknown): string | null => {
   if (message.includes("POST_PLAN_REQUIRED"))
     return "Posts are available with a Standard or Premium plan.";
   if (message.includes("POST_LIMIT_REACHED"))
-    return "You've reached your post limit for this billing period.";
+    return "You have used all the posts in your plan for this period.";
   if (message.includes("USER_ANNOUNCEMENT_LIMIT_REACHED"))
     return "You can only have 1 announcement at a time. Delete it to post a new one.";
   if (message.includes("USER_ANNOUNCEMENT_TEXT_ONLY"))
     return "Announcements from user accounts can contain text only.";
   if (message.includes("ANNOUNCEMENT_PLAN_REQUIRED"))
-    return "Announcements are available with a Standard or Premium plan.";
+    return "Collaborations are available on the Standard and Premium plans.";
   if (message.includes("ANNOUNCEMENT_LIMIT_REACHED"))
-    return "You've reached your announcement limit for this billing period.";
+    return "You have used all the posts in your plan for this period.";
   if (message.includes("GALLERY_PLAN_REQUIRED"))
     return "Your current plan doesn't include this type of gallery media.";
   if (message.includes("GALLERY_LIMIT_REACHED"))

@@ -63,9 +63,10 @@ export const getPostLimit = (plan?: string | null): number => {
 /** Ad limits */
 export const getAdLimit = (plan?: string | null): number => {
   switch (getPlan(plan)) {
-    case 'Premium': return 10;
-    case 'Standard': return 5;
-    default: return 0; // Free cannot post ads
+    // Collaborations share the posts allowance (server: plan_limits + shared triggers)
+    case 'Premium': return 30;
+    case 'Standard': return 15;
+    default: return 0; // Free cannot post collaborations
   }
 };
 

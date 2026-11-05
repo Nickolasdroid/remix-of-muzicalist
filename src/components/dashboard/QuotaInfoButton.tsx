@@ -17,13 +17,10 @@ export const QuotaInfoButton = ({ kind }: QuotaInfoButtonProps) => {
   const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
 
+  // Posts, availability posts and collaborations share one allowance, so both counters explain the same rule
+  void kind;
   const message =
-    kind === "posts"
-      ? t(
-          "quotaInfo.posts",
-          "Post slots regenerate 30 days after publishing. Deleting a post does not free up the slot immediately.",
-        )
-      : "Collaboration slots regenerate 30 days after publishing. Deleting a collaboration does not free up the slot immediately.";
+    "Posts, availability posts and collaborations share one monthly allowance. A slot frees up 30 days after publishing; deleting a post does not free it sooner.";
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

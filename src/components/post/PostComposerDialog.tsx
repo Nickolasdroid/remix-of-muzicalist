@@ -21,7 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useEntitlements, serverLimit } from "@/hooks/useEntitlements";
+import { useEntitlements, serverLimit, sharedPostsUsed } from "@/hooks/useEntitlements";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { canPublishPosts, getPostLimit } from "@/lib/planLimits";
@@ -96,7 +96,8 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
   const postLimit = isAdmin
     ? Number.POSITIVE_INFINITY
     : serverLimit(entitlements, "posts", getPostLimit(profile?.plan));
-  const postsUsed = typeof entitlements?.usage?.posts === "number" ? entitlements.usage.posts : 0;
+  // Posts, availability posts and collaborations share one monthly allowance
+  const postsUsed = sharedPostsUsed(entitlements);
   const postsRemaining = Number.isFinite(postLimit) ? Math.max(postLimit - postsUsed, 0) : Number.POSITIVE_INFINITY;
   const canCreate = isAdmin || canPublishPosts(profile?.plan);
   const hoursHalf = !!availableFrom !== !!availableUntil; // one time without the other

@@ -60,3 +60,14 @@ export const serverLimit = (
   const value = entitlements?.limits?.[key];
   return typeof value === "number" ? value : fallback;
 };
+
+/**
+ * Used slots of the shared monthly allowance: posts (incl. availability posts)
+ * plus collaborations, against limits.posts. Mirrors the server triggers.
+ */
+export const sharedPostsUsed = (entitlements: ServerEntitlements | null, fallback = 0): number => {
+  const posts = entitlements?.usage?.posts;
+  const collabs = entitlements?.usage?.announcements;
+  if (typeof posts !== "number") return fallback;
+  return posts + (typeof collabs === "number" ? collabs : 0);
+};

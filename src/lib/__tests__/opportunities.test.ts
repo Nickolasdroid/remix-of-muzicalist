@@ -142,8 +142,9 @@ describe("myAvailabilityFor", () => {
 
 describe("opportunityErrorText", () => {
   it("maps database codes, longest match first", () => {
-    expect(opportunityErrorText({ message: "USER_ANNOUNCEMENT_LIMIT_REACHED" })).toMatch(/5 open announcements/);
-    expect(opportunityErrorText({ message: "ANNOUNCEMENT_LIMIT_REACHED" })).toMatch(/all the announcements/);
+    expect(opportunityErrorText({ message: "USER_ANNOUNCEMENT_LIMIT_REACHED" })).toMatch(/5 open events/);
+    expect(opportunityErrorText({ message: "ANNOUNCEMENT_LIMIT_REACHED" })).toMatch(/all the posts/);
+    expect(opportunityErrorText({ message: "POST_LIMIT_REACHED" })).toMatch(/all the posts/);
     expect(opportunityErrorText({ message: "OPPORTUNITY_CLOSED" })).toMatch(/no longer taking offers/);
     expect(opportunityErrorText({ message: "boom" })).toBeNull();
   });

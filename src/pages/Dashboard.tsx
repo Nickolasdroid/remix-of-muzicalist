@@ -348,6 +348,10 @@ const Dashboard = () => {
   const STANDARD_POST_LIMIT = isAdmin
     ? Number.POSITIVE_INFINITY
     : serverLimit(entitlements, 'posts', getPostLimit(currentPlan));
+  // One allowance for posts, availability posts and collaborations (mirrors the server triggers)
+  const sharedUsed = postsUsed + standardAdsUsed;
+  const sharedRemaining = Math.max(STANDARD_POST_LIMIT - sharedUsed, 0);
+  const sharedLimitLabel = Number.isFinite(STANDARD_POST_LIMIT) ? STANDARD_POST_LIMIT : '∞';
   /**
    * Creation entitlement (current plan) is intentionally kept SEPARATE from
    * visibility of content the owner already created. A downgrade blocks new
@@ -2462,16 +2466,15 @@ const Dashboard = () => {
                           const merged = [...postItems, ...promoItems].sort((a, b) =>
                             new Date(b.__date).getTime() - new Date(a.__date).getTime()
                           );
-                          const postLimitLabel = Number.isFinite(STANDARD_POST_LIMIT) ? STANDARD_POST_LIMIT : '∞';
                           return (
                         <SectionShell>
-                          <OverLimitBanner kind="posts" used={postsUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
+                          <OverLimitBanner kind="posts" used={sharedUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
                           <OverLimitBanner kind="promotions" used={promotionsUsed} limit={PROMOTION_LIMIT} resetDate={periodEnd} />
 
                           <SectionHeaderWithUsage
                             icon={<FileText className="h-5 w-5 text-accent" />}
                             title={t('dashboardPosts.title', 'Posts')}
-                            usage={`${postItems.length}/${postLimitLabel}`}
+                            usage={`${sharedUsed}/${sharedLimitLabel}`}
                             info={<QuotaInfoButton kind="posts" />}
                             action={<>
                               <PostsViewSwitcher mode={postsViewMode} onChange={setPostsViewMode} />
@@ -2669,11 +2672,11 @@ const Dashboard = () => {
                             </Button>
                           </div> :
                         <SectionShell>
-                          <OverLimitBanner kind="announcements" used={standardAdsUsed} limit={STANDARD_AD_LIMIT} resetDate={periodEnd} />
+                          <OverLimitBanner kind="posts" used={sharedUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
                           <SectionHeaderWithUsage
                             icon={postsKind === "gig" ? <CalendarIcon className="h-5 w-5 text-accent" /> : <Users className="h-5 w-5 text-accent" />}
                             title={postsKind === "gig" ? "Events" : "Collaborations"}
-                            usage={`${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'}`}
+                            usage={`${sharedUsed}/${sharedLimitLabel}`}
                             info={<QuotaInfoButton kind="announcements" />}
                             action={
                               !canCreateAnnouncements ? (
@@ -2702,12 +2705,12 @@ const Dashboard = () => {
                             open={showAnnouncementDialog}
                             onOpenChange={setShowAnnouncementDialog}
                             isArtist
-                            blockedReason={standardAdsUsed >= STANDARD_AD_LIMIT ? "You have used all the collaborations in your plan for this period." : null}
-                            meta={Number.isFinite(STANDARD_AD_LIMIT) ? (
+                            blockedReason={sharedUsed >= STANDARD_POST_LIMIT ? "You have used all the posts in your plan for this period." : null}
+                            meta={Number.isFinite(STANDARD_POST_LIMIT) ? (
                               <>
-                                <span className={standardAdsRemaining === 0 ? "text-destructive" : "text-accent"}>
-                                  <span className="tabular-nums">{standardAdsRemaining}</span>{" "}
-                                  <span>{standardAdsRemaining === 1 ? "collaboration left" : "collaborations left"}</span>
+                                <span className={sharedRemaining === 0 ? "text-destructive" : "text-accent"}>
+                                  <span className="tabular-nums">{sharedRemaining}</span>{" "}
+                                  <span>{sharedRemaining === 1 ? "post left" : "posts left"}</span>
                                 </span>
                                 <QuotaInfoButton kind="announcements" />
                               </>
