@@ -1108,7 +1108,7 @@ export const RO_TEXT: Record<string, string> = {
   "In a band, not looking for collaborations": "Cânt într-o formație, nu caut colaborări",
   "Open to collaborations": "Deschis la colaborări",
   "Not looking for collaborations": "Nu caută colaborări",
-  "Shown on your profile. Artists and organizers can filter by it.": "Apare pe profilul tău. Artiștii și organizatorii pot filtra după el.",
+  "Shown on your profile, under your specialization.": "Apare pe profilul tău, sub specializare.",
   "All artists": "Toți artiștii",
   "Gallery: up to 10 images & 2 videos": "Galerie: până la 10 imagini și 2 videoclipuri",
   "Gallery: up to 15 images & 5 videos": "Galerie: până la 15 imagini și 5 videoclipuri",

@@ -2069,7 +2069,7 @@ const Dashboard = () => {
                                       </button>
                                     ))}
                                   </div>
-                                  <p className="text-xs text-muted-foreground">Shown on your profile. Artists and organizers can filter by it.</p>
+                                  <p className="text-xs text-muted-foreground">Shown on your profile, under your specialization.</p>
                                   <div className="flex gap-2">
                                     <Button size="sm" onClick={() => saveField('collabStatus')} disabled={isSaving}>
                                       <Save className="h-3 w-3 mr-1" />
