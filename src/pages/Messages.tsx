@@ -127,6 +127,18 @@ const Messages = () => {
   const adId = searchParams.get("adId");
   // Opened from a dashboard announcement: show only the replies to that announcement
   const [forAd, setForAd] = useState<string | null>(searchParams.get("forAd"));
+  // Title of the filtered event / collaboration when no conversation about it exists yet
+  const [forAdFallback, setForAdFallback] = useState<AnnouncementContext | null>(null);
+  useEffect(() => {
+    if (!forAd) return;
+    let active = true;
+    supabase.from("announcements").select("*").eq("id", forAd).maybeSingle().then(({ data }) => {
+      if (active) setForAdFallback((data as AnnouncementContext) ?? null);
+    });
+    return () => {
+      active = false;
+    };
+  }, [forAd]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -505,7 +517,7 @@ const Messages = () => {
   // One inbox, like Facebook / Instagram. Conversations about an event or collaboration
   // carry a megaphone line with its title; ?forAd= narrows the list to the replies to one.
   const renderConversationList = () => {
-    const forAdContext = forAd ? conversations.find(c => c.announcement_id === forAd)?.announcement_context : null;
+    const forAdContext = forAd ? conversations.find(c => c.announcement_id === forAd)?.announcement_context ?? forAdFallback : null;
     const list = forAd ? conversations.filter(c => c.announcement_id === forAd) : conversations;
     return <>
       {forAd && (

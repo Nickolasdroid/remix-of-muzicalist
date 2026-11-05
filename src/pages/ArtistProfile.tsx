@@ -1882,6 +1882,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                     return <>
                   <div>
                     <SectionHeaderWithUsage
+                            key={`opp-head-${postsKind}`}
                       icon={postsKind === "gig" ? <CalendarIcon className="h-5 w-5 text-accent" /> : <Users className="h-5 w-5 text-accent" />}
                       title={postsKind === "gig" ? "Events" : "Collaborations"}
                       className="mb-4"

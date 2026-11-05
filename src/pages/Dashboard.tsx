@@ -2664,6 +2664,7 @@ const Dashboard = () => {
                         <SectionShell>
                           <OverLimitBanner kind="posts" used={sharedUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
                           <SectionHeaderWithUsage
+                            key={`opp-head-${postsKind}`}
                             icon={postsKind === "gig" ? <CalendarIcon className="h-5 w-5 text-accent" /> : <Users className="h-5 w-5 text-accent" />}
                             title={postsKind === "gig" ? "Events" : "Collaborations"}
                             usage={`${sharedUsed}/${sharedLimitLabel}`}
