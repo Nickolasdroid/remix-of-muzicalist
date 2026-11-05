@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useMemo, useState } from "react";
-import { CalendarDays, CalendarRange, Loader2, Megaphone, Moon } from "lucide-react";
+import { CalendarDays, CalendarRange, Loader2, Moon, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -61,9 +61,8 @@ const amountOrNull = (s: string) => {
 };
 
 /**
- * "New announcement": structured opportunity.
- *   Looking for an artist (event) -> artists answer with a priced offer
- *   Looking for a collaborator (artists only) -> answered by message
+ * "New event" (organizers: artists answer with a priced offer) or
+ * "New collaboration" (artists: answered by message). Same names as the feed filters and card tags.
  */
 const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason, onPublished }: OpportunityComposerProps) => {
   const { i18n } = useTranslation();
@@ -251,12 +250,12 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
       const { data, error } = await (supabase as any).from("announcements").insert(row).select("id").single();
       if (error) throw error;
       await onPublished({ id: data.id, kind });
-      toast({ title: "Announcement published" });
+      toast({ title: isGig ? "Event published" : "Collaboration published" });
       releaseHistory();
       onOpenChange(false);
     } catch (error) {
       toast({
-        title: "Announcement not published",
+        title: isGig ? "Event not published" : "Collaboration not published",
         description: opportunityErrorText(error) || (error as Error)?.message || "Something went wrong. Please try again.",
         variant: "destructive",
       });
@@ -301,7 +300,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
     <Dialog open={open} onOpenChange={handleOpenChange} manageHistory={false}>
       <DialogContent className={cn("max-w-[440px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-2xl overflow-hidden max-h-[90vh] flex flex-col", FULLSCREEN_ON_MOBILE)}>
         <MobileComposerHeader
-          title={isGig ? "Looking for an artist" : "Looking for a collaborator"}
+          title={isGig ? "New event" : "New collaboration"}
           onCancel={() => handleOpenChange(false)}
           actionLabel="Publish"
           onAction={handlePublish}
@@ -310,15 +309,15 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
         />
         <div className="flex items-center gap-3 px-5 pt-5 pb-3 pr-12 max-md:sr-only">
           <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-accent/60 bg-accent/10 text-accent">
-            <Megaphone className="h-5 w-5" />
+            {isGig ? <CalendarDays className="h-5 w-5" /> : <Users className="h-5 w-5" />}
           </span>
           <div className="min-w-0 flex-1">
             <DialogTitle className="text-[17px] font-semibold leading-tight">
-              {isGig ? "Looking for an artist" : "Looking for a collaborator"}
+              {isGig ? "New event" : "New collaboration"}
             </DialogTitle>
             <DialogDescription asChild>
               <div className="text-sm text-muted-foreground">
-                <span>{isGig ? "You receive priced offers from available artists." : "Find musicians for your event."}</span>
+                <span>{isGig ? "Looking for an artist. Available artists send you priced offers." : "Looking for musicians to play with. They answer by message."}</span>
                 {meta && <div className="mt-0.5 flex items-center gap-1 text-xs text-accent">{meta}</div>}
               </div>
             </DialogDescription>
@@ -563,7 +562,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
               className="h-12 w-full rounded-xl bg-accent text-[15px] font-bold text-accent-foreground hover:bg-accent/90"
             >
               {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Publish announcement
+              Publish
             </Button>
           </div>
 
@@ -572,7 +571,7 @@ const OpportunityComposer = ({ open, onOpenChange, isArtist, meta, blockedReason
       </DialogContent>
       <DiscardDraftDialog
         open={confirmDiscard}
-        title="Discard this announcement?"
+        title={isGig ? "Discard this event?" : "Discard this collaboration?"}
         onKeep={() => setConfirmDiscard(false)}
         onDiscard={() => {
           setConfirmDiscard(false);

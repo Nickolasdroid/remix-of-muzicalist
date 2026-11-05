@@ -144,7 +144,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
     const budget = formatOpportunityBudget(a, lang);
 
     const actions: PostAction[] = [
-      ...(open ? [{ key: "close", label: "Close announcement", icon: Ban, onSelect: () => onClose(a.id) }] : []),
+      ...(open ? [{ key: "close", label: "Close", icon: Ban, onSelect: () => onClose(a.id) }] : []),
       { key: "delete", label: "Delete", icon: Trash2, destructive: true, onSelect: () => onDelete(a.id) },
     ];
 
@@ -280,7 +280,8 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-1.5">
+      {/* Secondary switch: plain text, so it doesn't compete with the Posts · Collaborations chips above */}
+      <div className="flex gap-4 border-b border-border/60">
         {([
           { k: "active" as Tab, label: lang.startsWith("ro") ? "Active" : "Active", n: active.length },
           { k: "ended" as Tab, label: lang.startsWith("ro") ? "Încheiate" : "Ended", n: ended.length },
@@ -291,10 +292,10 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
             onClick={() => setTab(t.k)}
             aria-pressed={tab === t.k}
             className={cn(
-              "rounded-full border px-3 py-1.5 text-[13px] transition-colors",
+              "-mb-px border-b-2 pb-2 text-[13px] transition-colors",
               tab === t.k
-                ? "border-accent bg-accent/15 font-semibold text-accent"
-                : "border-border text-muted-foreground hover:text-foreground",
+                ? "border-accent font-semibold text-foreground"
+                : "border-transparent text-muted-foreground hover:text-foreground",
             )}
           >
             <span className="notranslate" translate="no">{t.label}</span>
@@ -310,7 +311,9 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
       ) : (
         <div className="rounded-2xl border border-dashed border-border/70 p-6 text-center text-sm text-muted-foreground">
           <Megaphone className="mx-auto mb-2 h-6 w-6 opacity-60" />
-          {tab === "active" ? <span>No active announcements</span> : <span>No ended announcements</span>}
+          {isArtist
+            ? tab === "active" ? <span>No active collaborations</span> : <span>No ended collaborations</span>
+            : tab === "active" ? <span>No active events</span> : <span>No ended events</span>}
         </div>
       )}
     </div>

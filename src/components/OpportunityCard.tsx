@@ -137,9 +137,13 @@ const OpportunityCard = ({
         {menu}
       </div>
 
-      <h3 className="text-base font-bold leading-snug text-foreground notranslate" translate="no" data-user-content="true">
-        {opportunityDisplayTitle(o, lang)}
-      </h3>
+      <div className="space-y-1">
+        {/* Same names as the feed filters: Event / Collaboration */}
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-accent">{isGig ? "Event" : "Collaboration"}</p>
+        <h3 className="text-base font-bold leading-snug text-foreground notranslate" translate="no" data-user-content="true">
+          {opportunityDisplayTitle(o, lang)}
+        </h3>
+      </div>
 
       {(dateText || place) && (
         <div className="space-y-1.5 text-[13.5px] text-foreground/85">

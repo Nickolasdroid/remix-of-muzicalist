@@ -322,11 +322,11 @@ const UserDashboard = () => {
   const handleCloseAnnouncement = async (id: string) => {
     const { error } = await (supabase as any).from('announcements').update({ status: 'closed' }).eq('id', id);
     if (error) {
-      toast({ title: "Error", description: "Failed to close the announcement.", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to close the event.", variant: "destructive" });
       return;
     }
     await loadAnnouncements();
-    toast({ title: "Announcement closed", description: "It no longer appears in Announcements." });
+    toast({ title: "Event closed", description: "It no longer appears in the feed." });
   };
 
   const handleDeleteAnnouncement = async (id: string) => {
@@ -335,7 +335,7 @@ const UserDashboard = () => {
       const { error } = await supabase.from('announcements').delete().eq('id', id);
       if (error) throw error;
       await loadAnnouncements();
-      toast({ title: t("common.success"), description: "Announcement deleted!" });
+      toast({ title: "Event deleted" });
     } catch (error: any) {
       toast({ title: t("common.error"), description: error.message, variant: "destructive" });
     } finally {
@@ -503,7 +503,7 @@ const UserDashboard = () => {
                 <div>
                   <SectionHeaderWithUsage
                     icon={<Megaphone className="h-4 w-4 md:h-5 md:w-5" />}
-                    title={t("userDashboard.announcements", "Announcements")}
+                    title="My events"
                     usage={`${standardAdsUsed}/${STANDARD_AD_LIMIT}`}
                     className="mb-2"
                     action={
@@ -524,7 +524,7 @@ const UserDashboard = () => {
                     {!canPublish && (
                       <p className="text-xs text-muted-foreground flex items-center gap-1.5">
                         <Clock className="h-3.5 w-3.5" />
-                        <span>You have 5 open announcements. A slot frees up when an event passes or you close one.</span>
+                        <span>You have 5 open events. A slot frees up when an event passes or you close one.</span>
                       </p>
                     )}
 
@@ -538,8 +538,8 @@ const UserDashboard = () => {
                         empty={
                           <div className="rounded-lg border border-dashed border-border/60 bg-background/20 p-4 text-center">
                           <Megaphone className="h-6 w-6 mx-auto mb-1.5 text-muted-foreground/60" />
-                          <p className="text-sm text-muted-foreground">No announcements yet</p>
-                          <p className="text-xs text-muted-foreground/70 mt-0.5">Publish your first one to reach artists.</p>
+                          <p className="text-sm text-muted-foreground">No events yet</p>
+                          <p className="text-xs text-muted-foreground/70 mt-0.5">Add an event and available artists send you offers.</p>
                         </div>
                         }
                       />
@@ -549,8 +549,8 @@ const UserDashboard = () => {
                   <AlertDialog open={!!deleteAnnouncementId} onOpenChange={(open) => !open && setDeleteAnnouncementId(null)}>
                     <AlertDialogContent className="rounded-lg">
                       <AlertDialogHeader>
-                        <AlertDialogTitle>{t("userDashboard.deleteAdTitle")}</AlertDialogTitle>
-                        <AlertDialogDescription>{t("userDashboard.deleteAdDescription")}</AlertDialogDescription>
+                        <AlertDialogTitle>Delete this event?</AlertDialogTitle>
+                        <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>

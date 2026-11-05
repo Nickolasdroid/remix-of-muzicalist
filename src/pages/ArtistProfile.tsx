@@ -64,6 +64,7 @@ import SocialStats from "@/components/SocialStats";
 import ProfileActionsMenu from "@/components/ProfileActionsMenu";
 import { SectionHeaderWithUsage } from "@/components/dashboard/SectionLayout";
 import OfficialProfileView from "@/components/profile/OfficialProfileView";
+import ContentKindChips, { announcementKind, type ContentKind } from "@/components/profile/ContentKindChips";
 import FeedPostCard from "@/components/FeedPostCard";
 import { PostsGrid, PostsViewSwitcher, postDetailPath, usePostsViewMode } from "@/components/post/PostsView";
 import { useAdminIds } from "@/hooks/useAdminIds";
@@ -272,6 +273,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   };
   const [acceptedEventsCount, setAcceptedEventsCount] = useState<number>(0);
   const [activeTab, setActiveTab] = useState<string>("details");
+  // Posts tab chips: Posts · Events · Collaborations
+  const [postsKind, setPostsKind] = useState<ContentKind>("posts");
   const [responseRate, setResponseRate] = useState<number | null>(null);
   const {
     toast
@@ -1147,8 +1150,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
           {/* User's Announcements */}
           {activeAnnouncements.length > 0 && <div>
             <SectionHeaderWithUsage
-              icon={<Megaphone className="h-5 w-5 text-accent" />}
-              title="Announcements"
+              icon={<CalendarIcon className="h-5 w-5 text-accent" />}
+              title="Events"
               className="mb-3"
             />
             <AnnouncementList
@@ -1448,7 +1451,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
               {/* Tabs Section */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-6 mb-4 md:mb-8 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]">
+                <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]">
                   <TabsTrigger value="details" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                     <User strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                     <span className="hidden lg:inline">Details</span>
@@ -1457,11 +1460,6 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   <TabsTrigger value="posts" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                     <FileText strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                     <span className="hidden lg:inline">Posts</span>
-                    <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
-                  </TabsTrigger>
-                  <TabsTrigger value="announcements" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                    <Megaphone strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
-                    <span className="hidden lg:inline">Announcements</span>
                     <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
                   </TabsTrigger>
                   <TabsTrigger value="gallery" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
@@ -1687,6 +1685,20 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
                 {/* Posts Tab */}
                 <TabsContent value="posts" className="space-y-4 md:space-y-6">
+                  {(() => {
+                    const opps = announcements.filter((a) => !a.is_premium && !isAdExpired(a));
+                    const hasGig = opps.some((a) => announcementKind(a, "collab") === "gig");
+                    const hasCollab = opps.some((a) => announcementKind(a, "collab") === "collab");
+                    return (
+                      <ContentKindChips
+                        value={postsKind}
+                        onChange={setPostsKind}
+                        className="mb-1"
+                        options={[{ k: "posts" }, ...(hasGig ? [{ k: "gig" as const }] : []), ...(hasCollab ? [{ k: "collab" as const }] : [])]}
+                      />
+                    );
+                  })()}
+                  {postsKind === "posts" ? <>
                   <div>
                     <SectionHeaderWithUsage
                       icon={<FileText className="h-5 w-5 text-accent" />}
@@ -1864,40 +1876,34 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   </div>
                 }
                   </div>
-                </TabsContent>
-
-                {/* Announcements Tab */}
-                <TabsContent value="announcements" className="space-y-4 md:space-y-6">
+                  </> : (() => {
+                    const activeOpps = announcements.filter((a) => !a.is_premium && !isAdExpired(a) && announcementKind(a, "collab") === postsKind);
+                    return <>
                   <div>
                     <SectionHeaderWithUsage
-                      icon={<Megaphone className="h-5 w-5 text-accent" />}
-                      title="Announcements"
+                      icon={postsKind === "gig" ? <CalendarIcon className="h-5 w-5 text-accent" /> : <Users className="h-5 w-5 text-accent" />}
+                      title={postsKind === "gig" ? "Events" : "Collaborations"}
                       className="mb-4"
                     />
                     {!currentUserId ?
                 <Card className="p-8 text-center">
                         <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                         <h3 className="text-lg font-semibold text-foreground mb-2">Login Required</h3>
-                        <p className="text-muted-foreground mb-4">Please log in or create an account to view the artist's announcements.</p>
+                        <p className="text-muted-foreground mb-4">Please log in or create an account to view the artist's events and collaborations.</p>
                         <div className="flex flex-col sm:flex-row gap-2 justify-center">
                           <Button onClick={() => navigate('/login')} className="bg-accent text-accent-foreground hover:bg-accent/90">Login</Button>
                           <Button variant="outline" onClick={() => navigate('/register')}>Register</Button>
                         </div>
-                     </Card> : announcements.filter((a) => !a.is_premium && !isAdExpired(a)).length === 0 ?
+                     </Card> : activeOpps.length === 0 ?
                 <Card className="p-8 text-center">
                         <Megaphone className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                        <p className="text-muted-foreground">This artist doesn't have any announcements yet.</p>
-                        {isOwnProfile && (
-                          <Button onClick={() => navigate('/my-plan')} className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90">
-                            Upgrade to Post Announcements
-                          </Button>
-                        )}
+                        <p className="text-muted-foreground">Nothing here yet.</p>
                       </Card> :
 
                 <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                   <div className="w-full max-w-[500px] mx-auto space-y-2 md:space-y-4">
                       <AnnouncementList
-                        announcements={announcements.filter((a) => !a.is_premium && !isAdExpired(a))}
+                        announcements={activeOpps}
                         profile={artist}
                         onDeleted={(id) => setAnnouncements((items) => items.filter((x) => x.id !== id))}
                         onUpdated={(id, patch) => setAnnouncements((items) => items.map((x) => (x.id === id ? { ...x, ...patch } : x)))}
@@ -1905,7 +1911,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                         empty={
                           <Card className="p-8 text-center">
                             <Megaphone className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                            <p className="text-muted-foreground">No announcements yet.</p>
+                            <p className="text-muted-foreground">Nothing here yet.</p>
                           </Card>
                         }
                       />
@@ -1913,7 +1919,10 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   </div>
                 }
                   </div>
+                    </>;
+                  })()}
                 </TabsContent>
+
 
                 {/* Gallery Tab */}
                 <TabsContent value="gallery">

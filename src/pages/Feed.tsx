@@ -43,7 +43,8 @@ import { translateSpecialization } from "@/lib/specializationLabel";
 import StoriesBar from "@/components/stories/StoriesBar";
 import Announcements from "@/pages/Announcements";
 import AnnouncementList from "@/components/opportunities/AnnouncementList";
-import { canPublishPosts } from "@/lib/planLimits";
+import { canPost, canPublishPosts } from "@/lib/planLimits";
+import CreateChooser, { type CreateChoice } from "@/components/composer/CreateChooser";
 
 const POSTS_PER_PAGE = 10;
 
@@ -121,6 +122,10 @@ const Feed = () => {
   const [opportunities, setOpportunities] = useState<any[]>([]);
   // Stories stay Standard/Premium; posts are open to every artist plan
   const [canCreateStories, setCanCreateStories] = useState(false);
+  // Collaborations: Standard / Premium artists
+  const [canCreateCollab, setCanCreateCollab] = useState(false);
+  const [showChooser, setShowChooser] = useState(false);
+  const [storySignal, setStorySignal] = useState(0);
   const { t } = useTranslation();
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -169,6 +174,9 @@ const Feed = () => {
         setViewer({ isArtist: !!prof?.specialization, specialization: prof?.specialization ?? null, county: (prof as any)?.county ?? null });
         if (prof?.specialization && (prof.plan === 'Standard' || prof.plan === 'Premium')) {
           setCanCreateStories(true);
+        }
+        if (prof?.specialization && canPost(prof.plan)) {
+          setCanCreateCollab(true);
         }
         if (prof?.specialization && canPublishPosts(prof.plan)) {
           setCanCreate(true);
@@ -570,7 +578,7 @@ const Feed = () => {
         <div ref={contentRef} className="max-w-[500px] mx-auto space-y-2 sm:space-y-3">
           <h1 className="sr-only">Musical Community Feed</h1>
 
-          <StoriesBar currentUserId={currentUserId} canPublish={canCreateStories} />
+          <StoriesBar currentUserId={currentUserId} canPublish={canCreateStories} openComposerSignal={storySignal} />
 
           {currentUserId && (
             <div className="relative">
@@ -809,28 +817,42 @@ const Feed = () => {
         </div>
       </div>
 
-      {/* Organizers: the + creates an event announcement ("looking for an artist") */}
+      {/* Organizers: the + creates an event ("looking for an artist") */}
       {viewer && !viewer.isArtist && (
         <Button
           onClick={() => navigate('/user-dashboard?new=announcement')}
           size="icon"
-          aria-label="Create announcement"
+          aria-label="New event"
           className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
         >
           <Plus className="h-6 w-6" />
         </Button>
       )}
 
-      {canCreate && filter !== "gig" && filter !== "collab" && (
+      {/* Artists: the + asks what to create (post, story, collaboration) */}
+      {canCreate && (
         <Button
-          onClick={() => setShowComposer(true)}
+          onClick={() => setShowChooser(true)}
           size="icon"
-          aria-label="Create post"
+          aria-label="Create"
           className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
         >
           <Plus className="h-6 w-6" />
         </Button>
       )}
+
+      <CreateChooser
+        open={showChooser}
+        onOpenChange={setShowChooser}
+        canCreateStories={canCreateStories}
+        canCreateCollab={canCreateCollab}
+        onUpgrade={() => navigate('/my-plan')}
+        onChoose={(choice: CreateChoice) => {
+          if (choice === 'post') setShowComposer(true);
+          else if (choice === 'story') setStorySignal((n) => n + 1);
+          else navigate('/dashboard?tab=profile&section=posts&new=collab');
+        }}
+      />
 
       <PostComposerDialog
         open={showComposer}

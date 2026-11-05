@@ -10,14 +10,19 @@ interface StoriesBarProps {
   currentUserId: string | null;
   /** Standard/Premium artist — can add stories. */
   canPublish: boolean;
+  /** Bumped by the feed's "+" (Story) to open the composer from outside. */
+  openComposerSignal?: number;
 }
 
 /** Horizontal row of story rings shown at the top of the feed. */
-const StoriesBar = ({ currentUserId, canPublish }: StoriesBarProps) => {
+const StoriesBar = ({ currentUserId, canPublish, openComposerSignal = 0 }: StoriesBarProps) => {
   const [groups, setGroups] = useState<StoryGroup[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [viewerStart, setViewerStart] = useState<number | null>(null);
   const [composerOpen, setComposerOpen] = useState(false);
+  useEffect(() => {
+    if (openComposerSignal > 0 && canPublish) setComposerOpen(true);
+  }, [openComposerSignal, canPublish]);
   const [me, setMe] = useState<{ stage_name: string; avatar_url: string | null } | null>(null);
   // Seen state for guests and for instant UI updates before the DB round-trip.
   const localSeen = useRef<Set<string>>(new Set());

@@ -33,6 +33,7 @@ import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
 import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
 import OpportunityComposer from "@/components/OpportunityComposer";
 import OwnerAnnouncementsList from "@/components/dashboard/OwnerAnnouncementsList";
+import ContentKindChips, { announcementKind, type ContentKind } from "@/components/profile/ContentKindChips";
 import ProfileViewsCard from "@/components/dashboard/ProfileViewsCard";
 import BookingRequestCard from "@/components/BookingRequestCard";
 import { sortBookingsForPreview, isClosedBooking, bookingStatusKey } from "@/lib/bookingDisplay";
@@ -96,7 +97,7 @@ const Dashboard = () => {
     toast
   } = useToast();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
   const { isAdmin } = useUserRole();
   // Authoritative server-side entitlements (effective plan, limits, current
@@ -120,11 +121,20 @@ const Dashboard = () => {
   const calendarOnly = location.pathname === "/calendar";
   const [activeTab, setActiveTab] = useState(calendarOnly ? "profile" : searchParams.get('tab') || "profile");
   usePageTitle(activeTab === "settings" ? "Settings" : "Profile");
-  const [profileSection, setProfileSection] = useState(calendarOnly ? "calendar" : searchParams.get('section') === "calendar" ? "details" : searchParams.get('section') || "details");
+  const [profileSection, setProfileSection] = useState(
+    calendarOnly ? "calendar"
+      : searchParams.get('section') === "calendar" ? "details"
+      // Collaborations live in the Posts tab now (chips Posts · Collaborations)
+      : searchParams.get('section') === "announcements" ? "posts"
+      : searchParams.get('section') || "details",
+  );
+  const [postsKind, setPostsKind] = useState<ContentKind>(
+    searchParams.get('section') === "announcements" || searchParams.get('new') === "collab" ? "collab" : "posts",
+  );
 
   // Force admins to allowed sections only
   useEffect(() => {
-    if (isAdmin && profileSection !== "posts" && profileSection !== "announcements") {
+    if (isAdmin && profileSection !== "posts") {
       setProfileSection("posts");
     }
   }, [isAdmin, profileSection]);
@@ -189,12 +199,24 @@ const Dashboard = () => {
     } else if (section === "calendar") {
       // The calendar moved out of the profile tabs into its own page
       navigate("/calendar", { replace: true });
+    } else if (section === "announcements") {
+      setProfileSection("posts");
+      setPostsKind("collab");
     } else if (section) {
       setProfileSection(section);
     }
     if (searchParams.get('new') === '1') {
       if (section === 'posts') setShowPostDialog(true);
       if (section === 'announcements') setShowAnnouncementDialog(true);
+    }
+    // From the feed's "+" → Collaboration
+    if (searchParams.get('new') === 'collab') {
+      setProfileSection("posts");
+      setPostsKind("collab");
+      setShowAnnouncementDialog(true);
+      const next = new URLSearchParams(searchParams);
+      next.delete('new');
+      setSearchParams(next, { replace: true });
     }
     const commentsId = searchParams.get('commentsId');
     const commentsType = searchParams.get('commentsType');
@@ -1889,7 +1911,7 @@ const Dashboard = () => {
 
                     {/* Tabs Section */}
                     <Tabs value={profileSection} onValueChange={setProfileSection} className="w-full">
-                      {!calendarOnly && <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-2' : 'grid-cols-5'} mb-4 md:mb-8 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]`}>
+                      {!calendarOnly && <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-1' : 'grid-cols-4'} mb-4 md:mb-8 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]`}>
                         {!isAdmin && (
                           <TabsTrigger value="details" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                             <User strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
@@ -1900,11 +1922,6 @@ const Dashboard = () => {
                         <TabsTrigger value="posts" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                           <FileText strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                           <span className="hidden lg:inline">Posts</span>
-                          <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
-                        </TabsTrigger>
-                        <TabsTrigger value="announcements" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                          <Megaphone strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
-                          <span className="hidden lg:inline">Announcements</span>
                           <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
                         </TabsTrigger>
                         {!isAdmin && (
@@ -2348,6 +2365,16 @@ const Dashboard = () => {
 
                       {/* Posts Tab */}
                       <TabsContent value="posts" className="space-y-4">
+                        <ContentKindChips
+                          value={postsKind}
+                          onChange={setPostsKind}
+                          options={[
+                            { k: "posts" },
+                            ...(announcements.some((a) => !a.is_premium && a.kind === "gig") ? [{ k: "gig" as const }] : []),
+                            { k: "collab" },
+                          ]}
+                        />
+                        {postsKind === "posts" ? <>
                         {!canCreatePosts && posts.length === 0 && announcements.filter((a) => a.is_premium).length === 0 ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
                             <p className="text-muted-foreground font-medium">Posts are not available on the Free plan</p>
@@ -2575,16 +2602,13 @@ const Dashboard = () => {
 
                           );
                         })()}
-                      </TabsContent>
-
-                      {/* Announcements Tab */}
-                      <TabsContent value="announcements" className="space-y-4">
+                        </> : <>
                         {/* Locked state only when creation is blocked AND the owner has no existing announcements at all (promoted ones included). */}
                         {!canCreateAnnouncements && announcements.length === 0 ? <div className="text-center py-12 border border-dashed border-border rounded-lg">
 
                             <Lock className="h-12 w-12 text-muted-foreground/50 mx-auto mb-3" />
-                            <p className="text-muted-foreground font-medium">Announcements are not available on the Free plan</p>
-                            <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to create announcements</p>
+                            <p className="text-muted-foreground font-medium">Collaborations are not available on the Free plan</p>
+                            <p className="text-sm text-muted-foreground mt-1">Upgrade to Standard or Premium to look for musicians to play with</p>
                             <Button onClick={() => navigate('/my-plan')} className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90">
                               Upgrade
                             </Button>
@@ -2592,8 +2616,8 @@ const Dashboard = () => {
                         <SectionShell>
                           <OverLimitBanner kind="announcements" used={standardAdsUsed} limit={STANDARD_AD_LIMIT} resetDate={periodEnd} />
                           <SectionHeaderWithUsage
-                            icon={<Megaphone className="h-5 w-5 text-accent" />}
-                            title={t('dashboardAnnouncements.title', 'Announcements')}
+                            icon={postsKind === "gig" ? <CalendarIcon className="h-5 w-5 text-accent" /> : <Users className="h-5 w-5 text-accent" />}
+                            title={postsKind === "gig" ? "Events" : "Collaborations"}
                             usage={`${announcements.filter((a) => !a.is_premium).length}/${Number.isFinite(STANDARD_AD_LIMIT) ? STANDARD_AD_LIMIT : '∞'}`}
                             info={<QuotaInfoButton kind="announcements" />}
                             action={
@@ -2623,12 +2647,12 @@ const Dashboard = () => {
                             open={showAnnouncementDialog}
                             onOpenChange={setShowAnnouncementDialog}
                             isArtist
-                            blockedReason={standardAdsUsed >= STANDARD_AD_LIMIT ? "You have used all the announcements in your plan for this period." : null}
+                            blockedReason={standardAdsUsed >= STANDARD_AD_LIMIT ? "You have used all the collaborations in your plan for this period." : null}
                             meta={Number.isFinite(STANDARD_AD_LIMIT) ? (
                               <>
                                 <span className={standardAdsRemaining === 0 ? "text-destructive" : "text-accent"}>
                                   <span className="tabular-nums">{standardAdsRemaining}</span>{" "}
-                                  <span>{standardAdsRemaining === 1 ? "announcement left" : "announcements left"}</span>
+                                  <span>{standardAdsRemaining === 1 ? "collaboration left" : "collaborations left"}</span>
                                 </span>
                                 <QuotaInfoButton kind="announcements" />
                               </>
@@ -2637,7 +2661,7 @@ const Dashboard = () => {
                           />
                           <div id="announcements-list">
                             <OwnerAnnouncementsList
-                              announcements={announcements}
+                              announcements={announcements.filter((a) => !a.is_premium && announcementKind(a, "collab") === postsKind)}
                               isArtist
                               listClassName="-mx-4 md:mx-0"
                               disabled={isSaving}
@@ -2645,14 +2669,16 @@ const Dashboard = () => {
                               onDelete={(id) => setDeleteAnnouncementId(id)}
                               empty={
                                 <SectionEmptyState
-                                  icon={<Megaphone className="h-10 w-10 opacity-50" />}
-                                  title="No announcements yet"
+                                  icon={<Users className="h-10 w-10 opacity-50" />}
+                                  title="No collaborations yet"
                                 />
                               }
                             />
                           </div>
                         </SectionShell>}
+                        </>}
                       </TabsContent>
+
 
                       {/* Gallery Tab */}
                       {!isAdmin && <TabsContent value="gallery">

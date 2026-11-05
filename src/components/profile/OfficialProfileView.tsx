@@ -1,6 +1,7 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useState, type ReactNode } from "react";
 import { FileText, Megaphone } from "lucide-react";
+import ContentKindChips, { announcementKind, type ContentKind } from "@/components/profile/ContentKindChips";
 import FeedPostCard from "@/components/FeedPostCard";
 import AnnouncementList from "@/components/opportunities/AnnouncementList";
 import OfficialProfileHeader from "@/components/profile/OfficialProfileHeader";
@@ -80,11 +81,6 @@ interface Props {
   onValueChange?: (v: string) => void;
 }
 
-const triggerClass =
-  "group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none";
-const indicatorClass =
-  "pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100";
-
 /**
  * Official / Brand profile presentation (the Muzicalist account).
  *
@@ -118,6 +114,10 @@ const OfficialProfileView = ({
 }: Props) => {
   const name = profile.stage_name || profile.first_name || "Muzicalist";
   const [postsViewMode, setPostsViewMode] = usePostsViewMode();
+  // Posts · Events · Collaborations, the same names as in the feed
+  const [kind, setKind] = useState<ContentKind>(value === "announcements" || defaultTab === "announcements" ? "collab" : "posts");
+  const hasGig = (announcements as any[]).some((a) => announcementKind(a, "gig") === "gig");
+  const hasCollab = (announcements as any[]).some((a) => announcementKind(a, "gig") === "collab");
 
   const author = {
     id: profile.id,
@@ -147,21 +147,16 @@ const OfficialProfileView = ({
 
 
 
-      <Tabs value={value} defaultValue={value ? undefined : defaultTab} onValueChange={onValueChange} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-4 md:mb-6 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]">
-          <TabsTrigger value="posts" className={triggerClass}>
-            <FileText strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] group-data-[state=active]:text-[#D4AF37]" />
-            <span className="hidden sm:inline">Posts</span>
-            <span className={indicatorClass} />
-          </TabsTrigger>
-          <TabsTrigger value="announcements" className={triggerClass}>
-            <Megaphone strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] group-data-[state=active]:text-[#D4AF37]" />
-            <span className="hidden sm:inline">Announcements</span>
-            <span className={indicatorClass} />
-          </TabsTrigger>
-        </TabsList>
+      <Tabs value="posts" onValueChange={onValueChange} className="w-full">
 
         <TabsContent value="posts">
+          <ContentKindChips
+            value={kind}
+            onChange={setKind}
+            className="mb-4"
+            options={[{ k: "posts" }, ...(hasGig || (isOwnProfile && announcementsToolbar) ? [{ k: "gig" as const }] : []), ...(hasCollab ? [{ k: "collab" as const }] : [])]}
+          />
+          {kind === "posts" ? <>
           <SectionHeaderWithUsage
             icon={<FileText className="h-5 w-5 text-accent" />}
             title="Posts"
@@ -209,26 +204,26 @@ const OfficialProfileView = ({
               )}
             </div>
           </div>
-        </TabsContent>
-
-        <TabsContent value="announcements">
+          </> : <>
           {announcementsToolbar}
           <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
             <div className="w-full max-w-[500px] mx-auto space-y-2 md:space-y-4">
               <AnnouncementList
-                announcements={announcements as any[]}
+                announcements={(announcements as any[]).filter((a) => announcementKind(a, "gig") === kind)}
                 profile={profile as any}
                 onMediaClick={(m) => onMediaClick?.(m)}
                 empty={
                   <div className="text-center py-12 border border-dashed border-border rounded-lg mx-4 md:mx-0">
                     <Megaphone className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
-                    <p className="text-muted-foreground">No announcements yet.</p>
+                    <p className="text-muted-foreground">Nothing here yet.</p>
                   </div>
                 }
               />
             </div>
           </div>
+          </>}
         </TabsContent>
+
       </Tabs>
     </div>
   );

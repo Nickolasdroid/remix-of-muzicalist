@@ -51,7 +51,7 @@ const PhoneMockup = () => (
 
       {/* Event Request section inside phone */}
       <div className="p-2.5 space-y-1.5">
-        <h4 className="font-display font-bold text-sm text-foreground">Announcements</h4>
+        <h4 className="font-display font-bold text-sm text-foreground">Events</h4>
 
         {[
           { name: "Electric Club", location: "New York, NY", date: "Saturday, May 18" },

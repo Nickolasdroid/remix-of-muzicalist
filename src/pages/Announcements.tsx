@@ -239,8 +239,14 @@ const Announcements = ({ embeddedKind }: { embeddedKind?: "gig" | "collab" } = {
           return filteredAnnouncements.length === 0 ? (
             <EmptyState
               icon={<Megaphone className="h-5 w-5 text-accent" />}
-              title={t("announcementsPage.emptyTitle")}
-              description={t("announcementsPage.emptyDescription")}
+              title={embeddedKind === "gig" ? "No events yet" : embeddedKind === "collab" ? "No collaborations yet" : t("announcementsPage.emptyTitle")}
+              description={
+                embeddedKind === "gig"
+                  ? "When organizers look for an artist, their events appear here."
+                  : embeddedKind === "collab"
+                    ? "When artists look for musicians to play with, they appear here."
+                    : t("announcementsPage.emptyDescription")
+              }
               className="border-border/60 bg-card/40 py-16"
             />
           ) : (
@@ -267,17 +273,17 @@ const Announcements = ({ embeddedKind }: { embeddedKind?: "gig" | "collab" } = {
               {isLoadingMore && (
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Loader2 className="h-5 w-5 animate-spin" />
-                  <span>Loading more announcements...</span>
+                  <span>Loading more...</span>
                 </div>
               )}
               {!hasMore && announcements.length > 0 && (
-                <p className="text-muted-foreground text-sm">No more announcements to load</p>
+                <p className="text-muted-foreground text-sm">Nothing more to load</p>
               )}
             </div>
           ) : (
             announcements.some((announcement) => !isAdExpired(announcement)) && (
               <GuestContentGate
-                title="Sign in to see all announcements"
+                title="Sign in to see all events and collaborations"
                 description="Create a free account or log in to browse every opportunity and apply to gigs."
               />
             )
@@ -285,11 +291,12 @@ const Announcements = ({ embeddedKind }: { embeddedKind?: "gig" | "collab" } = {
         </div>
       </div>
 
-      {canCreate && (
+      {/* Inside the feed, the feed's own "+" is used */}
+      {canCreate && !embeddedKind && (
         <Button
-          onClick={() => navigate(isArtistViewer ? '/dashboard?tab=profile&section=announcements&new=1' : '/user-dashboard?new=announcement')}
+          onClick={() => navigate(isArtistViewer ? '/dashboard?tab=profile&section=posts&new=collab' : '/user-dashboard?new=announcement')}
           size="icon"
-          aria-label="Create announcement"
+          aria-label="Create"
           className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
         >
           <Plus className="h-6 w-6" />

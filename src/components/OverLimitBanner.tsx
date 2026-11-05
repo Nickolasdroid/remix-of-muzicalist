@@ -10,7 +10,8 @@ interface OverLimitBannerProps {
 }
 
 const LABELS: Record<OverLimitBannerProps["kind"], string> = {
-  announcements: "Announcements",
+  // Artists' announcements are collaborations
+  announcements: "Collaborations",
   posts: "Posts",
   promotions: "Promotions",
 };

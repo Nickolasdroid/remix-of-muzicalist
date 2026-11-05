@@ -14,11 +14,11 @@
   },
   "announcementsPage": {
     "announcementLabel": "Announcement",
-    "loading": "Loading announcements...",
-    "emptyTitle": "No announcements yet",
-    "emptyDescription": "Announcements published by artists will appear here.",
-    "errorTitle": "Announcements couldn't be loaded",
-    "errorMessage": "Something went wrong while loading announcements.",
+    "loading": "Loading...",
+    "emptyTitle": "Nothing here yet",
+    "emptyDescription": "New events and collaborations will appear here.",
+    "errorTitle": "Couldn't be loaded",
+    "errorMessage": "Something went wrong while loading.",
     "retry": "Try again"
   },
   "platformStats": {

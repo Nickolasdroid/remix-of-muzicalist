@@ -14,11 +14,11 @@
   },
   "announcementsPage": {
     "announcementLabel": "Anunț",
-    "loading": "Se încarcă anunțurile...",
-    "emptyTitle": "Nu există încă anunțuri",
-    "emptyDescription": "Anunțurile publicate de artiști vor apărea aici.",
-    "errorTitle": "Anunțurile nu au putut fi încărcate",
-    "errorMessage": "A apărut o problemă la încărcarea anunțurilor.",
+    "loading": "Se încarcă...",
+    "emptyTitle": "Nimic aici încă",
+    "emptyDescription": "Evenimentele și colaborările noi vor apărea aici.",
+    "errorTitle": "Nu s-au putut încărca",
+    "errorMessage": "A apărut o problemă la încărcare.",
     "retry": "Încearcă din nou"
   },
   "platformStats": {

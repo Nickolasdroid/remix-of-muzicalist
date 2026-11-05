@@ -23,10 +23,7 @@ export const QuotaInfoButton = ({ kind }: QuotaInfoButtonProps) => {
           "quotaInfo.posts",
           "Post slots regenerate 30 days after publishing. Deleting a post does not free up the slot immediately.",
         )
-      : t(
-          "quotaInfo.announcements",
-          "Announcement slots regenerate 30 days after publishing. Deleting an announcement does not free up the slot immediately.",
-        );
+      : "Collaboration slots regenerate 30 days after publishing. Deleting a collaboration does not free up the slot immediately.";
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

@@ -125,6 +125,12 @@ const AnnouncementList = ({
   const [offerTarget, setOfferTarget] = useState<any | null>(null);
   const [closeTargetId, setCloseTargetId] = useState<string | null>(null);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const kindOf = (id: string | null) => {
+    const a = id ? announcements.find((x: any) => x.id === id) : null;
+    return a?.is_premium ? "promotion" : a?.kind ?? null;
+  };
+  const closeTargetKind = kindOf(closeTargetId);
+  const deleteTargetKind = kindOf(deleteTargetId);
   const [adminDeleteId, setAdminDeleteId] = useState<string | null>(null);
   const [reportId, setReportId] = useState<string | null>(null);
 
@@ -231,22 +237,22 @@ const AnnouncementList = ({
     setCloseTargetId(null);
     const { error } = await (supabase as any).from("announcements").update({ status: "closed" }).eq("id", id);
     if (error) {
-      toast({ title: "Error", description: "Failed to close the announcement.", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to close it. Please try again.", variant: "destructive" });
       return;
     }
     onUpdated?.(id, { status: "closed" });
-    toast({ title: "Announcement closed", description: "It no longer appears in Announcements." });
+    toast({ title: "Closed", description: "It no longer appears in the feed." });
   };
 
   const deleteAnnouncement = async (id: string) => {
     setDeleteTargetId(null);
     const { error } = await supabase.from("announcements").delete().eq("id", id);
     if (error) {
-      toast({ title: "Error", description: "Failed to delete announcement.", variant: "destructive" });
+      toast({ title: "Error", description: "Failed to delete. Please try again.", variant: "destructive" });
       return;
     }
     onDeleted?.(id);
-    toast({ title: "Announcement deleted", description: "Your announcement has been deleted." });
+    toast({ title: "Deleted" });
   };
 
   const menuFor = (a: any) => {
@@ -270,7 +276,7 @@ const AnnouncementList = ({
           {isOwner && isOpportunity(a) && a.status === "open" && (
             <DropdownMenuItem onClick={() => setCloseTargetId(a.id)}>
               <Ban className="h-4 w-4 mr-2" />
-              Close announcement
+              Close
             </DropdownMenuItem>
           )}
           {isOwner && (
@@ -478,16 +484,17 @@ const AnnouncementList = ({
       <AlertDialog open={!!closeTargetId} onOpenChange={(o) => !o && setCloseTargetId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Close this announcement?</AlertDialogTitle>
+            <AlertDialogTitle>{closeTargetKind === "collab" ? "Close this collaboration?" : "Close this event?"}</AlertDialogTitle>
             <AlertDialogDescription>
-              It no longer appears in Announcements and artists can't send new offers. Offers you already received stay in
-              your bookings.
+              {closeTargetKind === "collab"
+                ? "It no longer appears in the feed. Conversations you already have stay in your messages."
+                : "It no longer appears in the feed and artists can't send new offers. Offers you already received stay in your bookings."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={() => closeTargetId && closeAnnouncement(closeTargetId)}>
-              Close announcement
+              Close
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -496,9 +503,9 @@ const AnnouncementList = ({
       <AlertDialog open={!!deleteTargetId} onOpenChange={(o) => !o && setDeleteTargetId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Announcement</AlertDialogTitle>
+            <AlertDialogTitle>{deleteTargetKind === "collab" ? "Delete this collaboration?" : deleteTargetKind === "gig" ? "Delete this event?" : "Delete this promotion?"}</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete this announcement? This action cannot be undone.
+              This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -523,7 +530,7 @@ const AnnouncementList = ({
           setAdminDeleteId(null);
           const { error } = await supabase.from("announcements").delete().eq("id", id);
           if (error) {
-            toast({ title: "Error", description: "Failed to delete announcement.", variant: "destructive" });
+            toast({ title: "Error", description: "Failed to delete. Please try again.", variant: "destructive" });
             return;
           }
           onDeleted?.(id);
