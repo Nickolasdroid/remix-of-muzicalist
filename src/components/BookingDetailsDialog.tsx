@@ -238,7 +238,7 @@ const BookingDetailsDialog = ({
               <span
                 className={`mt-2 inline-flex w-fit rounded-full px-2.5 py-0.5 text-xs font-semibold ${BOOKING_TONE_CLASS[bookingStatusTone(statusKey)]}`}
               >
-                {bookingStatusLabel(statusKey, viewer)}
+                {bookingStatusLabel(statusKey, viewer, booking ?? undefined)}
               </span>
               <DialogDescription className="sr-only">Booking details</DialogDescription>
             </div>

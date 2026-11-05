@@ -19,8 +19,22 @@ export const bookingStatusKey = (b: Pick<BookingOfferFields, "status" | "event_d
   return "cancelled";
 };
 
-/** English labels — translated by the RO dictionary. */
-export const bookingStatusLabel = (k: BookingStatusKey, viewer: "artist" | "requester") => {
+type ClosedInfo = { confirmed_at?: string | null; declined_by?: string | null; offer_sent_at?: string | null; offer_price?: unknown };
+
+/**
+ * Why a closed (status "rejected") booking ended:
+ *   cancelled       - it was confirmed, then cancelled; or the organizer withdrew the request
+ *   offer_declined  - the organizer declined the artist's offer
+ *   rejected        - the artist declined the request
+ */
+export const closedReason = (b: ClosedInfo): "cancelled" | "offer_declined" | "rejected" => {
+  if (b.confirmed_at) return "cancelled";
+  if (b.declined_by === "requester") return b.offer_sent_at || (b.offer_price != null && b.offer_price !== "") ? "offer_declined" : "cancelled";
+  return "rejected";
+};
+
+/** English labels — translated by the RO dictionary. Pass the booking to tell apart why a closed one ended. */
+export const bookingStatusLabel = (k: BookingStatusKey, viewer: "artist" | "requester", booking?: ClosedInfo) => {
   switch (k) {
     case "pending":
       return viewer === "artist" ? "New request" : "Waiting for offer";
@@ -30,8 +44,10 @@ export const bookingStatusLabel = (k: BookingStatusKey, viewer: "artist" | "requ
       return "Confirmed";
     case "completed":
       return "Completed";
-    default:
-      return "Cancelled";
+    default: {
+      const why = booking ? closedReason(booking) : "cancelled";
+      return why === "rejected" ? "Rejected" : why === "offer_declined" ? "Offer declined" : "Cancelled";
+    }
   }
 };
 

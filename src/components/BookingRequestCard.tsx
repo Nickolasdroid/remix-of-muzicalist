@@ -21,6 +21,9 @@ interface BookingLike {
   message?: string | null;
   offer_price?: number | string | null;
   offer_currency?: string | null;
+  confirmed_at?: string | null;
+  declined_by?: string | null;
+  offer_sent_at?: string | null;
 }
 
 const parseYMD = (s: string) => {
@@ -102,7 +105,7 @@ const BookingRequestCard = ({
           <div className="flex items-start justify-between gap-2">
             <p className="truncate font-semibold text-foreground">{booking.event_type || "Event"}</p>
             <span className={`md:hidden shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${BOOKING_TONE_CLASS[bookingStatusTone(statusKey)]}`}>
-              {bookingStatusLabel(statusKey, viewer)}
+              {bookingStatusLabel(statusKey, viewer, booking)}
             </span>
           </div>
           <div className="mt-0.5 flex min-w-0 items-center gap-1.5">
@@ -135,7 +138,7 @@ const BookingRequestCard = ({
         {/* Desktop: status sits on the right, next to the chevron, so the row reads left-to-right */}
         <div className="hidden md:flex shrink-0 items-center gap-3">
           <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${BOOKING_TONE_CLASS[bookingStatusTone(statusKey)]}`}>
-            {bookingStatusLabel(statusKey, viewer)}
+            {bookingStatusLabel(statusKey, viewer, booking)}
           </span>
           <ChevronRight className="h-4 w-4 text-muted-foreground/60 transition-colors group-hover:text-accent" aria-hidden="true" />
         </div>

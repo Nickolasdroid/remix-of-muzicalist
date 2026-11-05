@@ -262,7 +262,7 @@ const BookingRequests = () => {
               { k: "pending", ro: "În așteptare", en: "Pending" },
               { k: "accepted", ro: "Confirmate", en: "Confirmed" },
               { k: "completed", ro: "Finalizate", en: "Completed" },
-              { k: "rejected", ro: "Anulate", en: "Cancelled" },
+              { k: "rejected", ro: "Respinse / anulate", en: "Declined / cancelled" },
             ] as { k: FilterKey; ro: string; en: string }[])
               .filter((f) => f.k === "all" || f.k === filter || counts[f.k] > 0)
               .map((f) => (

@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { closedReason } from "@/lib/bookingDisplay";
 import { FileSignature, Loader2, Printer } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
@@ -195,12 +196,21 @@ const BookingOfferPanel = ({
 
   let cancelledLine: string | null = null;
   if (cancelled) {
+    const why = closedReason(booking);
     const byMe = (booking.declined_by === "requester") === (viewer === "requester");
-    cancelledLine = byMe
-      ? "You cancelled this booking."
-      : viewer === "artist"
-        ? "Cancelled by the organizer."
-        : "Cancelled by the artist.";
+    if (booking.confirmed_at) {
+      cancelledLine = byMe
+        ? "You cancelled this booking."
+        : viewer === "artist"
+          ? "Cancelled by the organizer."
+          : "Cancelled by the artist.";
+    } else if (why === "offer_declined") {
+      cancelledLine = viewer === "artist" ? "The organizer declined your offer." : "You declined the offer.";
+    } else if (why === "cancelled") {
+      cancelledLine = viewer === "artist" ? "The organizer cancelled the request." : "You cancelled this request.";
+    } else {
+      cancelledLine = viewer === "artist" ? "You declined this request." : "The artist declined your request.";
+    }
   }
 
   return (
