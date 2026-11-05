@@ -35,7 +35,7 @@ import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
 import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
 import OpportunityComposer from "@/components/OpportunityComposer";
 import OwnerAnnouncementsList from "@/components/dashboard/OwnerAnnouncementsList";
-import { useProfileAvatars } from "@/hooks/useProfileAvatars";
+import { useProfileAvatars, useProfileBasics } from "@/hooks/useProfileAvatars";
 import ContentKindChips, { announcementKind, type ContentKind } from "@/components/profile/ContentKindChips";
 import ProfileViewsCard from "@/components/dashboard/ProfileViewsCard";
 import BookingRequestCard from "@/components/BookingRequestCard";
@@ -421,6 +421,8 @@ const Dashboard = () => {
   // Photos of the people who sent booking requests (cards + details dialog)
   const requesterAvatars = useProfileAvatars(bookingRequests.map((r: any) => r.requester_user_id));
   const [sentBookingRequests, setSentBookingRequests] = useState<any[]>([]);
+  // The artists I sent requests to (name + photo on the preview cards)
+  const sentArtists = useProfileBasics(sentBookingRequests.map((r: any) => r.profile_id));
 
   const [selectedBookingRequest, setSelectedBookingRequest] = useState<any | null>(null);
   const [showBookingDetailDialog, setShowBookingDetailDialog] = useState(false);
@@ -498,11 +500,15 @@ const Dashboard = () => {
     } = await (supabase as any).rpc('get_my_calendar_events');
     if (data) setCalendarEvents(data);
   };
-  // Dashboard preview: only what still needs attention (new, offer sent, upcoming confirmed).
-  // Cancelled and past bookings stay under "See all".
-  const activePreview = useMemo(
-    () => sortBookingsForPreview(bookingRequests.filter((r) => !isClosedBooking(bookingStatusKey(r)))),
-    [bookingRequests]
+  // Calendar preview: received and sent requests together, the ones that still need
+  // attention first (new, offer sent, upcoming confirmed), then the latest closed ones.
+  const bookingPreview = useMemo(
+    () =>
+      sortBookingsForPreview([
+        ...bookingRequests.map((r) => ({ ...r, __sent: false })),
+        ...sentBookingRequests.map((r) => ({ ...r, __sent: true })),
+      ]).slice(0, 5),
+    [bookingRequests, sentBookingRequests]
   );
 
   const loadBookingRequests = async () => {
@@ -3172,7 +3178,7 @@ const Dashboard = () => {
                                   ) : null;
                                 })()}
                               </h3>
-                              {bookingRequests.length > 0 && (
+                              {bookingRequests.length + sentBookingRequests.length > 0 && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
@@ -3184,21 +3190,22 @@ const Dashboard = () => {
                               )}
                             </div>
                             
-                            {bookingRequests.length === 0 ? <Card className="border-2 border-dashed border-border/50">
+                            {bookingPreview.length === 0 ? <Card className="border-2 border-dashed border-border/50">
                                 <CardContent className="p-8 text-center">
                                   <CalendarIcon className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                                   <p className="text-muted-foreground">No booking requests yet</p>
                                 </CardContent>
-                              </Card> : activePreview.length === 0 ? (
-                                <div className="rounded-xl border border-dashed border-border/60 px-4 py-6 text-center">
-                                  <p className="text-sm font-medium text-foreground">No active requests</p>
-                                  <p className="mt-1 text-xs text-muted-foreground">Cancelled and past requests are in your history.</p>
-                                  <Button variant="ghost" size="sm" className="mt-2 rounded-lg text-accent hover:text-accent" onClick={() => navigate("/booking-requests")}>
-                                    View history
-                                  </Button>
-                                </div>
-                              ) : <div className="space-y-2.5">
-                                {activePreview.slice(0, 5).map((request) => (
+                              </Card> : <div className="space-y-2.5">
+                                {bookingPreview.map((request: any) => request.__sent ? (
+                                  <BookingRequestCard
+                                    key={`sent-${request.id}`}
+                                    booking={request}
+                                    viewer="requester"
+                                    counterpartName={sentArtists[request.profile_id]?.stage_name || "Artist"}
+                                    counterpartAvatarUrl={sentArtists[request.profile_id]?.avatar_url}
+                                    onClick={() => navigate("/booking-requests?tab=sent")}
+                                  />
+                                ) : (
                                   <BookingRequestCard
                                     key={request.id}
                                     booking={request}
