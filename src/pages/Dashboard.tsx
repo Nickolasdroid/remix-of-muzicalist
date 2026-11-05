@@ -35,6 +35,7 @@ import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
 import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
 import OpportunityComposer from "@/components/OpportunityComposer";
 import OwnerAnnouncementsList from "@/components/dashboard/OwnerAnnouncementsList";
+import { useProfileAvatars } from "@/hooks/useProfileAvatars";
 import ContentKindChips, { announcementKind, type ContentKind } from "@/components/profile/ContentKindChips";
 import ProfileViewsCard from "@/components/dashboard/ProfileViewsCard";
 import BookingRequestCard from "@/components/BookingRequestCard";
@@ -417,6 +418,8 @@ const Dashboard = () => {
 
   // Booking requests state
   const [bookingRequests, setBookingRequests] = useState<any[]>([]);
+  // Photos of the people who sent booking requests (cards + details dialog)
+  const requesterAvatars = useProfileAvatars(bookingRequests.map((r: any) => r.requester_user_id));
   const [sentBookingRequests, setSentBookingRequests] = useState<any[]>([]);
 
   const [selectedBookingRequest, setSelectedBookingRequest] = useState<any | null>(null);
@@ -3201,6 +3204,7 @@ const Dashboard = () => {
                                     booking={request}
                                     viewer="artist"
                                     counterpartName={request.requester_name}
+                                    counterpartAvatarUrl={requesterAvatars[request.requester_user_id]}
                                     onClick={() => {
                                       setSelectedBookingRequest(request);
                                       setShowBookingDetailDialog(true);
@@ -3310,6 +3314,7 @@ const Dashboard = () => {
                             booking={selectedBookingRequest}
                             viewer="artist"
                             counterpartName={selectedBookingRequest?.requester_name || ""}
+                            counterpartAvatarUrl={selectedBookingRequest ? requesterAvatars[selectedBookingRequest.requester_user_id] : null}
                             artistName={profile?.stage_name || 'Artist'}
                             onOffer={() => selectedBookingRequest && handleAcceptBooking(selectedBookingRequest)}
                             onArtistDecline={async (id) => {

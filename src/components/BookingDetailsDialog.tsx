@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { CalendarDays, Lock, Mail, PartyPopper, Phone } from "lucide-react";
+import { Clock, Lock, Mail, Phone } from "lucide-react";
+import { BookingDateTile } from "@/components/BookingRequestCard";
 import { supabase } from "@/integrations/supabase/client";
 import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -30,6 +31,7 @@ import {
   bookingStatusTone,
   BOOKING_TONE_CLASS,
   formatBookingWhen,
+  isClosedBooking,
   messageWithoutTime,
 } from "@/lib/bookingDisplay";
 
@@ -204,26 +206,37 @@ const BookingDetailsDialog = ({
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-[440px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-2xl overflow-hidden max-h-[90vh] flex flex-col">
-          {/* Header */}
-          <div className="flex items-center gap-3 px-5 pt-5 pb-4 pr-12">
-            <Avatar className="h-11 w-11">
-              {counterpartAvatarUrl && <AvatarImage src={counterpartAvatarUrl} alt={counterpartName} />}
-              <AvatarFallback className="bg-accent/10 text-accent font-semibold">
-                {(counterpartName || "?").charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 min-w-0">
-              <DialogTitle className="text-[17px] font-semibold leading-tight truncate notranslate" translate="no">
-                {counterpartName}
+          {/* Header: same order as the list card — date tile, event, time, status */}
+          <div className="flex items-start gap-3.5 px-5 pt-5 pb-4 pr-12">
+            <BookingDateTile ymd={booking.event_date} closed={isClosedBooking(statusKey)} large />
+            <div className="min-w-0 flex-1">
+              <DialogTitle className="text-[17px] font-semibold leading-tight">
+                {booking.event_type ? (
+                  isKnownEventType(booking.event_type) ? (
+                    <span className="block truncate">{booking.event_type}</span>
+                  ) : (
+                    <span className="block truncate notranslate" translate="no" data-user-content="true">{booking.event_type}</span>
+                  )
+                ) : (
+                  <span>Event</span>
+                )}
               </DialogTitle>
-              {viewer === "artist" ? (
-                <p className="text-sm text-muted-foreground truncate">Organizer</p>
-              ) : counterpartSubtitle ? (
-                <p className="text-sm text-muted-foreground truncate notranslate" translate="no">{counterpartSubtitle}</p>
-              ) : null}
-              {/* Status under the name, so the subtitle keeps its full width */}
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                <span className="notranslate" translate="no">{when.date}</span>
+              </p>
+              {(when.time || when.endsOn) && (
+                <p className="mt-0.5 flex flex-wrap items-center gap-x-1 text-sm text-muted-foreground">
+                  <Clock className="h-3.5 w-3.5" aria-hidden="true" />
+                  {when.time && <span className="notranslate tabular-nums" translate="no">{when.time}</span>}
+                  {when.endsOn && (
+                    <span>
+                      (<span>ends on</span> <span className="notranslate" translate="no">{when.endsOn}</span>)
+                    </span>
+                  )}
+                </p>
+              )}
               <span
-                className={`mt-1.5 inline-flex w-fit rounded-full px-2.5 py-0.5 text-xs font-semibold ${BOOKING_TONE_CLASS[bookingStatusTone(statusKey)]}`}
+                className={`mt-2 inline-flex w-fit rounded-full px-2.5 py-0.5 text-xs font-semibold ${BOOKING_TONE_CLASS[bookingStatusTone(statusKey)]}`}
               >
                 {bookingStatusLabel(statusKey, viewer)}
               </span>
@@ -233,36 +246,22 @@ const BookingDetailsDialog = ({
 
           {/* Body */}
           <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-4">
-            <div className="rounded-xl bg-card px-3.5 py-3 space-y-2.5">
-            {booking.event_type && (
-              <div className="flex gap-3 items-center">
-                <PartyPopper className="h-[18px] w-[18px] text-accent shrink-0" />
-                {isKnownEventType(booking.event_type) ? (
-                  <p className="text-[15px] font-medium text-foreground truncate">{booking.event_type}</p>
-                ) : (
-                  <p className="text-[15px] font-medium text-foreground truncate notranslate" translate="no" data-user-content="true">
-                    {booking.event_type}
-                  </p>
-                )}
-              </div>
-            )}
-            <div className="flex gap-3">
-              <CalendarDays className="h-[18px] w-[18px] text-accent mt-0.5 shrink-0" />
+            {/* Who: the same photo and name as on the card */}
+            <div className="flex items-center gap-3 rounded-xl bg-card px-3.5 py-3">
+              <Avatar className="h-10 w-10">
+                {counterpartAvatarUrl && <AvatarImage src={counterpartAvatarUrl} alt={counterpartName} />}
+                <AvatarFallback className="bg-accent/10 text-accent font-semibold">
+                  {(counterpartName || "?").charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
               <div className="min-w-0">
-                <p className="text-[15px] text-foreground notranslate" translate="no">{when.date}</p>
-                {(when.time || when.endsOn) && (
-                  <p className="text-sm text-muted-foreground">
-                    {when.time && <span className="notranslate" translate="no">{when.time}</span>}
-                    {when.time && when.endsOn && <span> · </span>}
-                    {when.endsOn && (
-                      <>
-                        <span>ends on</span> <span className="notranslate" translate="no">{when.endsOn}</span>
-                      </>
-                    )}
-                  </p>
-                )}
+                <p className="truncate text-[15px] font-medium text-foreground notranslate" translate="no">{counterpartName}</p>
+                {viewer === "artist" ? (
+                  <p className="truncate text-sm text-muted-foreground">Organizer</p>
+                ) : counterpartSubtitle ? (
+                  <p className="truncate text-sm text-muted-foreground notranslate" translate="no">{counterpartSubtitle}</p>
+                ) : null}
               </div>
-            </div>
             </div>
 
             <BookingOfferPanel

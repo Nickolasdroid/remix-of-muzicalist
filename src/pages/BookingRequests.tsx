@@ -7,6 +7,7 @@ import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import BookingRequestCard from "@/components/BookingRequestCard";
+import { useProfileAvatars } from "@/hooks/useProfileAvatars";
 import { useToast } from "@/hooks/use-toast";
 import { Calendar as CalendarIcon, ArrowLeft, Loader2 } from "lucide-react";
 import BookingOfferDialog from "@/components/BookingOfferDialog";
@@ -142,6 +143,8 @@ const BookingRequests = () => {
   // Sent view = user account, or artist looking at the "Sent" tab
   const isSentView = !isArtistViewer || tab === "sent";
   const requests = isSentView ? sentRequests : receivedRequests;
+  // Photos of the people who sent the requests I received
+  const requesterAvatars = useProfileAvatars(receivedRequests.map((r) => r.requester_user_id));
 
   const filtered = useMemo(() => {
     if (filter === "all") return requests;
@@ -311,6 +314,7 @@ const BookingRequests = () => {
                     booking={request}
                     viewer={isUserView ? "requester" : "artist"}
                     counterpartName={primaryName}
+                    counterpartAvatarUrl={isUserView ? artist?.avatar_url : requesterAvatars[request.requester_user_id]}
                     onClick={() => {
                       setSelected(request);
                       setOpen(true);
@@ -335,7 +339,7 @@ const BookingRequests = () => {
               : selected.requester_name
             : ""
         }
-        counterpartAvatarUrl={selected && isUserView ? artistProfiles[selected.profile_id]?.avatar_url : null}
+        counterpartAvatarUrl={selected ? (isUserView ? artistProfiles[selected.profile_id]?.avatar_url : requesterAvatars[selected.requester_user_id]) : null}
         counterpartSubtitle={
           selected && isUserView
             ? [

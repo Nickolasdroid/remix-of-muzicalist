@@ -10,6 +10,7 @@ import {
   formatBookingWhen,
 } from "@/lib/bookingDisplay";
 import { formatMoney } from "@/lib/bookingOffers";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface BookingLike {
   id: string;
@@ -27,6 +28,30 @@ const parseYMD = (s: string) => {
   return new Date(y, m - 1, d);
 };
 
+/** Date tile (weekday · day · month), shared by the list card and the details dialog. */
+export const BookingDateTile = ({ ymd, closed, large }: { ymd: string; closed?: boolean; large?: boolean }) => {
+  const { i18n } = useTranslation();
+  const lang = i18n.language || i18n.resolvedLanguage || "ro";
+  const locale = lang.startsWith("ro") ? "ro-RO" : "en-GB";
+  const date = parseYMD(ymd);
+  const weekday = date.toLocaleDateString(locale, { weekday: "short" }).replace(".", "");
+  const month = date.toLocaleDateString(locale, { month: "short" }).replace(".", "");
+  return (
+    <div
+      className={`flex shrink-0 flex-col items-center justify-center rounded-lg ${large ? "w-16 py-2" : "w-14 py-1.5"} ${
+        closed ? "bg-muted/60 text-muted-foreground" : "bg-accent/10 text-accent"
+      }`}
+      aria-hidden="true"
+    >
+      <span className="text-[10px] font-semibold uppercase tracking-wide leading-none notranslate" translate="no">{weekday}</span>
+      <span className={`mt-1 font-bold leading-none tabular-nums ${large ? "text-2xl" : "text-xl"} ${closed ? "" : "text-foreground"}`}>
+        {date.getDate()}
+      </span>
+      <span className="mt-1 text-[10px] font-medium uppercase tracking-wide leading-none notranslate" translate="no">{month}</span>
+    </div>
+  );
+};
+
 /**
  * One booking in a list (artist dashboard and the Booking Requests page).
  * Date tile on the left, event + who + time/price in the middle, status on the right.
@@ -36,26 +61,25 @@ const BookingRequestCard = ({
   booking,
   viewer,
   counterpartName,
+  counterpartAvatarUrl,
   onClick,
   actions,
 }: {
   booking: BookingLike;
   viewer: "artist" | "requester";
   counterpartName: string;
+  /** Small photo next to the name, the same one the details dialog shows */
+  counterpartAvatarUrl?: string | null;
   onClick: () => void;
   /** Optional buttons under the card body (e.g. Send offer / Decline). */
   actions?: ReactNode;
 }) => {
   const { i18n } = useTranslation();
   const lang = i18n.language || i18n.resolvedLanguage || "ro";
-  const locale = lang.startsWith("ro") ? "ro-RO" : "en-GB";
 
   const statusKey = bookingStatusKey(booking);
   const closed = isClosedBooking(statusKey);
   const when = formatBookingWhen(booking, lang);
-  const date = parseYMD(booking.event_date);
-  const weekday = date.toLocaleDateString(locale, { weekday: "short" }).replace(".", "");
-  const month = date.toLocaleDateString(locale, { month: "short" }).replace(".", "");
   const hasPrice = booking.offer_price != null && booking.offer_price !== "" && statusKey !== "pending";
 
   return (
@@ -72,18 +96,7 @@ const BookingRequestCard = ({
       className="group rounded-xl border border-border/50 bg-card p-3 md:p-4 cursor-pointer transition-colors hover:border-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     >
       <div className="flex items-center gap-3 md:gap-4">
-        <div
-          className={`flex w-14 shrink-0 flex-col items-center justify-center rounded-lg py-1.5 ${
-            closed ? "bg-muted/60 text-muted-foreground" : "bg-accent/10 text-accent"
-          }`}
-          aria-hidden="true"
-        >
-          <span className="text-[10px] font-semibold uppercase tracking-wide leading-none">{weekday}</span>
-          <span className={`mt-1 text-xl font-bold leading-none tabular-nums ${closed ? "" : "text-foreground"}`}>
-            {date.getDate()}
-          </span>
-          <span className="mt-1 text-[10px] font-medium uppercase tracking-wide leading-none">{month}</span>
-        </div>
+        <BookingDateTile ymd={booking.event_date} closed={closed} />
 
         <div className={`min-w-0 flex-1 ${closed ? "opacity-70" : ""}`}>
           <div className="flex items-start justify-between gap-2">
@@ -92,7 +105,15 @@ const BookingRequestCard = ({
               {bookingStatusLabel(statusKey, viewer)}
             </span>
           </div>
-          <p className="truncate text-sm text-muted-foreground notranslate" translate="no">{counterpartName}</p>
+          <div className="mt-0.5 flex min-w-0 items-center gap-1.5">
+            <Avatar className="h-5 w-5 shrink-0">
+              {counterpartAvatarUrl && <AvatarImage src={counterpartAvatarUrl} alt="" />}
+              <AvatarFallback className="bg-accent/10 text-[10px] font-semibold text-accent">
+                {(counterpartName || "?").charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+            <p className="truncate text-sm text-muted-foreground notranslate" translate="no">{counterpartName}</p>
+          </div>
           {(when.time || hasPrice) && (
             <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
               {when.time && (
