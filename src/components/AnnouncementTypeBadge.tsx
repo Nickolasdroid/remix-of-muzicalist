@@ -12,6 +12,8 @@ interface AnnouncementTypeBadgeProps {
   kind?: AnnouncementKind;
   /** An active promotion boost is always spelled out. */
   promoted?: boolean;
+  /** Tooltip / screen-reader name of the megaphone ("Event", "Collaboration") */
+  label?: string;
 }
 
 /**
@@ -25,6 +27,7 @@ interface AnnouncementTypeBadgeProps {
 const AnnouncementTypeBadge = ({
   kind = "announcement",
   promoted = false,
+  label: labelProp,
 }: AnnouncementTypeBadgeProps) => {
   const { t } = useTranslation();
 
@@ -39,7 +42,7 @@ const AnnouncementTypeBadge = ({
     return <Badge className={badgeClass}>Promotion</Badge>;
   }
 
-  const label = t("announcementsPage.announcementLabel", "Announcement");
+  const label = labelProp ?? t("announcementsPage.announcementLabel", "Announcement");
   return (
     <Tooltip>
       <TooltipTrigger asChild>

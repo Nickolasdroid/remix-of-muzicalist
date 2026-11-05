@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import AnnouncementTypeBadge from "@/components/AnnouncementTypeBadge";
 import { CalendarDays, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import CardAuthorHeader from "@/components/CardAuthorHeader";
@@ -129,9 +130,9 @@ const OpportunityCard = ({
           verified={author.verified}
           specialization={author.specialization ?? author.subtitle?.split(" · ")[0]}
           specializationTranslatable={author.subtitleTranslatable}
-          county={author.county ?? author.subtitle?.split(" · ")[1]}
-          country={author.country}
+          // The place is in the card body; the meta row carries the megaphone instead of county + flag
           time={formatSmartDate(o.created_at)}
+          extra={<AnnouncementTypeBadge label={isGig ? "Event" : "Collaboration"} />}
           onClick={onAuthorClick}
         />
         {menu}
