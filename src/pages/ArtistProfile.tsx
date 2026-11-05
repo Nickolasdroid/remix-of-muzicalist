@@ -7,7 +7,6 @@ import CardAuthorHeader from "@/components/CardAuthorHeader";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { trackActivityEvent } from "@/lib/activityTracker";
 import { recordProfileView } from "@/lib/profileViews";
-import ReviewsEntryRow from "@/components/ReviewsEntryRow";
 import AnnouncementTypeBadge from "@/components/AnnouncementTypeBadge";
 import { useTranslation } from "react-i18next";
 import SEO, { toMetaDescription } from "@/components/SEO";
@@ -1449,7 +1448,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
               {/* Tabs Section */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]">
+                <TabsList className="grid w-full grid-cols-6 mb-4 md:mb-8 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]">
                   <TabsTrigger value="details" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                     <User strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                     <span className="hidden lg:inline">Details</span>
@@ -1468,6 +1467,11 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   <TabsTrigger value="gallery" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                     <Images strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                     <span className="hidden lg:inline">Gallery</span>
+                    <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
+                  </TabsTrigger>
+                  <TabsTrigger value="reviews" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                    <Star strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
+                    <span className="hidden lg:inline">Reviews</span>
                     <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
                   </TabsTrigger>
                   <TabsTrigger value="calendar" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
@@ -1658,14 +1662,27 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                 }
                   </div>
 
-                  <Separator />
+                </TabsContent>
 
-                  {/* Reviews entry → dedicated reviews page */}
-                  <ReviewsEntryRow
-                    count={reviews.length}
-                    average={getAverageRating()}
-                    onClick={() => navigate(`/artist/${artist.slug ?? id}/reviews`)}
-                  />
+                {/* Reviews Tab: what organizers decide on, no longer hidden under Details */}
+                <TabsContent value="reviews">
+                  <div className="mb-4 flex items-center justify-between gap-3">
+                    <SectionHeaderWithUsage
+                      icon={<Star className="h-5 w-5 text-accent" />}
+                      title="Reviews"
+                      usage={reviews.length > 0 ? reviews.length : undefined}
+                    />
+                    {writeReviewButton}
+                  </div>
+                  {reviews.length > 0 ? <>
+                    <ReviewsSummary ratings={reviews.map((r) => r.rating)} average={getAverageRating()} />
+                    <div className="grid gap-3 md:grid-cols-2">
+                      {(getReviewDisplayLimit(artist?.plan) ? reviews.slice(0, getReviewDisplayLimit(artist?.plan)!) : reviews).map((review) => <div key={review.id}>{renderReviewCard(review)}</div>)}
+                    </div>
+                  </> : <div className="text-center py-12 border border-dashed border-accent/30 rounded-lg">
+                    <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">No reviews yet</p>
+                  </div>}
                 </TabsContent>
 
                 {/* Posts Tab */}

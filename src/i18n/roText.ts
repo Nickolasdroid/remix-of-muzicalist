@@ -1042,6 +1042,7 @@ export const RO_TEXT: Record<string, string> = {
   "Available artists": "Artiști disponibili",
   "No artists have announced free dates yet.": "Încă niciun artist nu și-a anunțat zilele libere.",
   "Feed filter": "Filtru feed",
+  "Organizers can review you after a completed booking. Verified reviews help you rank higher.": "Organizatorii te pot evalua după o rezervare finalizată. Recenziile verificate te urcă în clasament.",
   "Gallery: up to 10 images & 2 videos": "Galerie: până la 10 imagini și 2 videoclipuri",
   "Gallery: up to 15 images & 5 videos": "Galerie: până la 15 imagini și 5 videoclipuri",
   "Gallery: up to 5 images (no video support)": "Galerie: până la 5 imagini (fără videoclipuri)",

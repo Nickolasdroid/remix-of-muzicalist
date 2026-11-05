@@ -46,6 +46,7 @@
     "submitting": "Submitting..."
   },
   "navigation": {
+    "calendar": "Calendar",
     "bookings": "Bookings",
     "home": "Home",
     "categories": "Categories",

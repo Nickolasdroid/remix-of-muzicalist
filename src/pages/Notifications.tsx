@@ -305,7 +305,7 @@ const Notifications = () => {
     if (refType === "announcement") return "/dashboard?tab=profile&section=announcements";
     if (refType === "review") return "/dashboard?tab=profile";
     if (refType === "booking_request" || type === "booking_request" || type === "booking_update")
-      return "/dashboard?tab=profile&section=calendar";
+      return "/calendar";
     if (refType === "follower") return n.actor_id ? `/artist/${n.actor_id}` : "/dashboard?tab=profile";
     return "/dashboard?tab=profile";
   };

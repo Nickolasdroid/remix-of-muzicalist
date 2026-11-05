@@ -80,6 +80,7 @@ registerPreload("/register", Register.preload);
 registerPreload("/register/artist", RegisterArtist.preload);
 registerPreload("/register/user", RegisterUser.preload);
 registerPreload("/dashboard", Dashboard.preload);
+registerPreload("/calendar", Dashboard.preload);
 registerPreload("/dashboard/posts/new", CreatePost.preload);
 registerPreload("/user-dashboard", UserDashboard.preload);
 registerPreload("/artist/", ArtistProfileRoute.preload);
@@ -156,6 +157,8 @@ const App = () => (
             <Route path="/register/artist" element={<RegisterArtist />} />
             <Route path="/register/user" element={<RegisterUser />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            {/* The artist's calendar, reached from the bottom bar */}
+            <Route path="/calendar" element={<Dashboard />} />
             <Route path="/dashboard/posts/new" element={<CreatePost />} />
             <Route path="/user-dashboard" element={<UserDashboard />} />
             <Route path="/artist/:id" element={<ArtistProfileRoute />} />

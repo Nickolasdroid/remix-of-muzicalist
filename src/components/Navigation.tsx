@@ -374,7 +374,10 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
   
   const sidebarLinks = [
     { to: '/feed', icon: Home, label: t('navigation.home') },
-    { to: '/booking-requests', icon: CalendarCheck, label: t('navigation.bookings', 'Bookings'), badge: bookingActionCount },
+    // Artists: their calendar (availability + requests + bookings); organizers: their bookings
+    userType === 'user'
+      ? { to: '/booking-requests', icon: CalendarCheck, label: t('navigation.bookings', 'Bookings'), badge: bookingActionCount }
+      : { to: '/calendar', icon: CalendarCheck, label: t('navigation.calendar', 'Calendar'), badge: bookingActionCount },
     { to: '/categories', icon: Users, label: t('navigation.categories') },
     { to: '/leaderboard', icon: Trophy, label: t('navigation.leaderboard') },
     { to: '/countries', icon: Globe, label: t('navigation.countries', 'Countries') },
@@ -399,10 +402,12 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
   // Mobile bottom nav items (left to right: Feed - Announcements - Messages - Profile)
   const mobileBottomNav = [
     { to: '/feed', icon: Home, label: t('navigation.home'), showBadge: false },
-    // Announcements now live in the feed (filters); this slot goes to bookings, the core action
-    { to: user ? '/booking-requests' : '/login', icon: CalendarCheck, label: t('navigation.bookings', 'Bookings'), showBadge: false, badgeCount: bookingActionCount },
-    { to: user ? '/messages' : '/login', icon: MessageSquare, label: t('navigation.messages'), showBadge: true },
     { to: '/search', icon: Search, label: t('common.search'), showBadge: false },
+    { to: user ? '/messages' : '/login', icon: MessageSquare, label: t('navigation.messages'), showBadge: true },
+    // Artists: their calendar; organizers: their bookings. Badge = items waiting for an answer
+    userType === 'user'
+      ? { to: user ? '/booking-requests' : '/login', icon: CalendarCheck, label: t('navigation.bookings', 'Bookings'), showBadge: false, badgeCount: bookingActionCount }
+      : { to: user ? '/calendar' : '/login', icon: CalendarCheck, label: t('navigation.calendar', 'Calendar'), showBadge: false, badgeCount: bookingActionCount },
     { to: user ? (userType === 'user' ? '/user-dashboard' : '/dashboard?tab=profile') : '/login', icon: User, label: t('navigation.profile'), showBadge: false },
   ];
 
@@ -474,7 +479,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 <p className="px-4 pt-5 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {t('navigation.discover', 'Discover')}
                 </p>
-                {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/booking-requests').map((link, i) => (
+                {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/booking-requests' && link.to !== '/calendar').map((link, i) => (
                   <MobileMenuRow
                     key={link.to}
                     to={link.to}

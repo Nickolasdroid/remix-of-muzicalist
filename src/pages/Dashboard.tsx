@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { bandMembersLabel } from "@/lib/bandMembers";
 import { usePageTitle } from "@/hooks/usePageTitle";
-import ReviewsEntryRow from "@/components/ReviewsEntryRow";
 import { formatSmartDate, formatDateNoYear, cn, sanitizeFileName } from "@/lib/utils";
 import SettingsTab, { type SettingSection } from "@/components/SettingsTab";
 import ExpandableText from "@/components/ExpandableText";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import ReviewCard from "@/components/ReviewCard";
+import ReviewsSummary from "@/components/ReviewsSummary";
 import Navigation from "@/components/Navigation";
 import SocialStats from "@/components/SocialStats";
 import OfficialProfileHeader from "@/components/profile/OfficialProfileHeader";
@@ -114,9 +115,12 @@ const Dashboard = () => {
   const [pricingRefreshKey, setPricingRefreshKey] = useState(0);
   const [acceptedEventsCount, setAcceptedEventsCount] = useState(0);
   const [responseRate, setResponseRate] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || "profile");
+  // /calendar (bottom bar) shows only the artist's calendar: availability, requests, bookings
+  const location = useLocation();
+  const calendarOnly = location.pathname === "/calendar";
+  const [activeTab, setActiveTab] = useState(calendarOnly ? "profile" : searchParams.get('tab') || "profile");
   usePageTitle(activeTab === "settings" ? "Settings" : "Profile");
-  const [profileSection, setProfileSection] = useState(searchParams.get('section') || "details");
+  const [profileSection, setProfileSection] = useState(calendarOnly ? "calendar" : searchParams.get('section') === "calendar" ? "details" : searchParams.get('section') || "details");
 
   // Force admins to allowed sections only
   useEffect(() => {
@@ -179,7 +183,13 @@ const Dashboard = () => {
       setActiveTab(tab);
     }
     const section = searchParams.get('section');
-    if (section) {
+    if (calendarOnly) {
+      setActiveTab("profile");
+      setProfileSection("calendar");
+    } else if (section === "calendar") {
+      // The calendar moved out of the profile tabs into its own page
+      navigate("/calendar", { replace: true });
+    } else if (section) {
       setProfileSection(section);
     }
     if (searchParams.get('new') === '1') {
@@ -558,7 +568,7 @@ const Dashboard = () => {
     if (!user) return;
     const {
       data
-    } = await supabase.from('reviews').select('id, reviewer_name, rating, comment, created_at, reviewer_user_id').eq('profile_id', user.id).order('created_at', {
+    } = await supabase.from('reviews').select('id, reviewer_name, rating, comment, created_at, reviewer_user_id, is_verified_booking').eq('profile_id', user.id).order('created_at', {
       ascending: false
     });
     if (!data) return;
@@ -1638,8 +1648,8 @@ const Dashboard = () => {
   }
   return <div className={`min-h-screen md:ml-64 bg-background`}>
       <Navigation 
-        mobileTitle={getMobileTitle()} 
-        mobileBackPath={getMobileBackPath()}
+        mobileTitle={calendarOnly ? undefined : getMobileTitle()} 
+        mobileBackPath={calendarOnly ? undefined : getMobileBackPath()}
         onMobileBack={activeTab === "settings" && settingsSection !== "main" ? () => {
           setSettingsSection("main");
         } : undefined}
@@ -1651,7 +1661,7 @@ const Dashboard = () => {
               {/* Profile Tab */}
               {activeTab === "profile" && <div className="space-y-6 md:space-y-8">
                     {/* Hero Header: Cover + overlapping avatar/name/meta — responsive (owner view) */}
-                    {!isAdmin && (
+                    {!isAdmin && !calendarOnly && (
                       <div className="relative left-1/2 mb-6 w-screen -translate-x-1/2 md:left-0 md:mb-8 md:w-full md:translate-x-0">
                         <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary group">
                           {/* Spacer to keep name from overlapping top-right action buttons on tablet */}
@@ -1875,11 +1885,11 @@ const Dashboard = () => {
 
 
 
-                    {!isAdmin && <ProfileViewsCard plan={currentPlan} />}
+                    {!isAdmin && !calendarOnly && <ProfileViewsCard plan={currentPlan} />}
 
                     {/* Tabs Section */}
                     <Tabs value={profileSection} onValueChange={setProfileSection} className="w-full">
-                      <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-2' : 'grid-cols-5'} mb-4 md:mb-8 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]`}>
+                      {!calendarOnly && <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-2' : 'grid-cols-5'} mb-4 md:mb-8 h-auto p-1 md:p-1.5 gap-0.5 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]`}>
                         {!isAdmin && (
                           <TabsTrigger value="details" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
                             <User strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
@@ -1905,13 +1915,13 @@ const Dashboard = () => {
                           </TabsTrigger>
                         )}
                         {!isAdmin && (
-                          <TabsTrigger value="calendar" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                            <CalendarIcon strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
-                            <span className="hidden lg:inline">Calendar</span>
+                          <TabsTrigger value="reviews" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                            <Star strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
+                            <span className="hidden lg:inline">Reviews</span>
                             <span className="pointer-events-none absolute bottom-0 left-1/2 h-[3px] w-[40%] -translate-x-1/2 rounded-full bg-[#D4AF37] opacity-0 transition-opacity duration-200 ease-in-out group-data-[state=active]:opacity-100" />
                           </TabsTrigger>
                         )}
-                      </TabsList>
+                      </TabsList>}
 
                       {/* Details Tab */}
                       {!isAdmin && <TabsContent value="details" className="space-y-4 md:space-y-8">
@@ -2314,14 +2324,26 @@ const Dashboard = () => {
                             </div>}
                          </div>
 
-                        <Separator />
+                      </TabsContent>}
 
-                        {/* Reviews entry → shared dedicated reviews page */}
-                        <ReviewsEntryRow
-                          count={reviews.length}
-                          average={getAverageRating()}
-                          onClick={() => user?.id && navigate(`/artist/${user.id}/reviews`)}
+                      {/* Reviews Tab (was hidden at the bottom of Details) */}
+                      {!isAdmin && <TabsContent value="reviews">
+                        <SectionHeaderWithUsage
+                          icon={<Star className="h-5 w-5 text-accent" />}
+                          title="Reviews"
+                          usage={reviews.length > 0 ? reviews.length : undefined}
+                          className="mb-4"
                         />
+                        {reviews.length > 0 ? <>
+                          <ReviewsSummary ratings={reviews.map((r) => r.rating)} average={getAverageRating()} />
+                          <div className="grid gap-3 md:grid-cols-2">
+                            {reviews.map((r) => <ReviewCard key={r.id} review={r} />)}
+                          </div>
+                        </> : <div className="py-12 text-center border border-dashed border-accent/30 rounded-lg">
+                          <Star className="mx-auto mb-2 h-8 w-8 text-muted-foreground/50" />
+                          <p className="text-sm font-medium text-foreground">No reviews yet</p>
+                          <p className="mx-auto mt-1 max-w-xs text-xs text-muted-foreground">Organizers can review you after a completed booking. Verified reviews help you rank higher.</p>
+                        </div>}
                       </TabsContent>}
 
                       {/* Posts Tab */}
@@ -2834,7 +2856,7 @@ const Dashboard = () => {
 
                       {/* Calendar Tab */}
                       {!isAdmin && <TabsContent value="calendar">
-                        <div>
+                        <div className={calendarOnly ? "pt-4" : undefined}>
                           <SectionHeaderWithUsage
                             icon={<CalendarIcon className="h-5 w-5 text-accent" />}
                             title="My Calendar"
