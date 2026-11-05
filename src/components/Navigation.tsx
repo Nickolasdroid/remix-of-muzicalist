@@ -374,10 +374,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
   
   const sidebarLinks = [
     { to: '/feed', icon: Home, label: t('navigation.home') },
-    // Artists: their calendar (availability + requests + bookings); organizers: their bookings
-    userType === 'user'
-      ? { to: '/booking-requests', icon: CalendarCheck, label: t('navigation.bookings', 'Bookings'), badge: bookingActionCount }
-      : { to: '/calendar', icon: CalendarCheck, label: t('navigation.calendar', 'Calendar'), badge: bookingActionCount },
+    // Search second, like the bottom bar (the calendar sits after Regions)
+    { to: '/search', icon: Search, label: t('common.search') },
     { to: '/categories', icon: Users, label: t('navigation.categories') },
     { to: '/leaderboard', icon: Trophy, label: t('navigation.leaderboard') },
     { to: '/countries', icon: Globe, label: t('navigation.countries', 'Countries') },
@@ -479,7 +477,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 <p className="px-4 pt-5 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {t('navigation.discover', 'Discover')}
                 </p>
-                {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/booking-requests' && link.to !== '/calendar').map((link, i) => (
+                {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/search').map((link, i) => (
                   <MobileMenuRow
                     key={link.to}
                     to={link.to}
@@ -697,17 +695,25 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
             </Link>
           ))}
 
-          {/* Search Link - between Regions and Notifications */}
+          {/* Calendar (artists) / Bookings (organizers) - between Regions and Notifications,
+              swapped with Search like the bottom bar */}
           <Link
-            to="/search"
-            className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-              isActive('/search')
+            to={userType === 'user' ? '/booking-requests' : '/calendar'}
+            className={`flex items-center justify-between px-3 py-3 rounded-lg transition-colors ${
+              isActive(userType === 'user' ? '/booking-requests' : '/calendar')
                 ? 'bg-accent/20 text-accent'
                 : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
             }`}
           >
-            <Search className="h-5 w-5" />
-            <span className="font-medium">{t('common.search')}</span>
+            <div className="flex items-center gap-3">
+              <CalendarCheck className="h-5 w-5" />
+              <span className="font-medium">{userType === 'user' ? t('navigation.bookings', 'Bookings') : t('navigation.calendar', 'Calendar')}</span>
+            </div>
+            {bookingActionCount > 0 && (
+              <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
+                {bookingActionCount > 9 ? '9+' : bookingActionCount}
+              </span>
+            )}
           </Link>
 
           {/* User-specific links */}
