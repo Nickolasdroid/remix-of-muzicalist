@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { fetchCollabStatuses, hasCollabStatus, isOpenToCollabs, type CollabStatus } from "@/lib/collabStatus";
 
 interface FilterButtonProps {
   filterCountry: string;
@@ -41,6 +42,10 @@ interface FilterButtonProps {
   setSortOrder: (value: string) => void;
   countries: string[];
   counties: string[];
+  /** Singers / instrumentalists: "all" or "open" (open to collaborations) */
+  collabFilter: string;
+  setCollabFilter: (value: string) => void;
+  showCollabFilter: boolean;
 }
 
 const FilterContent = ({
@@ -52,8 +57,26 @@ const FilterContent = ({
   setSortOrder,
   countries,
   counties,
+  collabFilter,
+  setCollabFilter,
+  showCollabFilter,
 }: FilterButtonProps) => (
   <div className="space-y-4">
+    {showCollabFilter && (
+      <div className="space-y-2">
+        <Label htmlFor="collab">Collaborations</Label>
+        <Select value={collabFilter} onValueChange={setCollabFilter}>
+          <SelectTrigger id="collab">
+            <SelectValue placeholder="All artists" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All artists</SelectItem>
+            <SelectItem value="open">Free for collaborations</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+    )}
+
     <div className="space-y-2">
       <Label htmlFor="country">Country</Label>
       <Select value={filterCountry} onValueChange={setFilterCountry}>
@@ -104,6 +127,7 @@ const FilterContent = ({
         setFilterCountry("all");
         setFilterCounty("all");
         setSortOrder("none");
+        setCollabFilter("all");
       }}
       className="w-full"
     >
@@ -114,7 +138,7 @@ const FilterContent = ({
 
 /** Filters that narrow the list (sorting is not counted). */
 const activeFilterCount = (props: FilterButtonProps) =>
-  [props.filterCountry, props.filterCounty].filter((v) => v && v !== "all").length;
+  [props.filterCountry, props.filterCounty, props.showCollabFilter ? props.collabFilter : "all"].filter((v) => v && v !== "all").length;
 
 /**
  * Mobile: a filter icon in the top bar (next to the bell) that opens a drawer.
@@ -187,6 +211,7 @@ interface Artist {
   
   plan: string;
   availabilityStatus?: "available" | "booked" | null;
+  collabStatus?: CollabStatus | null;
 }
 
 const CategoryArtists = () => {
@@ -199,6 +224,7 @@ const CategoryArtists = () => {
   const [filterCounty, setFilterCounty] = useState<string>("all");
   
   const [sortOrder, setSortOrder] = useState<string>("none");
+  const [collabFilter, setCollabFilter] = useState<string>(searchParams.get('collab') === 'open' ? "open" : "all");
   const [userCountry, setUserCountry] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [availableCountries, setAvailableCountries] = useState<string[]>([]);
@@ -270,6 +296,11 @@ const CategoryArtists = () => {
         console.error('Error fetching artists:', error);
       } else {
         let artistsWithAvailability: Artist[] = (data || []).map(a => ({ ...a, country: a.country ?? null }));
+        // Singers / instrumentalists: collaboration status (read on its own, never breaks the list)
+        if (hasCollabStatus(specialization) && artistsWithAvailability.length > 0) {
+          const statuses = await fetchCollabStatuses(artistsWithAvailability.map(a => a.id));
+          artistsWithAvailability = artistsWithAvailability.map(a => ({ ...a, collabStatus: statuses[a.id] ?? null }));
+        }
         
         // If a date is specified, check availability
         if (urlDate && artistsWithAvailability.length > 0) {
@@ -340,6 +371,10 @@ const CategoryArtists = () => {
       result = result.filter(artist => artist.county === filterCounty);
     }
 
+    if (collabFilter === "open") {
+      result = result.filter(artist => isOpenToCollabs(artist.collabStatus));
+    }
+
 
     if (sortOrder === "a-z") {
       result.sort((a, b) => a.stage_name.localeCompare(b.stage_name));
@@ -348,9 +383,9 @@ const CategoryArtists = () => {
     }
 
     return result;
-  }, [artists, filterCountry, filterCounty, sortOrder]);
+  }, [artists, filterCountry, filterCounty, sortOrder, collabFilter]);
 
-  const filterProps = { filterCountry, setFilterCountry, filterCounty, setFilterCounty, sortOrder, setSortOrder, countries: availableCountries, counties: filteredCounties };
+  const filterProps = { filterCountry, setFilterCountry, filterCounty, setFilterCounty, sortOrder, setSortOrder, countries: availableCountries, counties: filteredCounties, collabFilter, setCollabFilter, showCollabFilter: category === 'Singers' || category === 'Instrumentalists' };
 
   return (
     <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>

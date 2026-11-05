@@ -64,6 +64,8 @@ import SocialStats from "@/components/SocialStats";
 import ProfileActionsMenu from "@/components/ProfileActionsMenu";
 import { SectionHeaderWithUsage } from "@/components/dashboard/SectionLayout";
 import OfficialProfileView from "@/components/profile/OfficialProfileView";
+import CollabStatusChip from "@/components/profile/CollabStatusChip";
+import { fetchCollabStatuses, hasCollabStatus, type CollabStatus } from "@/lib/collabStatus";
 import ContentKindChips, { announcementKind, type ContentKind } from "@/components/profile/ContentKindChips";
 import FeedPostCard from "@/components/FeedPostCard";
 import { PostsGrid, PostsViewSwitcher, postDetailPath, usePostsViewMode } from "@/components/post/PostsView";
@@ -185,6 +187,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   const id = artistId ?? routeId;
   const navigate = useNavigate();
   const [artist, setArtist] = useState<Profile | null>(null);
+  const [collabStatus, setCollabStatus] = useState<CollabStatus | null>(null);
   // Publicly entitled social links, resolved server-side (public.get_public_social_links)
   const [socialLinks, setSocialLinks] = useState<{ platform: string; url: string }[] | null>(null);
   const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
@@ -356,6 +359,12 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         console.error('Error fetching profile:', profileError);
       } else {
         setArtist(profileData ? { ...profileData, email: contact.email, phone: contact.phone } : null);
+        // Read on its own so the page works before the column exists
+        if (profileData && hasCollabStatus(profileData.specialization)) {
+          fetchCollabStatuses([profileData.id]).then((m) => setCollabStatus(m[profileData.id] ?? null));
+        } else {
+          setCollabStatus(null);
+        }
       }
       setLoading(false);
 
@@ -1363,6 +1372,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                     {artist.county && <span className="truncate">{artist.county}</span>}
                     {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                   </div>
+                  {collabStatus && <CollabStatusChip status={collabStatus} className="mt-1.5" />}
                   <SocialStats
                     className="mt-1.5 md:mt-2 flex-nowrap"
                     followersCount={followersCount}

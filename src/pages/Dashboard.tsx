@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { bandMembersLabel } from "@/lib/bandMembers";
+import CollabStatusChip from "@/components/profile/CollabStatusChip";
+import { COLLAB_STATUSES, COLLAB_STATUS_LABEL, hasCollabStatus, isCollabStatus, isOpenToCollabs } from "@/lib/collabStatus";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { formatSmartDate, formatDateNoYear, cn, sanitizeFileName } from "@/lib/utils";
 import SettingsTab, { type SettingSection } from "@/components/SettingsTab";
@@ -259,7 +261,8 @@ const Dashboard = () => {
     tiktokUrl: "",
     spotifyUrl: "",
     instruments: "",
-    bandMembers: ""
+    bandMembers: "",
+    collabStatus: ""
   });
 
   // Announcements state
@@ -731,7 +734,8 @@ const Dashboard = () => {
         tiktokUrl: profileData.tiktok_url || "",
         spotifyUrl: profileData.spotify_url || "",
         instruments: profileData.instruments || "",
-        bandMembers: (profileData as any).band_members?.toString() || ""
+        bandMembers: (profileData as any).band_members?.toString() || "",
+        collabStatus: isCollabStatus((profileData as any).collab_status) ? (profileData as any).collab_status : ""
       });
 
       // Count accepted booking requests for this artist
@@ -985,6 +989,9 @@ const Dashboard = () => {
           break;
         case 'instruments':
           updateData.instruments = formData.instruments;
+          break;
+        case 'collabStatus':
+          (updateData as any).collab_status = formData.collabStatus || null;
           break;
         case 'bandMembers': {
           const n = parseInt(formData.bandMembers);
@@ -1803,6 +1810,9 @@ const Dashboard = () => {
                               {formData.county && <span className="truncate">{formData.county}</span>}
                               {formData.country && <CountryFlagIcon country={formData.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                             </div>
+                            {hasCollabStatus(formData.specialization) && isCollabStatus(formData.collabStatus) && (
+                              <CollabStatusChip status={formData.collabStatus} className="mt-1.5" />
+                            )}
                             {/* Owner view: Followers + Following, same visual language as the public profile */}
                             <SocialStats
                               className="mt-1.5 md:mt-2 flex-nowrap"
@@ -2027,6 +2037,55 @@ const Dashboard = () => {
                             </div>
                           </>
               }
+
+                        {/* Collaboration status — singers and instrumentalists only */}
+                        {hasCollabStatus(formData.specialization) && <>
+                            <Separator />
+                            <div className="group">
+                              <div className="flex items-center justify-between mb-3">
+                                <SectionHeaderWithUsage
+                                  icon={<Users className="h-5 w-5 text-accent" />}
+                                  title="Collaborations"
+                                />
+                                {editingField !== 'collabStatus' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('collabStatus')}>
+                                    <Edit2 className="h-4 w-4" />
+                                  </Button>}
+                              </div>
+                              {editingField === 'collabStatus' ? <div className="space-y-3">
+                                  <div className="flex flex-col gap-2" role="radiogroup" aria-label="Collaborations">
+                                    {COLLAB_STATUSES.map((st) => (
+                                      <button
+                                        key={st}
+                                        type="button"
+                                        role="radio"
+                                        aria-checked={formData.collabStatus === st}
+                                        onClick={() => setFormData({ ...formData, collabStatus: formData.collabStatus === st ? "" : st })}
+                                        className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 text-left text-sm transition-colors ${formData.collabStatus === st ? "border-accent bg-accent/10 text-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}
+                                      >
+                                        <span className={`grid h-4 w-4 shrink-0 place-items-center rounded-full border ${formData.collabStatus === st ? "border-accent" : "border-muted-foreground/50"}`}>
+                                          {formData.collabStatus === st && <span className="h-2 w-2 rounded-full bg-accent" />}
+                                        </span>
+                                        <span>{COLLAB_STATUS_LABEL[st]}</span>
+                                      </button>
+                                    ))}
+                                  </div>
+                                  <p className="text-xs text-muted-foreground">Shown on your profile. Artists and organizers can filter by it.</p>
+                                  <div className="flex gap-2">
+                                    <Button size="sm" onClick={() => saveField('collabStatus')} disabled={isSaving}>
+                                      <Save className="h-3 w-3 mr-1" />
+                                      Save
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                      <X className="h-3 w-3 mr-1" />
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div> : isCollabStatus(formData.collabStatus) ? <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium ${isOpenToCollabs(formData.collabStatus) ? "bg-green-500/15 text-green-500" : "bg-muted text-muted-foreground"}`}>
+                                    <span className="h-2 w-2 rounded-full bg-current" />
+                                    {COLLAB_STATUS_LABEL[formData.collabStatus]}
+                                  </span> : <p className="text-muted-foreground italic text-sm">Not specified</p>}
+                            </div>
+                          </>}
 
                         {/* Number of members — Bands only */}
                         {formData.specialization?.toLowerCase() === 'band' && <>

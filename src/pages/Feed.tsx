@@ -44,6 +44,7 @@ import StoriesBar from "@/components/stories/StoriesBar";
 import Announcements from "@/pages/Announcements";
 import AnnouncementList from "@/components/opportunities/AnnouncementList";
 import { canPost, canPublishPosts } from "@/lib/planLimits";
+import { fetchCollabStatuses, isOpenToCollabs } from "@/lib/collabStatus";
 import CreateChooser, { type CreateChoice } from "@/components/composer/CreateChooser";
 
 const POSTS_PER_PAGE = 10;
@@ -387,9 +388,13 @@ const Feed = () => {
         .neq("profile_id", currentUserId)
         .order("created_at", { ascending: false })
         .limit(30);
+      // The viewer's collaboration status: open -> matching collaborations rank like matching events;
+      // "in a band, not looking" -> no collaborations mixed into All (the Collaborations filter still has them)
+      const status = (await fetchCollabStatuses([currentUserId]))[currentUserId] ?? null;
       if (!active) return;
+      const openToCollabs = isOpenToCollabs(status);
       const score = (a: any) => {
-        const mine = a.kind === "gig" && a.seeking === viewer.specialization;
+        const mine = a.seeking === viewer.specialization && (a.kind === "gig" || (a.kind === "collab" && openToCollabs));
         const near = !!viewer.county && a.county === viewer.county;
         if (mine && near) return 0;
         if (mine) return 1;
@@ -397,7 +402,7 @@ const Feed = () => {
         if (a.kind === "collab" && near) return 3;
         return 4;
       };
-      const open = ((data as any[]) || []).filter((a) => !isAdExpired(a));
+      const open = ((data as any[]) || []).filter((a) => !isAdExpired(a) && !(status === "band_closed" && a.kind === "collab"));
       setOpportunities(open.map((a) => ({ ...a, type: "announcement" })).sort((x, y) => score(x) - score(y)).slice(0, 8));
     })();
     return () => {
