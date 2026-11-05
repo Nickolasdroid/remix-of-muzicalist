@@ -89,3 +89,10 @@ export const compareByFeedScore = (a: RankingSignals, b: RankingSignals): number
 /** Convenience helper: rank a list of feed items. */
 export const rankFeedItems = <T extends RankingSignals>(items: T[]): T[] =>
   [...items].sort(compareByFeedScore);
+
+/**
+ * Plan lift in the feed (relevance units, x relevanceWeight): Standard +15, Premium +30.
+ * Replaces manual promotions; no label is shown, the post simply ranks higher.
+ */
+export const planFeedRelevance = (plan?: string | null): number =>
+  plan === "Premium" ? 5 : plan === "Standard" ? 2.5 : 0;

@@ -15,9 +15,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import PostActionsMenu from "@/components/PostActionsMenu";
-import PromotePostDialog from "@/components/PromotePostDialog";
 import { getPostPromotionLimit, PROMOTION_SLOT_KIND } from "@/lib/planLimits";
-import { rankFeedItems, isPromotionActive } from "@/lib/feedRanking";
+import { rankFeedItems, isPromotionActive, planFeedRelevance } from "@/lib/feedRanking";
 import { getPeriodStart } from "@/lib/billingPeriod";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
@@ -342,6 +341,8 @@ const Feed = () => {
         [...postsWithProfiles, ...promoItems].map((item) => ({
           ...item,
           engagement: item.likes + item.commentsCount,
+          // No manual promotions anymore: Standard posts get a small lift, Premium a bigger one
+          relevance: planFeedRelevance(item.profile?.plan),
         })),
       );
 
@@ -753,15 +754,6 @@ const Feed = () => {
                             setReportTarget({ id: item.id, type: "post" });
                           },
                         },
-                        // Promote is only exposed to the post owner when their plan grants entitlements.
-                        ...(currentUserId === item.profile_id && promotionLimit > 0 ? [{
-                          key: 'promote',
-                          label: item.promoted
-                            ? t('postPromotion.managePromotion', 'Manage promotion')
-                            : t('postPromotion.promote', 'Promote'),
-                          icon: Megaphone,
-                          onSelect: () => setPromoteTarget({ id: item.id, promotedUntil: item.promotedUntil || null }),
-                        }] : []),
                         ...(currentUserId === item.profile_id ? [{
                           key: 'delete',
                           label: t('dashboardPosts.delete', 'Delete'),
@@ -919,30 +911,6 @@ const Feed = () => {
             toast({ title: "Content removed", description: `Reason: ${reason}` });
           }
           setAdminDeleteTarget(null);
-        }}
-      />
-      <PromotePostDialog
-        open={!!promoteTarget}
-        onOpenChange={(o) => { if (!o) setPromoteTarget(null); }}
-        isPromoted={!!promoteTarget?.promotedUntil && new Date(promoteTarget.promotedUntil).getTime() > Date.now()}
-        promotedUntil={promoteTarget?.promotedUntil}
-        remaining={promotionsRemaining}
-        isSaving={isPromoting}
-        onConfirm={async () => {
-          if (!promoteTarget) return;
-          setIsPromoting(true);
-          try {
-            const { error } = await (supabase as any).rpc('promote_post', { p_post_id: promoteTarget.id });
-            if (error) throw error;
-            setPromotionsUsed((n) => n + 1);
-            setPromoteTarget(null);
-            await fetchPosts(0, false);
-            toast({ title: t('postPromotion.successTitle', 'Post promoted'), description: t('postPromotion.successBody', 'Your post is now receiving increased distribution in the Muzicalist feed.') });
-          } catch (e: any) {
-            toast({ title: "Error", description: e.message, variant: "destructive" });
-          } finally {
-            setIsPromoting(false);
-          }
         }}
       />
       <ReportContentDialog

@@ -80,22 +80,10 @@ export const getAdLimit = (plan?: string | null): number => {
 export type PromotionKind = 'post' | 'announcement';
 
 /** Post promotion limits (per billing period) */
-export const getPostPromotionLimit = (plan?: string | null): number => {
-  switch (getPlan(plan)) {
-    case 'Premium': return 5;
-    case 'Standard': return 2;
-    default: return 0; // Free has no post promotions
-  }
-};
+export const getPostPromotionLimit = (_plan?: string | null): number => 0; // manual promotions retired
 
 /** Announcement promotion limits (per billing period) */
-export const getAnnouncementPromotionLimit = (plan?: string | null): number => {
-  switch (getPlan(plan)) {
-    case 'Premium': return 3;
-    case 'Standard': return 1;
-    default: return 0; // Free has no announcement promotions
-  }
-};
+export const getAnnouncementPromotionLimit = (_plan?: string | null): number => 0; // manual promotions retired
 
 /** Generic accessor by promotion kind */
 export const getPromotionLimitFor = (kind: PromotionKind, plan?: string | null): number =>

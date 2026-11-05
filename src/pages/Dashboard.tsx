@@ -39,7 +39,6 @@ import ContentKindChips, { announcementKind, type ContentKind } from "@/componen
 import ProfileViewsCard from "@/components/dashboard/ProfileViewsCard";
 import BookingRequestCard from "@/components/BookingRequestCard";
 import { sortBookingsForPreview, isClosedBooking, bookingStatusKey } from "@/lib/bookingDisplay";
-import PromotePostDialog from "@/components/PromotePostDialog";
 import PostActionsMenu from "@/components/PostActionsMenu";
 import { sharePost } from "@/lib/sharePost";
 import { LogOut, Camera, Save, User, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Edit2, X, Megaphone, Plus, Trash2, Images, Play, Upload, MessageSquare, FileText, Settings as SettingsIcon, DollarSign, Euro, Facebook, Instagram, Youtube, Link as LinkIcon, Music2, Heart, Clock, AlertCircle, Users, BarChart3, Lock, MoreHorizontal, Pencil, Search, Share2, Lightbulb, Info, Image as ImageIcon, Video as VideoIcon, Palette, Check, ChevronLeft, ChevronRight, Ban } from "lucide-react";
@@ -2469,7 +2468,6 @@ const Dashboard = () => {
                           return (
                         <SectionShell>
                           <OverLimitBanner kind="posts" used={sharedUsed} limit={STANDARD_POST_LIMIT} resetDate={periodEnd} />
-                          <OverLimitBanner kind="promotions" used={promotionsUsed} limit={PROMOTION_LIMIT} resetDate={periodEnd} />
 
                           <SectionHeaderWithUsage
                             icon={<FileText className="h-5 w-5 text-accent" />}
@@ -2588,16 +2586,6 @@ const Dashboard = () => {
                                             icon: Pencil,
                                             onSelect: () => setEditItem({ id: item.id, kind: isPromo ? 'promotion' : 'post', text: item.__text }),
                                           },
-                                          ...(!isPromo
-                                            ? [{
-                                                key: 'promote',
-                                                label: isPostPromoted
-                                                  ? t('postPromotion.managePromotion', 'Manage promotion')
-                                                  : t('postPromotion.promote', 'Promote'),
-                                                icon: Megaphone,
-                                                onSelect: () => setPromoteTarget({ id: item.id, promotedUntil: postPromotedUntil }),
-                                              }]
-                                            : []),
                                           {
                                             key: 'delete',
                                             label: t('dashboardPosts.delete', 'Delete'),
@@ -2615,15 +2603,6 @@ const Dashboard = () => {
                             </div></div>
                           )}
 
-                          <PromotePostDialog
-                            open={!!promoteTarget}
-                            onOpenChange={(open) => { if (!open) setPromoteTarget(null); }}
-                            isPromoted={!!promoteTarget?.promotedUntil && new Date(promoteTarget.promotedUntil).getTime() > Date.now()}
-                            promotedUntil={promoteTarget?.promotedUntil}
-                            remaining={promotionsRemaining}
-                            isSaving={isSaving}
-                            onConfirm={() => promoteTarget && handlePromotePost(promoteTarget.id)}
-                          />
 
                           {/* Edit dialog */}
                           <Dialog open={!!editItem} onOpenChange={(open) => { if (!open) setEditItem(null); }}>

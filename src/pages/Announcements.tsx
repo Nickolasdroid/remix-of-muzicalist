@@ -5,7 +5,6 @@ import { isAdExpired } from "@/lib/adExpiration";
 import { getPlanPriority, getAnnouncementPromotionLimit, PROMOTION_SLOT_KIND } from "@/lib/planLimits";
 import { rankFeedItems, isPromotionActive } from "@/lib/feedRanking";
 import { getPeriodStart } from "@/lib/billingPeriod";
-import PromotePostDialog from "@/components/PromotePostDialog";
 import { Megaphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
@@ -256,14 +255,6 @@ const Announcements = ({ embeddedKind }: { embeddedKind?: "gig" | "collab" } = {
               onMediaClick={setMediaPreview}
               onDeleted={(id) => setAnnouncements((items) => items.filter((x) => x.id !== id))}
               onUpdated={(id, patch) => setAnnouncements((items) => items.map((x) => (x.id === id ? { ...x, ...patch } : x)))}
-              extraMenuItems={(a, isOwner) =>
-                isOwner && promotionLimit > 0 && !isOpportunity(a) ? (
-                  <DropdownMenuItem onClick={() => setPromoteTarget({ id: a.id, promotedUntil: a.promoted_until || null })}>
-                    <Megaphone className="h-4 w-4 mr-2" />
-                    {a.promoted ? "Manage promotion" : "Promote"}
-                  </DropdownMenuItem>
-                ) : null
-              }
             />
           );
         })()}
@@ -307,31 +298,6 @@ const Announcements = ({ embeddedKind }: { embeddedKind?: "gig" | "collab" } = {
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />
 
 
-      <PromotePostDialog
-        open={!!promoteTarget}
-        onOpenChange={(open) => { if (!open) setPromoteTarget(null); }}
-        kind="announcement"
-        isPromoted={!!promoteTarget?.promotedUntil && new Date(promoteTarget.promotedUntil).getTime() > Date.now()}
-        promotedUntil={promoteTarget?.promotedUntil}
-        remaining={promotionsRemaining}
-        isSaving={isPromoting}
-        onConfirm={async () => {
-          if (!promoteTarget) return;
-          setIsPromoting(true);
-          try {
-            const { error } = await (supabase as any).rpc('promote_announcement', { p_announcement_id: promoteTarget.id });
-            if (error) throw error;
-            setPromotionsUsed((u) => u + 1);
-            setPromoteTarget(null);
-            toast({ title: "Success", description: "Announcement promoted!" });
-            fetchAnnouncements(0);
-          } catch (e: any) {
-            toast({ title: "Error", description: e.message || "Failed to promote announcement.", variant: "destructive" });
-          } finally {
-            setIsPromoting(false);
-          }
-        }}
-      />
 
     </div>;
 };

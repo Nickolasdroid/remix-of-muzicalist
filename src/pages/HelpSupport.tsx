@@ -102,32 +102,28 @@ const faqSections = [
     ],
   },
   {
-    title: "Posts & Announcements",
+    title: "Posts, events & collaborations",
     icon: Megaphone,
     items: [
       {
-        q: "What's the difference between a Post and an Announcement?",
-        a: "Posts are content shared by artists with their followers on the Feed (text + media, with likes and comments). Announcements are event opportunities posted by users looking to hire an artist — text-only with structured details such as location, price and date, and without likes or comments.",
+        q: "What's the difference between a post, an event and a collaboration?",
+        a: "A post is what artists share in the feed: text, photos, a video or a free date. An event is published by an organizer looking for an artist; artists answer with a priced offer. A collaboration is published by an artist looking for musicians to play with; others answer by message.",
       },
       {
-        q: "What is a Promotion and how is it different from an Announcement?",
-        a: "Promotions are premium artist content combining media and text, with likes and comments enabled — used to showcase work or special offers. Announcements are user-side event opportunities, simpler in format and used for hiring artists.",
+        q: "How do I create a post, an event or a collaboration?",
+        a: "Artists tap + in the feed and choose Post, Story or Collaboration. Organizers tap + to add a new event. Collaborations and stories are available on the Standard and Premium plans.",
       },
       {
-        q: "How do I create a post, promotion or announcement?",
-        a: "Artists create posts and promotions from the Feed page. Users create announcements from the User Dashboard. Limits depend on your subscription plan — see the Plans page for details.",
+        q: "How do the monthly limits work?",
+        a: "Posts, availability posts and collaborations share one monthly allowance: 3 on Free, 15 on Standard and 30 on Premium. A slot frees up 30 days after publishing. Upgrading increases your allowance immediately.",
       },
       {
-        q: "How do post / announcement / promotion limits work?",
-        a: "Each plan includes a fixed monthly allowance (e.g. Standard: 15 posts, 5 announcements, 2 promotions; Premium: 30 / 10 / 5). Counters reset automatically at the start of every new billing cycle. Upgrading mid-cycle increases your limit immediately and preserves what you've already used.",
+        q: "How do I get more visibility?",
+        a: "There is nothing to buy per post: posts from Standard artists appear higher in the feed, and posts from Premium artists appear highest.",
       },
       {
-        q: "How do likes and comments work?",
-        a: "Any logged-in user can like and comment on posts and promotions. Announcements do not support likes or comments — they're meant for direct contact via messaging.",
-      },
-      {
-        q: "How long are announcements visible?",
-        a: "Announcements stay visible until shortly after their event date, then expire automatically. Expired items remain in your dashboard history.",
+        q: "How long are events and collaborations visible?",
+        a: "They stay visible until their event date, then end automatically. Ended ones remain in your dashboard history.",
       },
     ],
   },
