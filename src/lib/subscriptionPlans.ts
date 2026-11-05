@@ -45,7 +45,6 @@ export const subscriptionPlans: SubscriptionPlan[] = [
       { text: 'Booking calendar: receive requests with exact date and time', included: true },
       { text: '1 visible social media link', included: true },
       { text: 'Eligible for Leaderboard rankings', included: true },
-      { text: 'Browse posts, events and collaborations', included: true },
     ],
     tagline: 'Perfect for getting started and exploring the platform',
     cta: 'Current Plan',
