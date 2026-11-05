@@ -1929,6 +1929,7 @@ export type Database = {
           billing: string | null
           bio: string | null
           career_start_year: number | null
+          collab_status: string | null
           comments_allow_from: string
           comments_allow_gifs: boolean
           country: string | null
@@ -1987,6 +1988,7 @@ export type Database = {
           billing?: string | null
           bio?: string | null
           career_start_year?: number | null
+          collab_status?: string | null
           comments_allow_from?: string
           comments_allow_gifs?: boolean
           country?: string | null
@@ -2045,6 +2047,7 @@ export type Database = {
           billing?: string | null
           bio?: string | null
           career_start_year?: number | null
+          collab_status?: string | null
           comments_allow_from?: string
           comments_allow_gifs?: boolean
           country?: string | null
@@ -3097,6 +3100,7 @@ export type Database = {
           billing: string | null
           bio: string | null
           career_start_year: number | null
+          collab_status: string | null
           comments_allow_from: string
           comments_allow_gifs: boolean
           country: string | null
