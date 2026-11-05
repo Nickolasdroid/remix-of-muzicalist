@@ -348,7 +348,7 @@ const BookingDetailsDialog = ({
               <button
                 type="button"
                 onClick={() => setConfirmAction(secondaryAction.key)}
-                className="shrink-0 rounded-md px-2 py-1 text-xs font-medium text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/50"
+                className="shrink-0 rounded-md px-2 py-1 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/50"
               >
                 {secondaryAction.label}
               </button>
