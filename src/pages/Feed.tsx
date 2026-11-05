@@ -110,6 +110,7 @@ const Feed = () => {
   };
   // Keep the active filter chip visible: scroll only the chip row, only when the filter changes
   const chipsRef = useRef<HTMLDivElement>(null);
+  const [chipsAtEnd, setChipsAtEnd] = useState(false);
   // Who is looking, for the personal order of "All"
   const [viewer, setViewer] = useState<{ isArtist: boolean; specialization: string | null; county: string | null } | null>(null);
   // Open opportunities mixed into "All" for artists
@@ -186,6 +187,7 @@ const Feed = () => {
     const chip = row?.querySelector<HTMLElement>('[data-active="true"]');
     if (!row || !chip) return;
     row.scrollLeft = chip.offsetLeft - (row.clientWidth - chip.offsetWidth) / 2;
+    setChipsAtEnd(row.scrollLeft + row.clientWidth >= row.scrollWidth - 4);
   }, [filter, currentUserId]);
 
   const [showComposer, setShowComposer] = useState(false);
@@ -567,13 +569,24 @@ const Feed = () => {
           <StoriesBar currentUserId={currentUserId} canPublish={canCreateStories} />
 
           {currentUserId && (
-            <div ref={chipsRef} className="flex gap-1.5 overflow-x-auto px-3 sm:px-0 pt-1 scrollbar-none" role="tablist" aria-label="Feed filter">
+            <div className="relative">
+            <div
+              ref={chipsRef}
+              onScroll={(e) => {
+                const el = e.currentTarget;
+                setChipsAtEnd(el.scrollLeft + el.clientWidth >= el.scrollWidth - 4);
+              }}
+              className="flex gap-1.5 overflow-x-auto px-3 sm:px-0 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              role="tablist"
+              aria-label="Feed filter"
+            >
               {([
                 { k: "all", label: "All" },
                 { k: "posts", label: "Posts" },
-                { k: "gig", label: "Artist wanted" },
-                { k: "collab", label: "Collaborator wanted" },
-                { k: "available", label: "Available artists" },
+                // Named by what they show: events looking for artists, collaborations, free artists
+                { k: "gig", label: "Events" },
+                { k: "collab", label: "Collaborations" },
+                { k: "available", label: "Free to book" },
               ] as { k: FeedFilter; label: string }[]).map((f) => (
                 <button
                   key={f.k}
@@ -589,6 +602,11 @@ const Feed = () => {
                   {f.label}
                 </button>
               ))}
+            </div>
+            {/* Hint that more filters are to the right on narrow screens */}
+            {!chipsAtEnd && (
+              <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-background to-transparent" aria-hidden="true" />
+            )}
             </div>
           )}
 

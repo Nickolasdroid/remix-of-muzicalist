@@ -181,7 +181,7 @@ const Announcements = ({ embeddedKind }: { embeddedKind?: "gig" | "collab" } = {
         <div ref={contentRef} className="max-w-[500px] mx-auto space-y-2 sm:space-y-3">
           {!embeddedKind && <h1 className="sr-only">Announcements</h1>}
           {currentUserId && !embeddedKind && (
-            <div className="flex gap-1.5 overflow-x-auto px-3 sm:px-0 pt-2 scrollbar-none">
+            <div className="flex gap-1.5 overflow-x-auto px-3 sm:px-0 pt-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {([
                 { k: "all", label: "All" },
                 // Same names as the two announcement types in the composer
