@@ -1451,7 +1451,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
               {/* Tabs Section */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-5 mb-4 md:mb-8 h-auto p-1.5 gap-1 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]">
+                <TabsList className="grid w-full grid-cols-4 mb-4 md:mb-8 h-auto p-1.5 gap-1 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]">
                   <TabsTrigger value="details" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-foreground/[0.08] data-[state=active]:text-foreground data-[state=active]:shadow-none">
                     <User strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                     <span className="hidden lg:inline">Details</span>
@@ -1467,10 +1467,6 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   <TabsTrigger value="reviews" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-foreground/[0.08] data-[state=active]:text-foreground data-[state=active]:shadow-none">
                     <Star strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
                     <span className="hidden lg:inline">Reviews</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="calendar" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-foreground/[0.08] data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                    <CalendarIcon strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
-                    <span className="hidden lg:inline">Calendar</span>
                   </TabsTrigger>
                 </TabsList>
 
@@ -1976,47 +1972,6 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   </div>
                 </TabsContent>
 
-                {/* Calendar Tab */}
-                <TabsContent value="calendar">
-                  <div>
-                    <SectionHeaderWithUsage
-                      icon={<CalendarIcon className="h-5 w-5 text-accent" />}
-                      title="Calendar"
-                      className="mb-4"
-                    />
-                    
-                    <AvailabilityCalendarLayout>
-                        <ArtistAvailabilityCalendar
-                          selected={selectedDate}
-                          onSelect={handleDateSelect}
-                          busyDates={getBusyDates().filter((d) => !hasFreeHours(d))}
-                          partialDates={getBusyDates().filter((d) => hasFreeHours(d))}
-                          blockedDates={getBlockedDates()}
-                          disablePastDates
-                        />
-                        {/* Date details / prompt (matches dashboard positioning) */}
-                        <div className="w-full lg:min-w-0 lg:w-auto">
-                          {selectedDate ? <div className="p-3 md:p-4 rounded-lg border border-border bg-card">
-                              <h4 className="font-semibold text-foreground mb-2 text-sm md:text-base">Selected Date</h4>
-                              <p className="text-xs md:text-sm text-muted-foreground mb-2 md:mb-3">
-                                {selectedDate.toLocaleDateString('en-US', {
-                          weekday: 'long',
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                              </p>
-                              <Badge className={isBlockedDate(selectedDate) ? "bg-muted text-muted-foreground" : isBusyDate(selectedDate) ? (hasFreeHours(selectedDate) ? "bg-amber-500/80 text-black hover:bg-amber-500/80" : "bg-destructive text-destructive-foreground") : calendarAvailabilityStyles.availableBadge}>
-                                {isBlockedDate(selectedDate) ? "Unavailable" : isBusyDate(selectedDate) ? (hasFreeHours(selectedDate) ? "Partially booked" : "Booked") : "Available"}
-                              </Badge>
-                            </div> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
-                              <p className="text-sm text-center">Select a date to send a booking request</p>
-                            </div>}
-                        </div>
-
-                    </AvailabilityCalendarLayout>
-                  </div>
-                </TabsContent>
 
               </Tabs>
 
