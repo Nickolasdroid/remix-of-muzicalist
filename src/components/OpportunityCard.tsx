@@ -130,9 +130,9 @@ const OpportunityCard = ({
           verified={author.verified}
           specialization={author.specialization ?? author.subtitle?.split(" · ")[0]}
           specializationTranslatable={author.subtitleTranslatable}
-          // The place is in the card body; the meta row carries the megaphone instead of county + flag
+          // The place is in the card body; the megaphone takes the county + flag spot
+          placeSlot={<AnnouncementTypeBadge label={isGig ? "Event" : "Collaboration"} />}
           time={formatSmartDate(o.created_at)}
-          extra={<AnnouncementTypeBadge label={isGig ? "Event" : "Collaboration"} />}
           onClick={onAuthorClick}
         />
         {menu}

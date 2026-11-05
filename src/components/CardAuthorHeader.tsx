@@ -19,6 +19,8 @@ interface CardAuthorHeaderProps {
   country?: string | null;
   /** "34m ago", "Aug 8" */
   time: string;
+  /** Rendered where the county goes, before the time (e.g. the megaphone of events / collaborations) */
+  placeSlot?: ReactNode;
   /** Rendered after the time (globe, promotion badge…) */
   extra?: ReactNode;
   /** Rendered next to the name */
@@ -42,6 +44,7 @@ const CardAuthorHeader = ({
   country,
   time,
   extra,
+  placeSlot,
   nameExtra,
   onClick,
   className,
@@ -82,13 +85,14 @@ const CardAuthorHeader = ({
             {specialization}
           </span>
         )}
-        {county && (
+        {placeSlot}
+        {!placeSlot && county && (
           <span className="inline-flex items-center gap-1 notranslate" translate="no">
             {county}
             {country && <CountryFlagIcon country={country} className="h-3 w-4 shrink-0 rounded-[2px]" />}
           </span>
         )}
-        {(specialization || county) && <span>·</span>}
+        {(specialization || county || placeSlot) && <span>·</span>}
         <span className="shrink-0 notranslate" translate="no">{time}</span>
         {extra}
       </div>
