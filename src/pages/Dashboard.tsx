@@ -1693,6 +1693,12 @@ const Dashboard = () => {
       <Navigation 
         mobileTitle={calendarOnly ? undefined : getMobileTitle()} 
         mobileBackPath={calendarOnly ? undefined : getMobileBackPath()}
+        // Calendar on phones: title in the header (like the other pages), Statistics as an icon next to the bell
+        mobileExtraAction={calendarOnly && isPremium(currentPlan) ? (
+          <Button variant="ghost" size="icon" className="h-10 w-10" aria-label="Statistics" onClick={() => navigate('/analytics')}>
+            <BarChart3 className="h-5 w-5" />
+          </Button>
+        ) : undefined}
         onMobileBack={activeTab === "settings" && settingsSection !== "main" ? () => {
           setSettingsSection("main");
         } : undefined}
@@ -2941,8 +2947,8 @@ const Dashboard = () => {
                         <div className={calendarOnly ? "pt-4" : undefined}>
                           <SectionHeaderWithUsage
                             icon={<CalendarIcon className="h-5 w-5 text-accent" />}
-                            title="My Calendar"
-                            className="mb-4"
+                            title="Calendar"
+                            className={calendarOnly ? "mb-4 hidden md:flex" : "mb-4"}
                             action={isPremium(currentPlan) ? (
                               <Button variant="outline" size="sm" onClick={() => navigate('/analytics')} className="gap-1.5">
                                 <BarChart3 className="h-4 w-4" />

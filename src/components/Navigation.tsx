@@ -587,6 +587,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[calc(100%-7.5rem)] truncate text-center font-display font-bold text-foreground text-lg">{t('navigation.regions', 'Regions')}</span>
               ) : location.pathname === '/categories' ? (
                 <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[calc(100%-7.5rem)] truncate text-center font-display font-bold text-foreground text-lg">{t('navigation.categories')}</span>
+              ) : location.pathname === '/calendar' ? (
+                <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[calc(100%-7.5rem)] truncate text-center font-display font-bold text-foreground text-lg">{t('navigation.calendar', 'Calendar')}</span>
               ) : location.pathname === '/notifications' ? (
                 <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[calc(100%-7.5rem)] truncate text-center font-display font-bold text-foreground text-lg">{t('navigation.notifications')}</span>
               ) : (
