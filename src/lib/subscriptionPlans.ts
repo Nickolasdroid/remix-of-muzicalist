@@ -36,7 +36,6 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     monthlyPrice: 0,
     description: 'Start your presence on Muzicalist',
     features: [
-      { text: "Artist profile with bio and photos", included: true },
       { text: "Display your music genres", included: true },
       { text: "Gallery: up to 5 photos & 1 video", included: true },
       { text: "Up to 3 posts/month, availability posts included", included: true },
@@ -55,7 +54,6 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     monthlyPrice: 12,
     description: 'Get discovered. Attract more clients. Grow your bookings.',
     features: [
-      { text: "Artist profile with bio and photos", included: true },
       { text: "Display your music genres", included: true },
       { text: "Display your estimated prices", included: true },
       { text: "Gallery: up to 10 photos & 3 videos", included: true },
@@ -80,7 +78,6 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     monthlyPrice: 24,
     description: 'Maximize your visibility. Build authority. Get booked consistently.',
     features: [
-      { text: "Artist profile with bio and photos", included: true },
       { text: "Display your music genres", included: true },
       { text: "Display your estimated prices", included: true },
       { text: "Gallery: up to 15 photos & 5 videos", included: true },
