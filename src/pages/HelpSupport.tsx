@@ -188,7 +188,7 @@ const faqSections = [
     items: [
       {
         q: "What plans are available?",
-        a: "Muzicalist offers Free, Standard and Premium tiers. Each plan unlocks more posts/announcements, additional features and priority placement. See the Plans page for current pricing.",
+        a: "Muzicalist offers Free, Standard and Premium. Higher plans give you more posts, a bigger gallery, stories and better placement in the feed and in search. See the Plans page for the full list and pricing.",
       },
       {
         q: "How do I upgrade or manage my plan?",
@@ -196,7 +196,7 @@ const faqSections = [
       },
       {
         q: "What does Premium include?",
-        a: "Premium artists get a verified badge, top placement in search and Leaderboard, advanced Analytics, higher content limits and access to exclusive features.",
+        a: "Premium gives you up to 30 posts a month, the biggest gallery, the top spot in search and artist lists, your posts highest in the feed, and statistics from profile views to requests and bookings.",
       },
       {
         q: "What happens when I downgrade my plan?",
