@@ -97,7 +97,7 @@ const faqSections = [
       },
       {
         q: "Can I set my pricing?",
-        a: "Yes, you can add multiple pricing entries on your profile to give clients a clear idea of your rates.",
+        a: "On the Standard and Premium plans you can show up to 3 estimated prices on your profile, so organizers get a clear idea of your rates. On Free, visitors see “Prices on request”.",
       },
     ],
   },

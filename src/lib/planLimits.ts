@@ -110,14 +110,11 @@ export const getSocialLinkLimit = (plan?: string | null): number => {
 /** Reviews are a platform-level feature: never limited by plan (null = unlimited). */
 export const getReviewDisplayLimit = (_plan?: string | null): number | null => null;
 
-/**
- * Estimated pricing is available on every plan: organizers need prices to
- * book, so hiding them on Free hurts the whole marketplace.
- */
-export const canSetEstimatedPrice = (_plan?: string | null): boolean => true;
+/** Estimated prices are shown on Standard and Premium only (server: plan_limits.pricing_entries). */
+export const canSetEstimatedPrice = (plan?: string | null): boolean => !isFree(plan);
 
 /** Maximum number of estimated pricing entries an artist can save */
-export const getEstimatedPriceLimit = (_plan?: string | null): number => 3;
+export const getEstimatedPriceLimit = (plan?: string | null): number => (isFree(plan) ? 0 : 3);
 
 /** Whether the plan can post (posts, ads, promotions) */
 /** Announcements and promotions: Standard and Premium only. */
