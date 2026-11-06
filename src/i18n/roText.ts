@@ -1187,6 +1187,7 @@ export const RO_TEXT: Record<string, string> = {
   "On the Standard and Premium plans you can show up to 3 estimated prices on your profile, so organizers get a clear idea of your rates. On Free, visitors see “Prices on request”.": "Pe planurile Standard și Premium poți afișa pe profil până la 3 prețuri estimative, ca organizatorii să știe la ce să se aștepte. Pe Free, vizitatorii văd „Prețuri la cerere”.",
   "Number of profile views": "Numărul de vizualizări ale profilului",
   "See how many people visit your profile with Standard or Premium.": "Vezi câți oameni îți vizitează profilul cu Standard sau Premium.",
+  "Publish stories, visible for 24 hours": "Publică story-uri, vizibile timp de 24 de ore",
   "Gallery: up to 10 images & 2 videos": "Galerie: până la 10 imagini și 2 videoclipuri",
   "Gallery: up to 15 images & 5 videos": "Galerie: până la 15 imagini și 5 videoclipuri",
   "Gallery: up to 5 images (no video support)": "Galerie: până la 5 imagini (fără videoclipuri)",
