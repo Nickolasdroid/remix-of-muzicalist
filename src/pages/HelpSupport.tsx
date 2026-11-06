@@ -41,7 +41,7 @@ const faqSections = [
       },
       {
         q: "What's the difference between an Artist and a User account?",
-        a: "Artists get a full public profile with gallery, bio, social links, booking calendar, reviews, and analytics (Premium). Users can browse and follow artists, post event announcements, send booking requests, and message artists.",
+        a: "Artists get a full public profile with gallery, bio, booking calendar, reviews, and analytics (Premium). Users can browse and follow artists, post events, send booking requests, and message artists.",
       },
       {
         q: "Do I need to pay to use Muzicalist?",
@@ -63,11 +63,11 @@ const faqSections = [
     items: [
       {
         q: "How do I edit my artist profile?",
-        a: "Open your Dashboard → Profile tab. You can update bio, specialization, instruments (Instrumentalists), music genres (max 5), social links, avatar, gallery, pricing and more. Stage name, phone number and county are read-only once registered — contact support if they need to change.",
+        a: "Open your Dashboard → Profile tab. You can update bio, specialization, instruments (Instrumentalists), music genres (max 5), avatar, gallery, pricing and more. Stage name, phone number and county are read-only once registered — contact support if they need to change.",
       },
       {
         q: "How do I add photos and videos to my gallery?",
-        a: "From your Dashboard's Profile tab, scroll to the Gallery section. You can upload images and add YouTube links.",
+        a: "In your Dashboard's Profile, open the Gallery tab. You can upload images and add YouTube links.",
       },
       {
         q: "What specializations are available?",
