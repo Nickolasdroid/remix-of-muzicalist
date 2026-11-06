@@ -1,24 +1,48 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, BarChart3, TrendingUp, TrendingDown } from "lucide-react";
+import { Eye, BarChart3, Lock, TrendingUp, TrendingDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { isPremium } from "@/lib/planLimits";
+import { isFree, isPremium } from "@/lib/planLimits";
 import { fetchMyProfileViews, viewsChangePct, type ProfileViewStats } from "@/lib/profileViews";
 
 /**
- * Profile views over the last 30 days, shown to artists on every plan.
- * Premium links to full statistics; other plans get an upgrade nudge.
+ * Profile views over the last 30 days: Standard and Premium.
+ * Free sees a locked card with an upgrade nudge; Premium links to full statistics.
  * Renders nothing until the counter is available on the server.
  */
 const ProfileViewsCard = ({ plan }: { plan?: string | null }) => {
   const navigate = useNavigate();
   const [stats, setStats] = useState<ProfileViewStats | null>(null);
 
+  const free = isFree(plan);
   useEffect(() => {
+    if (free) return;
     let active = true;
     fetchMyProfileViews().then((s) => { if (active) setStats(s); });
     return () => { active = false; };
-  }, []);
+  }, [free]);
+
+  // Free: the counter is a Standard / Premium feature
+  if (free) {
+    return (
+      <div className="mb-4 md:mb-8 rounded-lg border border-border bg-card p-4 md:p-5">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-center gap-3 md:gap-4">
+            <div className="p-2.5 md:p-3 rounded-xl bg-muted">
+              <Lock className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground" aria-hidden="true" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-foreground">Profile views</p>
+              <p className="text-xs text-muted-foreground">See how many people visit your profile with Standard or Premium.</p>
+            </div>
+          </div>
+          <Button size="sm" onClick={() => navigate("/my-plan")} className="self-start md:self-auto bg-accent text-accent-foreground hover:bg-accent/90">
+            Upgrade
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (!stats) return null;
 
