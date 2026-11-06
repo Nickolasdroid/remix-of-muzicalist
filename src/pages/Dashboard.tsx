@@ -36,8 +36,6 @@ import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManag
 import OpportunityComposer from "@/components/OpportunityComposer";
 import OwnerAnnouncementsList from "@/components/dashboard/OwnerAnnouncementsList";
 import { useProfileAvatars, useProfileBasics } from "@/hooks/useProfileAvatars";
-import ProfileMusic, { profileMusicEmbeds } from "@/components/profile/ProfileMusic";
-import { parseEmbedUrl } from "@/lib/mediaEmbeds";
 import ContentKindChips, { announcementKind, type ContentKind } from "@/components/profile/ContentKindChips";
 import ProfileViewsCard from "@/components/dashboard/ProfileViewsCard";
 import BookingRequestCard from "@/components/BookingRequestCard";
@@ -2652,58 +2650,6 @@ const Dashboard = () => {
                       {/* Gallery Tab */}
                       {!isAdmin && <TabsContent value="gallery">
                         <SectionShell>
-                          {/* Music & video (YouTube / Spotify), played on the profile; no Facebook / Instagram / TikTok links */}
-                          <div className="group mb-6">
-                            <div className="flex items-center justify-between mb-3">
-                              <SectionHeaderWithUsage icon={<Music className="h-5 w-5 text-accent" />} title="Music & video" />
-                              {editingField !== 'social' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('social')}>
-                                  <Edit2 className="h-4 w-4" />
-                                </Button>}
-                            </div>
-                            {editingField === 'social' ? (() => {
-                              const ytBad = !!formData.youtubeUrl.trim() && parseEmbedUrl(formData.youtubeUrl.trim())?.provider !== "youtube";
-                              const spBad = !!formData.spotifyUrl.trim() && parseEmbedUrl(formData.spotifyUrl.trim())?.provider !== "spotify";
-                              const oneOnly = getSocialLinkLimit(currentPlan) < 2;
-                              return <div className="space-y-3">
-                                {oneOnly && <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                                  <AlertCircle className="h-3.5 w-3.5" />
-                                  Free plan: one of the two is shown. Upgrade to show both.
-                                </p>}
-                                <div className="space-y-1">
-                                  <div className="flex items-center gap-2">
-                                    <Youtube className="h-5 w-5 text-accent flex-shrink-0" />
-                                    <Input value={formData.youtubeUrl} onChange={(e) => setFormData({ ...formData, youtubeUrl: e.target.value })} placeholder="Link to a YouTube video" />
-                                  </div>
-                                  {ytBad && <p className="pl-7 text-xs text-destructive">Paste the link of a video (not a channel).</p>}
-                                </div>
-                                <div className="space-y-1">
-                                  <div className="flex items-center gap-2">
-                                    <Music className="h-5 w-5 text-accent flex-shrink-0" />
-                                    <Input value={formData.spotifyUrl} onChange={(e) => setFormData({ ...formData, spotifyUrl: e.target.value })} placeholder="Link to Spotify (artist, album or track)" />
-                                  </div>
-                                  {spBad && <p className="pl-7 text-xs text-destructive">Paste a Spotify artist, album or track link.</p>}
-                                </div>
-                                <p className="text-xs text-muted-foreground">Visitors play it right on your profile, in Gallery.</p>
-                                <div className="flex gap-2">
-                                  <Button size="sm" onClick={() => saveField('social')} disabled={isSaving || ytBad || spBad}>
-                                    <Save className="h-3 w-3 mr-1" />
-                                    Save
-                                  </Button>
-                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                    <X className="h-3 w-3 mr-1" />
-                                    Cancel
-                                  </Button>
-                                </div>
-                              </div>;
-                            })() : (() => {
-                              const embeds = profileMusicEmbeds([
-                                { platform: 'youtube', url: formData.youtubeUrl },
-                                { platform: 'spotify', url: formData.spotifyUrl },
-                              ].filter((l) => l.url)).slice(0, getSocialLinkLimit(currentPlan));
-                              return embeds.length ? <ProfileMusic embeds={embeds} /> : <p className="text-muted-foreground italic text-sm">Add a YouTube video or your Spotify so organizers can hear you.</p>;
-                            })()}
-                          </div>
-
                           {/* Hidden inputs powering the inline + slots */}
                           <Input id="gallery-upload-inline" type="file" accept="image/*" onChange={handleGalleryImageUpload} className="hidden" />
 

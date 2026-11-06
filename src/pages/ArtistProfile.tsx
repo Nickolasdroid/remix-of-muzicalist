@@ -66,7 +66,6 @@ import { SectionHeaderWithUsage } from "@/components/dashboard/SectionLayout";
 import OfficialProfileView from "@/components/profile/OfficialProfileView";
 import CollabStatusChip from "@/components/profile/CollabStatusChip";
 import { fetchCollabStatuses, hasCollabStatus, type CollabStatus } from "@/lib/collabStatus";
-import ProfileMusic, { profileMusicEmbeds } from "@/components/profile/ProfileMusic";
 import ContentKindChips, { announcementKind, type ContentKind } from "@/components/profile/ContentKindChips";
 import FeedPostCard from "@/components/FeedPostCard";
 import { PostsGrid, PostsViewSwitcher, postDetailPath, usePostsViewMode } from "@/components/post/PostsView";
@@ -1892,22 +1891,6 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                 {/* Gallery Tab */}
                 <TabsContent value="gallery">
                   <div className="space-y-6 md:space-y-8">
-                    {/* Music & video: played here, no links to other platforms */}
-                    {(() => {
-                      const links = socialLinks ?? getVisibleSocialLinks(artist, artist.plan);
-                      const embeds = profileMusicEmbeds(links);
-                      if (!embeds.length) return null;
-                      return (
-                        <div>
-                          <SectionHeaderWithUsage
-                            icon={<Music className="h-5 w-5 text-accent" />}
-                            title="Music & video"
-                            className="mb-3"
-                          />
-                          <ProfileMusic embeds={embeds} />
-                        </div>
-                      );
-                    })()}
                     {/* Photos Section */}
                     <div>
                       <SectionHeaderWithUsage
