@@ -343,21 +343,19 @@ const AnnouncementList = ({
         );
       } else {
         const sent = mine?.status === "offered";
+        // One offer per event, and it can't be changed once sent (talk it over in Messages instead)
         actions = (
-          <div className="space-y-2">
-            {sent && (
-              <p className="flex items-center gap-1.5 text-sm text-foreground">
-                <CheckCircle2 className="h-4 w-4 text-accent" />
-                <span>Offer sent:</span>
-                <span className="font-semibold notranslate" translate="no">
-                  {formatMoney(mine.offer_price, mine.offer_currency)}
-                </span>
-              </p>
-            )}
-            <div className="flex gap-2">
+          <div className="flex gap-2">
+            {sent ? (
+              <Button disabled className="flex-1 rounded-lg font-semibold disabled:opacity-100 bg-muted text-muted-foreground">
+                <CheckCircle2 className="h-4 w-4 mr-2" />
+                <span>Offer sent</span>
+                <span className="ml-1.5 font-semibold notranslate" translate="no">· {formatMoney(mine.offer_price, mine.offer_currency)}</span>
+              </Button>
+            ) : (
               <Button
                 className="flex-1 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
-                disabled={!sent && unavailable}
+                disabled={unavailable}
                 onClick={() =>
                   setOfferTarget({
                     announcementId: a.id,
@@ -369,20 +367,20 @@ const AnnouncementList = ({
                       event_end_date: a.event_end_on || a.event_on,
                       event_type: a.event_type,
                       status: mine?.status || "pending",
-                      offer_price: mine?.offer_price ?? null,
-                      offer_currency: mine?.offer_currency ?? null,
-                      offer_note: mine?.offer_note ?? null,
+                      offer_price: null,
+                      offer_currency: null,
+                      offer_note: null,
                     },
                   })
                 }
               >
-                {sent ? <Pencil className="h-4 w-4 mr-2" /> : <Send className="h-4 w-4 mr-2" />}
-                {sent ? "Edit offer" : unavailable ? "Not available" : "Send offer"}
+                <Send className="h-4 w-4 mr-2" />
+                {unavailable ? "Not available" : "Send offer"}
               </Button>
-              <Button variant="outline" className="rounded-lg px-4" onClick={goMessage}>
-                Message
-              </Button>
-            </div>
+            )}
+            <Button variant="outline" className="rounded-lg px-4" onClick={goMessage}>
+              Message
+            </Button>
           </div>
         );
       }

@@ -266,9 +266,7 @@ const BookingOfferPanel = ({
 
         {status === "offered" && viewer === "artist" && (
           <div className="mt-3 flex gap-2">
-            <Button variant="outline" className={ghostBtn} onClick={onOffer} disabled={busy !== null}>
-              Edit offer
-            </Button>
+            {/* A sent offer can't be edited; it can only be withdrawn */}
             <Button variant="outline" className={ghostBtn} onClick={withdraw} disabled={busy !== null}>
               {busy === "withdraw" && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Withdraw offer
