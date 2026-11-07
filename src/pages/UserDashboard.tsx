@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Megaphone, Plus, Trash2, Upload, Clock, X, AlertCircle, Euro, MapPin, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, Image as ImageIcon, Users, Ban } from "lucide-react";
+import { Megaphone, Plus, Trash2, Upload, Clock, CalendarCheck, Camera, User, X, AlertCircle, Euro, MapPin, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, Image as ImageIcon, Users, Ban } from "lucide-react";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import { ORGANIZER_OPEN_LIMIT } from "@/lib/opportunities";
 import OpportunityComposer from "@/components/OpportunityComposer";
@@ -29,6 +29,11 @@ import SocialStats from "@/components/SocialStats";
 import { entitlementErrorMessage } from "@/lib/entitlements";
 import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
 import { SectionHeaderWithUsage } from "@/components/dashboard/SectionLayout";
+import BookingRequestCard from "@/components/BookingRequestCard";
+import { sortBookingsForPreview } from "@/lib/bookingDisplay";
+import { BOOKING_OFFER_COLUMNS } from "@/lib/bookingOffers";
+import { useProfileBasics } from "@/hooks/useProfileAvatars";
+import CountryFlagIcon from "@/components/CountryFlagIcon";
 
 interface MediaPreview {
   url: string;
@@ -38,7 +43,7 @@ interface MediaPreview {
 const UserDashboard = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get('tab') === 'settings' ? 'settings' : 'profile';
   usePageTitle(activeTab === "settings" ? "Settings" : "Profile");
@@ -89,6 +94,8 @@ const UserDashboard = () => {
 
   // Bookings
   const [bookings, setBookings] = useState<any[]>([]);
+  // The artists I sent requests to (name + photo on the booking cards)
+  const bookedArtists = useProfileBasics(bookings.map((b) => b.profile_id));
 
   // Following / Followers
   const [followingCount, setFollowingCount] = useState<number>(0);
@@ -126,7 +133,7 @@ const UserDashboard = () => {
     if (!user) return;
     const { data } = await supabase
       .from('booking_requests')
-      .select('id, status, event_date, event_end_date, created_at, profile_id')
+      .select('id, status, event_date, event_end_date, event_type, message, created_at, profile_id, ' + BOOKING_OFFER_COLUMNS)
       .eq('requester_user_id', user.id)
       .order('created_at', { ascending: false });
     if (data) setBookings(data);
@@ -418,16 +425,9 @@ const UserDashboard = () => {
             return new Date(y, m - 1, d);
           };
 
-          const pendingBookings = bookings.filter(b => b.status === 'pending' || b.status === 'offered').length;
-          const acceptedActive = bookings.filter(b => {
-            const d = parseYMD(b.event_end_date || b.event_date);
-            return b.status === 'accepted' && d && d >= today;
-          }).length;
-          const completedBookings = bookings.filter(b => {
-            const d = parseYMD(b.event_end_date || b.event_date);
-            return b.status === 'accepted' && d && d < today;
-          }).length;
-          const cancelledBookings = bookings.filter(b => b.status === 'rejected').length;
+          const confirmedBookings = bookings.filter(b => b.status === 'accepted' || b.status === 'completed').length;
+          const publishedEvents = announcements.filter((a: any) => !a.is_premium).length;
+          const bookingPreview = sortBookingsForPreview(bookings).slice(0, 5);
 
           const canPublish = standardAdsRemaining > 0;
 
@@ -437,70 +437,66 @@ const UserDashboard = () => {
 
           return (
             <>
-              {/* Header Section - matching Artist Profile layout */}
+              {/* Header: same layout as the artist dashboard (cover, avatar under it, name, subline, follows, stats) */}
               <div className="space-y-4 md:space-y-5">
-                {/* Hero Header: Cover + overlapping avatar/name/meta — matches ArtistProfile exactly */}
                 <div className="mb-4 md:mb-5 -mx-4 md:mx-0">
-
                   <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
                     <div className="absolute inset-0 bg-gradient-cinematic opacity-70 pointer-events-none" />
+                  </div>
 
-                    {/* Smooth fade into page background */}
-                    <div
-                      className="pointer-events-none absolute inset-x-0 bottom-0 h-full"
-                      style={{
-                        background:
-                          "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.98) 12%, hsl(var(--background) / 0.9) 25%, hsl(var(--background) / 0.7) 42%, hsl(var(--background) / 0.45) 60%, hsl(var(--background) / 0.2) 78%, hsl(var(--background) / 0) 100%)",
-                      }}
-                    />
-
-                    {/* Avatar + name + meta overlaid at bottom */}
-                    <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
-                      <div className="group/avatar relative p-1 rounded-full shadow-xl flex-shrink-0">
-                        <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
-                          <AvatarImage src={profile?.avatar_url} alt={`${profile?.first_name || ''} ${profile?.last_name || ''}`} />
-                          <AvatarFallback className="text-xl bg-gradient-to-br from-accent/30 to-accent/10">
-                            {profile?.first_name?.[0]}{profile?.last_name?.[0]}
-                          </AvatarFallback>
-                        </Avatar>
-                        <label className="absolute inset-1 flex items-center justify-center bg-black/50 rounded-full opacity-0 group-hover/avatar:opacity-100 cursor-pointer transition-opacity">
-                          <Upload className="h-5 w-5 text-white" />
-                          <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
-                        </label>
+                  <div className="px-4 md:px-0 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
+                    <div className="relative p-1 rounded-full shadow-xl flex-shrink-0 group/avatar">
+                      <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
+                        <AvatarImage src={profile?.avatar_url} alt="" />
+                        <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
+                          <User className="h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 text-accent" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <label className="absolute inset-1 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer">
+                        <Camera className="h-6 w-6 md:h-8 md:w-8 text-white" />
+                        <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
+                      </label>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                        {profile?.first_name} {profile?.last_name}
+                      </h1>
+                      <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
+                        <span className="font-medium">Organizer</span>
+                        {profile?.county && <span className="opacity-70">•</span>}
+                        {profile?.county && <span className="truncate notranslate" translate="no">{profile.county}</span>}
+                        {profile?.country && <CountryFlagIcon country={profile.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                       </div>
-
-                      <div className="flex-1 min-w-0 pb-1 md:pb-2">
-                        <h1
-                          className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg name-overlay-outline notranslate"
-                          data-user-content="true"
-                          data-no-translate="true"
-                          translate="no"
-                        >
-                          {profile?.first_name} {profile?.last_name}
-                        </h1>
-                        {memberSince && (
-                          <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
-                            <Clock className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                            <span>Member since {memberSince}</span>
-                          </div>
-                        )}
-                      </div>
+                      <SocialStats
+                        className="mt-1.5 md:mt-2 flex-nowrap"
+                        followersCount={followersCount}
+                        followingCount={followingCount}
+                        onFollowersClick={() => user && navigate(`/connections/${user.id}?tab=followers`)}
+                        onFollowingClick={() => user && navigate(`/connections/${user.id}?tab=following`)}
+                      />
                     </div>
                   </div>
 
-                  {/* Followers / Following — shared compact row */}
-                  <SocialStats
-                    className="mx-4 md:mx-0 mt-3 md:mt-4"
-                    followersCount={followersCount}
-                    followingCount={followingCount}
-                    onFollowersClick={() => user && navigate(`/connections/${user.id}?tab=followers`)}
-                    onFollowingClick={() => user && navigate(`/connections/${user.id}?tab=following`)}
-                  />
+                  {/* Stats card row, same as the artist's */}
+                  <div className="mx-4 md:mx-0 mt-3 md:mt-5 rounded-xl border border-border bg-secondary/40 p-3 md:p-5 grid grid-cols-3 divide-x divide-border">
+                    {[
+                      { icon: Megaphone, value: String(publishedEvents), label: "Events" },
+                      { icon: CalendarCheck, value: String(confirmedBookings), label: "Bookings" },
+                      { icon: Clock, value: profile?.created_at ? new Date(profile.created_at).toLocaleDateString(i18n.language || 'en', { month: 'short', year: 'numeric' }).replace('.', '') : '—', label: "Member since" },
+                    ].map((st) => (
+                      <div key={st.label} className="flex flex-col items-center justify-center text-center px-1">
+                        <div className="flex items-center gap-1.5 md:gap-2">
+                          <st.icon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
+                          <span className="text-base md:text-2xl font-bold text-foreground">{st.value}</span>
+                        </div>
+                        <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">{st.label}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
-
-              {/* ===== My Announcements & My Bookings ===== */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {/* ===== Bookings, then my events (one column, like the artist dashboard) ===== */}
+              <div className="flex flex-col gap-8">
                 {/* My Announcements */}
                 <div>
                   <SectionHeaderWithUsage
@@ -568,60 +564,39 @@ const UserDashboard = () => {
                   </AlertDialog>
                 </div>
 
-                {/* My Bookings */}
-                <div>
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <h2 className="text-base md:text-lg font-display font-bold flex items-center gap-2 min-w-0">
-                      <CalendarIcon className="h-4 w-4 text-accent shrink-0" />
-                      <span className="truncate">My Bookings</span>
-                    </h2>
-                    <Button variant="ghost" size="sm" className="h-8 text-xs shrink-0" onClick={() => goToBookings()}>
-                      View all
-                      <ChevronRight className="h-3.5 w-3.5 ml-1" />
-                    </Button>
-                  </div>
-
-
-                  {bookings.length === 0 ? (
-                    <Card className="rounded-lg border-dashed border-border/60 bg-card/60 backdrop-blur-sm p-6 text-center">
+                {/* Bookings: the same cards as the artist's calendar */}
+                <div className="order-first">
+                  <SectionHeaderWithUsage
+                    icon={<CalendarIcon className="h-4 w-4 md:h-5 md:w-5" />}
+                    title="Booking Requests"
+                    className="mb-3"
+                    action={bookings.length > 0 ? (
+                      <Button variant="ghost" size="sm" className="rounded-lg text-accent hover:text-accent" onClick={() => navigate('/booking-requests')}>
+                        See all
+                      </Button>
+                    ) : undefined}
+                  />
+                  {bookingPreview.length === 0 ? (
+                    <Card className="rounded-lg border-dashed border-border/60 bg-card/60 p-6 text-center">
                       <CalendarIcon className="h-8 w-8 mx-auto mb-2 text-muted-foreground/60" />
                       <p className="text-sm font-medium text-foreground">No bookings yet</p>
                       <p className="text-xs text-muted-foreground mt-1">Book your first artist to get started.</p>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-3 rounded-lg"
-                        onClick={() => navigate('/')}
-                      >
+                      <Button variant="outline" size="sm" className="mt-3 rounded-lg" onClick={() => navigate('/search')}>
                         <Sparkles className="h-3.5 w-3.5 mr-1.5" />
                         Discover artists
                       </Button>
                     </Card>
                   ) : (
-                    <div className="grid grid-cols-2 gap-2.5">
-                      {[
-                        { key: 'pending', label: 'Pending', value: pendingBookings, icon: Clock, tone: 'text-yellow-500', bg: 'bg-yellow-500/10' },
-                        { key: 'accepted', label: 'Confirmed', value: acceptedActive, icon: CheckCircle2, tone: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-                        { key: 'completed', label: 'Completed', value: completedBookings, icon: Sparkles, tone: 'text-blue-400', bg: 'bg-blue-500/10' },
-                        { key: 'rejected', label: 'Cancelled', value: cancelledBookings, icon: XCircle, tone: 'text-destructive', bg: 'bg-destructive/10' },
-                      ].map((b) => (
-                        <button
-                          key={b.key}
-                          onClick={() => goToBookings(b.key)}
-                          className="flex items-center justify-between gap-2 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-3 py-2.5 text-left hover:border-accent/40 transition"
-                        >
-                          <div className="flex flex-col min-w-0">
-                            <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none">
-                              {b.value}
-                            </span>
-                            <span className="mt-1 text-[11px] md:text-xs uppercase tracking-wider text-muted-foreground truncate">
-                              {b.label}
-                            </span>
-                          </div>
-                          <div className={`p-1.5 rounded-md ${b.bg} shrink-0`}>
-                            <b.icon className={`h-3.5 w-3.5 ${b.tone}`} />
-                          </div>
-                        </button>
+                    <div className="space-y-2.5">
+                      {bookingPreview.map((b: any) => (
+                        <BookingRequestCard
+                          key={b.id}
+                          booking={b}
+                          viewer="requester"
+                          counterpartName={bookedArtists[b.profile_id]?.stage_name || "Artist"}
+                          counterpartAvatarUrl={bookedArtists[b.profile_id]?.avatar_url}
+                          onClick={() => navigate('/booking-requests')}
+                        />
                       ))}
                     </div>
                   )}
