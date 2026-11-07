@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { Ban, CalendarDays, CheckCircle2, ChevronRight, MapPin, Megaphone, MessageCircle, Pencil, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import AnnouncementManagementCard from "@/components/dashboard/AnnouncementManagementCard";
 import PostActionsMenu, { type PostAction } from "@/components/PostActionsMenu";
 import { isAdExpired } from "@/lib/adExpiration";
@@ -23,6 +25,8 @@ interface OwnerAnnouncementsListProps {
   onDelete: (id: string) => void;
   /** Opens the composer on this event / collaboration; lockCore when answers already came in */
   onEdit?: (row: any, lockCore: boolean) => void;
+  /** Called after a collaborator was chosen (the list should reload) */
+  onChosen?: () => void;
   empty?: ReactNode;
   /** Wrapper of the cards, to match the posts list width */
   listClassName?: string;
@@ -41,7 +45,24 @@ type Tab = "active" | "ended";
  * The owner's announcements in the dashboards: what each one asks for, its status,
  * what came in (offers or messages) and where to go next. Active and ended are split.
  */
-const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, onDelete, onEdit, empty, listClassName }: OwnerAnnouncementsListProps) => {
+const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, onDelete, onEdit, onChosen, empty, listClassName }: OwnerAnnouncementsListProps) => {
+  const { toast } = useToast();
+  // Choosing a collaborator: confirm first (it closes the collaboration and tells the others)
+  const [chooseTarget, setChooseTarget] = useState<{ convId: string; name: string } | null>(null);
+  const [choosing, setChoosing] = useState(false);
+  const confirmChoose = async () => {
+    if (!chooseTarget) return;
+    setChoosing(true);
+    const { error } = await (supabase as any).rpc("choose_collaborator", { _conversation_id: chooseTarget.convId });
+    setChoosing(false);
+    if (error) {
+      toast({ title: "Error", description: "Couldn't choose this artist. Please try again.", variant: "destructive" });
+      return;
+    }
+    toast({ title: "Collaborator chosen", description: "The collaboration is closed and the others were told it's filled." });
+    setChooseTarget(null);
+    onChosen?.();
+  };
   const navigate = useNavigate();
   const { i18n } = useTranslation();
   const lang = i18n.language || i18n.resolvedLanguage || "ro";
@@ -50,7 +71,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
   const [gigStats, setGigStats] = useState<Record<string, GigStats>>({});
   const [messages, setMessages] = useState<Record<string, number>>({});
   // People who replied to each collaboration (newest first), with their conversation
-  const [repliers, setRepliers] = useState<Record<string, { convId: string; name: string; avatar: string | null }[]>>({});
+  const [repliers, setRepliers] = useState<Record<string, { convId: string; pid: string; name: string; avatar: string | null }[]>>({});
 
   const items = useMemo(() => announcements.filter((a) => !a.is_premium), [announcements]);
   const active = items.filter((a) => !isAdExpired(a));
@@ -110,10 +131,10 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
           const { data: profs } = await supabase.from("profiles").select("id, stage_name, first_name, avatar_url").in("id", otherIds);
           for (const p of (profs || []) as any[]) people[p.id] = { name: p.stage_name || p.first_name || "", avatar: p.avatar_url };
         }
-        const byAd: Record<string, { convId: string; name: string; avatar: string | null }[]> = {};
+        const byAd: Record<string, { convId: string; pid: string; name: string; avatar: string | null }[]> = {};
         for (const r of rows) {
           const who = people[otherOf(r)] || { name: "", avatar: null };
-          (byAd[r.announcement_id] ||= []).push({ convId: r.id, name: who.name, avatar: who.avatar });
+          (byAd[r.announcement_id] ||= []).push({ convId: r.id, pid: otherOf(r), name: who.name, avatar: who.avatar });
         }
         if (!cancelled) {
           setMessages(counts);
@@ -219,7 +240,11 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
         );
       link = msgCount > 3 ? { label: "See all", to: `/messages?forAd=${a.id}` } : null;
     }
-    const people = !isGig ? (repliers[a.id] || []).slice(0, 3) : [];
+    const allRepliers = !isGig ? repliers[a.id] || [] : [];
+    const chosenPerson = a.chosen_profile_id ? allRepliers.find((p) => p.pid === a.chosen_profile_id) : null;
+    // Once someone is chosen, only they are listed; otherwise the first 3
+    const people = chosenPerson ? [chosenPerson] : a.chosen_profile_id ? [] : allRepliers.slice(0, 3);
+    const canChoose = !isGig && open && !a.chosen_profile_id;
 
     return (
       <div
@@ -287,20 +312,33 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
 
         {people.length > 0 && (
           <div className="space-y-1 border-t border-border/60 pt-2">
+            {chosenPerson && (
+              <p className="px-1.5 pb-0.5 text-[11px] font-semibold uppercase tracking-wide text-green-500">Collaborator chosen</p>
+            )}
             {people.map((p) => (
-              <button
-                key={p.convId}
-                type="button"
-                onClick={() => navigate(`/messages?c=${p.convId}`)}
-                className="flex w-full items-center gap-2.5 rounded-lg px-1.5 py-1.5 text-left transition-colors hover:bg-foreground/[0.05]"
-              >
-                <Avatar className="h-7 w-7">
-                  {p.avatar && <AvatarImage src={p.avatar} alt="" />}
-                  <AvatarFallback className="bg-accent/10 text-[11px] font-semibold text-accent">{(p.name || "?").charAt(0).toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <span className="min-w-0 flex-1 truncate text-[13.5px] text-foreground notranslate" translate="no">{p.name || "Artist"}</span>
-                <MessageCircle className="h-4 w-4 shrink-0 text-muted-foreground" />
-              </button>
+              <div key={p.convId} className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => navigate(`/messages?c=${p.convId}`)}
+                  className="flex min-w-0 flex-1 items-center gap-2.5 rounded-lg px-1.5 py-1.5 text-left transition-colors hover:bg-foreground/[0.05]"
+                >
+                  <Avatar className="h-7 w-7">
+                    {p.avatar && <AvatarImage src={p.avatar} alt="" />}
+                    <AvatarFallback className="bg-accent/10 text-[11px] font-semibold text-accent">{(p.name || "?").charAt(0).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <span className="min-w-0 flex-1 truncate text-[13.5px] text-foreground notranslate" translate="no">{p.name || "Artist"}</span>
+                  <MessageCircle className="h-4 w-4 shrink-0 text-muted-foreground" />
+                </button>
+                {canChoose && (
+                  <button
+                    type="button"
+                    onClick={() => setChooseTarget({ convId: p.convId, name: p.name || "Artist" })}
+                    className="shrink-0 rounded-full border border-border px-3 py-1 text-xs font-semibold text-foreground transition-colors hover:border-accent hover:text-accent"
+                  >
+                    Choose
+                  </button>
+                )}
+              </div>
             ))}
           </div>
         )}
@@ -364,6 +402,31 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
             : tab === "active" ? <span>No active events</span> : <span>No ended events</span>}
         </div>
       )}
+
+      <AlertDialog open={!!chooseTarget} onOpenChange={(o) => !o && !choosing && setChooseTarget(null)}>
+        <AlertDialogContent className="rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              <span>Choose </span>
+              <span className="notranslate" translate="no">{chooseTarget?.name}</span>
+              <span>?</span>
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              The collaboration closes and leaves the feed. The artist is notified, and the others are told it has been filled.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={choosing}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); confirmChoose(); }}
+              disabled={choosing}
+              className="bg-accent text-accent-foreground hover:bg-accent/90"
+            >
+              Choose
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -77,16 +77,33 @@ interface AnnouncementContext {
   is_premium?: boolean;
   /** Opportunities: own expiry (event day / 30 days for collaborations) */
   kind?: string | null;
+  /** Collaborations: the artist the author chose */
+  chosen_profile_id?: string | null;
   expires_at?: string | null;
 }
 
-const AnnouncementHeader = ({ ad }: { ad: AnnouncementContext; onDismiss?: () => void }) => {
+const AnnouncementHeader = ({ ad, viewerId, otherId }: { ad: AnnouncementContext; viewerId?: string | null; otherId?: string | null; onDismiss?: () => void }) => {
   const { i18n } = useTranslation();
+  // Collaborations: who was chosen, seen from this conversation
+  const chosen = ad.kind === "collab" ? ad.chosen_profile_id : null;
+  const chosenLine = !chosen
+    ? null
+    : chosen === viewerId
+      ? { ok: true, text: "You were chosen for this collaboration" }
+      : chosen === otherId && ad.profile_id === viewerId
+        ? { ok: true, text: "You chose this artist" }
+        : { ok: false, text: "This collaboration has been filled" };
   return (
   <div className="mx-4 mt-3 mb-1 rounded-lg border border-accent/30 bg-accent/5 p-3 relative">
     <p className="text-xs font-semibold text-accent mb-1 flex items-center gap-1"><Megaphone className="h-3 w-3" /><span>{ad.kind === "gig" ? "About the event" : "About the collaboration"}</span></p>
     <p className="text-sm font-medium text-foreground pr-4 notranslate" data-user-content="true" data-no-translate="true" translate="no">{opportunityDisplayTitle(ad as any, i18n.language || "ro")}</p>
     <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5 notranslate" data-user-content="true" data-no-translate="true" translate="no">{ad.description}</p>
+    {chosenLine && (
+      <p className={`mt-2 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${chosenLine.ok ? "bg-green-500/15 text-green-500" : "bg-muted text-muted-foreground"}`}>
+        {chosenLine.ok && <span aria-hidden="true">✓</span>}
+        <span>{chosenLine.text}</span>
+      </p>
+    )}
     {(ad.location || ad.event_date || ad.budget) && (
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1.5 text-xs text-muted-foreground">
         {ad.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /><span className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{ad.location}</span></span>}
@@ -126,7 +143,7 @@ const Messages = () => {
   const artistId = searchParams.get("artistId");
   const adId = searchParams.get("adId");
   // ?c=<conversation id>: open that conversation (e.g. a reply on a collaboration card)
-  const convParam = searchParams.get("c");
+  const convParam = searchParams.get("c") || searchParams.get("conversation");
   // Opened from a dashboard announcement: show only the replies to that announcement
   const [forAd, setForAd] = useState<string | null>(searchParams.get("forAd"));
   // Title of the filtered event / collaboration when no conversation about it exists yet
@@ -713,7 +730,7 @@ const Messages = () => {
                 </div>
 
                 {/* Announcement context header */}
-                {announcementContext && <AnnouncementHeader ad={announcementContext} onDismiss={() => setAnnouncementContext(null)} />}
+                {announcementContext && <AnnouncementHeader ad={announcementContext} viewerId={user?.id} otherId={selectedConversation ? (selectedConversation.artist_id === user?.id ? selectedConversation.participant_id : selectedConversation.artist_id) : null} onDismiss={() => setAnnouncementContext(null)} />}
 
                 {/* Messages */}
                 <ScrollArea className="flex-1 p-4">
@@ -824,7 +841,7 @@ const Messages = () => {
                 </div>
 
                 {/* Announcement context header */}
-                {announcementContext && <AnnouncementHeader ad={announcementContext} onDismiss={() => setAnnouncementContext(null)} />}
+                {announcementContext && <AnnouncementHeader ad={announcementContext} viewerId={user?.id} otherId={selectedConversation ? (selectedConversation.artist_id === user?.id ? selectedConversation.participant_id : selectedConversation.artist_id) : null} onDismiss={() => setAnnouncementContext(null)} />}
 
                 {/* Messages */}
                 <ScrollArea className="flex-1 p-4 bg-background">

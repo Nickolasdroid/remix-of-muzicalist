@@ -107,7 +107,7 @@ const faqSections = [
     items: [
       {
         q: "What's the difference between a post, an event and a collaboration?",
-        a: "A post is what artists share in the feed: text, photos, a video or a free date. An event is published by an organizer looking for an artist; artists answer with a priced offer. A collaboration is published by an artist looking for musicians to play with; others answer by message.",
+        a: "A post is what artists share in the feed: text, photos, a video or a free date. An event is published by an organizer looking for an artist; artists answer with a priced offer. A collaboration is published by an artist looking for musicians to play with; others answer by message, and the author picks one with Choose.",
       },
       {
         q: "How do I create a post, an event or a collaboration?",

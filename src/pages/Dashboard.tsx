@@ -2634,6 +2634,7 @@ const Dashboard = () => {
                               onClose={handleCloseAnnouncement}
                               onDelete={(id) => setDeleteAnnouncementId(id)}
                               onEdit={(row, lockCore) => setEditOpp({ row, lockCore })}
+                              onChosen={() => loadAnnouncements()}
                               empty={
                                 <SectionEmptyState
                                   icon={<Users className="h-10 w-10 opacity-50" />}

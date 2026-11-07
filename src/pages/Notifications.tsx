@@ -15,6 +15,7 @@ import {
   UserPlus,
   FileText,
   Megaphone,
+  CheckCircle2,
   Info,
   Trash2,
   MoreHorizontal,
@@ -81,6 +82,10 @@ const iconFor = (type: string, size = "h-5 w-5") => {
       return <Megaphone className={cn(base, "text-accent")} />;
     case "mention":
       return <AtSign className={cn(base, "text-accent")} />;
+    case "collab_chosen":
+      return <CheckCircle2 className={cn(base, "text-emerald-400")} />;
+    case "collab_filled":
+      return <Megaphone className={cn(base, "text-muted-foreground")} />;
     default:
       return <Info className={cn(base, "text-muted-foreground")} />;
   }
@@ -100,6 +105,8 @@ const messageForType = (type: string): string | null => {
     case "new_announcement": return "posted a new announcement";
     case "message": return "sent you a message";
     case "mention": return "mentioned you in a post";
+    case "collab_chosen": return "chose you for their collaboration";
+    case "collab_filled": return "found a collaborator for the collaboration you answered";
     default: return null;
   }
 };
@@ -292,6 +299,7 @@ const Notifications = () => {
     // Mentions always open the post they came from, regardless of account type.
     if (type === "mention" && refId) return `/feed?post=${refId}`;
     if (type === "message" && refId) return `/messages?conversation=${refId}`;
+    if ((type === "collab_chosen" || type === "collab_filled") && refId) return `/messages?c=${refId}`;
     if (userType === "user") {
       if (type === "booking_request" || type === "booking_update") return "/booking-requests";
       if (refType === "announcement") return "/user-dashboard";
