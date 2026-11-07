@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import { Globe } from "lucide-react";
+import AnnouncementTypeBadge from "@/components/AnnouncementTypeBadge";
 import PostActions from "@/components/PostActions";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -107,7 +108,8 @@ const FeedPostCard = ({
             extra={
               <>
                 <span>·</span>
-                <Globe className="h-3 w-3" />
+                {/* Availability posts carry the megaphone, like events and collaborations */}
+                {availableOn ? <AnnouncementTypeBadge label="Availability" /> : <Globe className="h-3 w-3" />}
                 {promoted && (
                   <Badge className="bg-accent/10 text-accent border-accent/30 text-xs">
                     {t("postPromotion.promoted", "Promoted")}
