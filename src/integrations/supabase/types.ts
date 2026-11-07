@@ -698,6 +698,7 @@ export type Database = {
         Row: {
           announcement_id: string | null
           artist_id: string
+          collab_rejected_at: string | null
           created_at: string
           deleted_at_by_artist: string | null
           deleted_at_by_participant: string | null
@@ -710,6 +711,7 @@ export type Database = {
         Insert: {
           announcement_id?: string | null
           artist_id: string
+          collab_rejected_at?: string | null
           created_at?: string
           deleted_at_by_artist?: string | null
           deleted_at_by_participant?: string | null
@@ -722,6 +724,7 @@ export type Database = {
         Update: {
           announcement_id?: string | null
           artist_id?: string
+          collab_rejected_at?: string | null
           created_at?: string
           deleted_at_by_artist?: string | null
           deleted_at_by_participant?: string | null
@@ -3287,6 +3290,10 @@ export type Database = {
           msg_id: number
           read_ct: number
         }[]
+      }
+      reject_collab_reply: {
+        Args: { _conversation_id: string }
+        Returns: undefined
       }
       remember_recent_place: { Args: { _label: string }; Returns: undefined }
       reopen_case: {
