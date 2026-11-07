@@ -82,11 +82,13 @@ interface AnnouncementContext {
   expires_at?: string | null;
 }
 
-const AnnouncementHeader = ({ ad, viewerId, otherId }: { ad: AnnouncementContext; viewerId?: string | null; otherId?: string | null; onDismiss?: () => void }) => {
+const AnnouncementHeader = ({ ad, viewerId, otherId, rejected }: { ad: AnnouncementContext; viewerId?: string | null; otherId?: string | null; rejected?: boolean; onDismiss?: () => void }) => {
   const { i18n } = useTranslation();
   // Collaborations: who was chosen, seen from this conversation
   const chosen = ad.kind === "collab" ? ad.chosen_profile_id : null;
-  const chosenLine = !chosen
+  const chosenLine = ad.kind === "collab" && rejected && chosen !== otherId && chosen !== viewerId
+    ? { ok: false, text: ad.profile_id === viewerId ? "You rejected this artist" : "You weren't chosen for this collaboration" }
+    : !chosen
     ? null
     : chosen === viewerId
       ? { ok: true, text: "You were chosen for this collaboration" }
@@ -730,7 +732,7 @@ const Messages = () => {
                 </div>
 
                 {/* Announcement context header */}
-                {announcementContext && <AnnouncementHeader ad={announcementContext} viewerId={user?.id} otherId={selectedConversation ? (selectedConversation.artist_id === user?.id ? selectedConversation.participant_id : selectedConversation.artist_id) : null} onDismiss={() => setAnnouncementContext(null)} />}
+                {announcementContext && <AnnouncementHeader ad={announcementContext} viewerId={user?.id} otherId={selectedConversation ? (selectedConversation.artist_id === user?.id ? selectedConversation.participant_id : selectedConversation.artist_id) : null} rejected={!!(selectedConversation as any)?.collab_rejected_at} onDismiss={() => setAnnouncementContext(null)} />}
 
                 {/* Messages */}
                 <ScrollArea className="flex-1 p-4">
@@ -841,7 +843,7 @@ const Messages = () => {
                 </div>
 
                 {/* Announcement context header */}
-                {announcementContext && <AnnouncementHeader ad={announcementContext} viewerId={user?.id} otherId={selectedConversation ? (selectedConversation.artist_id === user?.id ? selectedConversation.participant_id : selectedConversation.artist_id) : null} onDismiss={() => setAnnouncementContext(null)} />}
+                {announcementContext && <AnnouncementHeader ad={announcementContext} viewerId={user?.id} otherId={selectedConversation ? (selectedConversation.artist_id === user?.id ? selectedConversation.participant_id : selectedConversation.artist_id) : null} rejected={!!(selectedConversation as any)?.collab_rejected_at} onDismiss={() => setAnnouncementContext(null)} />}
 
                 {/* Messages */}
                 <ScrollArea className="flex-1 p-4 bg-background">

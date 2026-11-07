@@ -49,6 +49,21 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
   const { toast } = useToast();
   // Choosing a collaborator: confirm first (it closes the collaboration and tells the others)
   const [chooseTarget, setChooseTarget] = useState<{ convId: string; name: string } | null>(null);
+  const [rejectTarget, setRejectTarget] = useState<{ convId: string; name: string } | null>(null);
+  const [rejectedLocal, setRejectedLocal] = useState<Set<string>>(new Set());
+  const confirmReject = async () => {
+    if (!rejectTarget) return;
+    setChoosing(true);
+    const { error } = await (supabase as any).rpc("reject_collab_reply", { _conversation_id: rejectTarget.convId });
+    setChoosing(false);
+    if (error) {
+      toast({ title: "Error", description: "Couldn't reject this artist. Please try again.", variant: "destructive" });
+      return;
+    }
+    setRejectedLocal((prev) => new Set(prev).add(rejectTarget.convId));
+    toast({ title: "Rejected", description: "The artist was told you chose someone else." });
+    setRejectTarget(null);
+  };
   const [choosing, setChoosing] = useState(false);
   const confirmChoose = async () => {
     if (!chooseTarget) return;
@@ -59,7 +74,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
       toast({ title: "Error", description: "Couldn't choose this artist. Please try again.", variant: "destructive" });
       return;
     }
-    toast({ title: "Collaborator chosen", description: "The collaboration is closed and the others were told it's filled." });
+    toast({ title: "Accepted", description: "The collaboration is closed and the others were told it's filled." });
     setChooseTarget(null);
     onChosen?.();
   };
@@ -71,7 +86,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
   const [gigStats, setGigStats] = useState<Record<string, GigStats>>({});
   const [messages, setMessages] = useState<Record<string, number>>({});
   // People who replied to each collaboration (newest first), with their conversation
-  const [repliers, setRepliers] = useState<Record<string, { convId: string; pid: string; name: string; avatar: string | null }[]>>({});
+  const [repliers, setRepliers] = useState<Record<string, { convId: string; pid: string; name: string; avatar: string | null; rejected: boolean }[]>>({});
 
   const items = useMemo(() => announcements.filter((a) => !a.is_premium), [announcements]);
   const active = items.filter((a) => !isAdExpired(a));
@@ -115,7 +130,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
       if (collabIds.length) {
         const { data } = await (supabase as any)
           .from("conversations")
-          .select("id, announcement_id, artist_id, participant_id, updated_at")
+          .select("*")
           .in("announcement_id", collabIds)
           .order("updated_at", { ascending: false });
         const rows = (data || []) as any[];
@@ -131,10 +146,10 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
           const { data: profs } = await supabase.from("profiles").select("id, stage_name, first_name, avatar_url").in("id", otherIds);
           for (const p of (profs || []) as any[]) people[p.id] = { name: p.stage_name || p.first_name || "", avatar: p.avatar_url };
         }
-        const byAd: Record<string, { convId: string; pid: string; name: string; avatar: string | null }[]> = {};
+        const byAd: Record<string, { convId: string; pid: string; name: string; avatar: string | null; rejected: boolean }[]> = {};
         for (const r of rows) {
           const who = people[otherOf(r)] || { name: "", avatar: null };
-          (byAd[r.announcement_id] ||= []).push({ convId: r.id, pid: otherOf(r), name: who.name, avatar: who.avatar });
+          (byAd[r.announcement_id] ||= []).push({ convId: r.id, pid: otherOf(r), name: who.name, avatar: who.avatar, rejected: !!r.collab_rejected_at });
         }
         if (!cancelled) {
           setMessages(counts);
@@ -313,7 +328,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
         {people.length > 0 && (
           <div className="space-y-1 border-t border-border/60 pt-2">
             {chosenPerson && (
-              <p className="px-1.5 pb-0.5 text-[11px] font-semibold uppercase tracking-wide text-green-500">Collaborator chosen</p>
+              <p className="px-1.5 pb-0.5 text-[11px] font-semibold uppercase tracking-wide text-green-500">Accepted</p>
             )}
             {people.map((p) => (
               <div key={p.convId} className="flex items-center gap-1">
@@ -329,15 +344,26 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
                   <span className="min-w-0 flex-1 truncate text-[13.5px] text-foreground notranslate" translate="no">{p.name || "Artist"}</span>
                   <MessageCircle className="h-4 w-4 shrink-0 text-muted-foreground" />
                 </button>
-                {canChoose && (
-                  <button
-                    type="button"
-                    onClick={() => setChooseTarget({ convId: p.convId, name: p.name || "Artist" })}
-                    className="shrink-0 rounded-full border border-border px-3 py-1 text-xs font-semibold text-foreground transition-colors hover:border-accent hover:text-accent"
-                  >
-                    Choose
-                  </button>
-                )}
+                {canChoose && (p.rejected || rejectedLocal.has(p.convId)) ? (
+                  <span className="shrink-0 rounded-full bg-muted px-2.5 py-1 text-xs font-medium text-muted-foreground">Rejected</span>
+                ) : canChoose ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setRejectTarget({ convId: p.convId, name: p.name || "Artist" })}
+                      className="shrink-0 rounded-full border border-border px-3 py-1 text-xs font-semibold text-muted-foreground transition-colors hover:border-destructive hover:text-destructive"
+                    >
+                      Reject
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setChooseTarget({ convId: p.convId, name: p.name || "Artist" })}
+                      className="shrink-0 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
+                    >
+                      Accept
+                    </button>
+                  </>
+                ) : null}
               </div>
             ))}
           </div>
@@ -406,11 +432,8 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
       <AlertDialog open={!!chooseTarget} onOpenChange={(o) => !o && !choosing && setChooseTarget(null)}>
         <AlertDialogContent className="rounded-2xl">
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              <span>Choose </span>
-              <span className="notranslate" translate="no">{chooseTarget?.name}</span>
-              <span>?</span>
-            </AlertDialogTitle>
+            <AlertDialogTitle>Accept this artist?</AlertDialogTitle>
+            <p className="text-sm font-semibold text-foreground notranslate" translate="no">{chooseTarget?.name}</p>
             <AlertDialogDescription>
               The collaboration closes and leaves the feed. The artist is notified, and the others are told it has been filled.
             </AlertDialogDescription>
@@ -422,7 +445,29 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
               disabled={choosing}
               className="bg-accent text-accent-foreground hover:bg-accent/90"
             >
-              Choose
+              Accept
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={!!rejectTarget} onOpenChange={(o) => !o && !choosing && setRejectTarget(null)}>
+        <AlertDialogContent className="rounded-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reject this artist?</AlertDialogTitle>
+            <p className="text-sm font-semibold text-foreground notranslate" translate="no">{rejectTarget?.name}</p>
+            <AlertDialogDescription>
+              The artist is told you chose someone else. The collaboration stays open for the others.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={choosing}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={(e) => { e.preventDefault(); confirmReject(); }}
+              disabled={choosing}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Reject
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
