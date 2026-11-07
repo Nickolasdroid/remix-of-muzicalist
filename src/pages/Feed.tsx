@@ -116,8 +116,8 @@ const Feed = () => {
   const [viewer, setViewer] = useState<{ isArtist: boolean; specialization: string | null; county: string | null } | null>(null);
   // Filters depend on who is looking: artists look for gigs and collaborators, organizers for
   // artists. A link with a filter the viewer doesn't have opens "All" instead of an empty view.
-  // Availabilities for everyone signed in: organizers book from them, artists see how active the others are
-  const filterChoices: FeedFilter[] = !viewer ? ["all", "posts"] : viewer.isArtist ? ["all", "posts", "available", "gig", "collab"] : ["all", "posts", "available"];
+  // Artists see the others' availability posts in All (no extra chip); organizers get the Availabilities filter
+  const filterChoices: FeedFilter[] = !viewer ? ["all", "posts"] : viewer.isArtist ? ["all", "posts", "gig", "collab"] : ["all", "posts", "available"];
   const filter: FeedFilter = viewer && !filterChoices.includes(requestedFilter) ? "all" : requestedFilter;
   // Open opportunities mixed into "All" for artists
   const [opportunities, setOpportunities] = useState<any[]>([]);
