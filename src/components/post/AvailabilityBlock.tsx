@@ -83,7 +83,7 @@ const AvailabilityBlock = ({
           className="h-8 shrink-0 rounded-lg bg-accent px-3 text-accent-foreground hover:bg-accent/90"
           onClick={() => navigate(bookUrl())}
         >
-          Request offer
+          Book
         </Button>
       )}
     </div>
