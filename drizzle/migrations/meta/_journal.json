@@ -127,6 +127,13 @@
       "when": 1794086664857,
       "tag": "0017_collab_reject_reply",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1794086893545,
+      "tag": "0018_collab_choose_collaborator",
+      "breakpoints": true
     }
   ]
 }
