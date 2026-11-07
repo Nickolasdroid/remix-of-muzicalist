@@ -116,7 +116,8 @@ const Feed = () => {
   const [viewer, setViewer] = useState<{ isArtist: boolean; specialization: string | null; county: string | null } | null>(null);
   // Filters depend on who is looking: artists look for gigs and collaborators, organizers for
   // artists. A link with a filter the viewer doesn't have opens "All" instead of an empty view.
-  const filterChoices: FeedFilter[] = !viewer ? ["all", "posts"] : viewer.isArtist ? ["all", "posts", "gig", "collab"] : ["all", "posts", "available"];
+  // Availabilities for everyone signed in: organizers book from them, artists see how active the others are
+  const filterChoices: FeedFilter[] = !viewer ? ["all", "posts"] : viewer.isArtist ? ["all", "posts", "available", "gig", "collab"] : ["all", "posts", "available"];
   const filter: FeedFilter = viewer && !filterChoices.includes(requestedFilter) ? "all" : requestedFilter;
   // Open opportunities mixed into "All" for artists
   const [opportunities, setOpportunities] = useState<any[]>([]);
@@ -524,7 +525,8 @@ const Feed = () => {
 
   /** The loaded feed narrowed to the chosen view, in the viewer's order. */
   function viewFeed(items: FeedItem[]): FeedItem[] {
-    if (filter === "posts") return items.filter((i) => i.type === "post");
+    // Posts = regular content only; availability posts have their own filter
+    if (filter === "posts") return items.filter((i) => i.type === "post" && !i.availableOn);
     if (filter === "available") return items.filter(isOpenAvailability);
     // Organizers: open dates of artists from the first page come first. Only the first page
     // is reordered, so items loaded later never jump above what was already seen.
@@ -601,10 +603,10 @@ const Feed = () => {
               {([
                 { k: "all", label: "All" },
                 { k: "posts", label: "Posts" },
-                // Named by what they show: events looking for artists, collaborations, free artists
+                { k: "available", label: "Availabilities" },
+                // Named by what they show: events looking for artists, collaborations
                 { k: "gig", label: "Events" },
                 { k: "collab", label: "Collaborations" },
-                { k: "available", label: "Availabilities" },
               ] as { k: FeedFilter; label: string }[]).filter((f) => filterChoices.includes(f.k)).map((f) => (
                 <button
                   key={f.k}
