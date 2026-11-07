@@ -604,7 +604,7 @@ const Feed = () => {
                 // Named by what they show: events looking for artists, collaborations, free artists
                 { k: "gig", label: "Events" },
                 { k: "collab", label: "Collaborations" },
-                { k: "available", label: "Free to book" },
+                { k: "available", label: "Availabilities" },
               ] as { k: FeedFilter; label: string }[]).filter((f) => filterChoices.includes(f.k)).map((f) => (
                 <button
                   key={f.k}
