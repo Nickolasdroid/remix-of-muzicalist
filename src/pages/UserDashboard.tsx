@@ -16,7 +16,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Megaphone, Plus, Trash2, Upload, Clock, CalendarCheck, Camera, User, X, AlertCircle, Euro, MapPin, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, Image as ImageIcon, Users, Ban } from "lucide-react";
+import { Megaphone, Plus, Trash2, Upload, Clock, CalendarCheck, Send, Camera, User, X, AlertCircle, Euro, MapPin, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, Image as ImageIcon, Users, Ban } from "lucide-react";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import { ORGANIZER_OPEN_LIMIT } from "@/lib/opportunities";
 import OpportunityComposer from "@/components/OpportunityComposer";
@@ -426,7 +426,7 @@ const UserDashboard = () => {
           };
 
           const confirmedBookings = bookings.filter(b => b.status === 'accepted' || b.status === 'completed').length;
-          const publishedEvents = announcements.filter((a: any) => !a.is_premium).length;
+          const sentRequests = bookings.length;
           const bookingPreview = sortBookingsForPreview(bookings).slice(0, 5);
 
           const canPublish = standardAdsRemaining > 0;
@@ -480,8 +480,8 @@ const UserDashboard = () => {
                   {/* Stats card row, same as the artist's */}
                   <div className="mx-4 md:mx-0 mt-3 md:mt-5 rounded-xl border border-border bg-secondary/40 p-3 md:p-5 grid grid-cols-3 divide-x divide-border">
                     {[
-                      { icon: Megaphone, value: String(publishedEvents), label: "Events" },
-                      { icon: CalendarCheck, value: String(confirmedBookings), label: "Bookings" },
+                      { icon: Send, value: String(sentRequests), label: "Requests sent" },
+                      { icon: CalendarCheck, value: String(confirmedBookings), label: "Artists booked" },
                       { icon: Clock, value: profile?.created_at ? new Date(profile.created_at).toLocaleDateString(i18n.language || 'en', { month: 'short', year: 'numeric' }).replace('.', '') : '—', label: "Member since" },
                     ].map((st) => (
                       <div key={st.label} className="flex flex-col items-center justify-center text-center px-1">
