@@ -192,6 +192,7 @@ export type Database = {
           budget_max: number | null
           budget_min: number | null
           budget_mode: string | null
+          chosen_profile_id: string | null
           city: string | null
           collab_type: string | null
           county: string | null
@@ -226,6 +227,7 @@ export type Database = {
           budget_max?: number | null
           budget_min?: number | null
           budget_mode?: string | null
+          chosen_profile_id?: string | null
           city?: string | null
           collab_type?: string | null
           county?: string | null
@@ -260,6 +262,7 @@ export type Database = {
           budget_max?: number | null
           budget_min?: number | null
           budget_mode?: string | null
+          chosen_profile_id?: string | null
           city?: string | null
           collab_type?: string | null
           county?: string | null
@@ -289,6 +292,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "announcements_chosen_profile_id_fkey"
+            columns: ["chosen_profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "announcements_profile_id_fkey"
             columns: ["profile_id"]
@@ -2843,6 +2853,10 @@ export type Database = {
           isOneToOne: true
           isSetofReturn: false
         }
+      }
+      choose_collaborator: {
+        Args: { _conversation_id: string }
+        Returns: string
       }
       close_case: {
         Args: {
