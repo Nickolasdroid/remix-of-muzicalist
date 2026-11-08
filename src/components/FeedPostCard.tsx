@@ -94,7 +94,7 @@ const FeedPostCard = ({
   const adminIds = useAdminIds();
   const isVerified = author.verified || (!!author.id && adminIds.has(author.id));
   return (
-    <Card className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
+    <Card className="text-card-foreground overflow-hidden my-0 rounded-lg border-0 bg-card shadow-none">
       <div className="px-3.5 pt-3 pb-0">
         <div className="flex items-start justify-between">
           <CardAuthorHeader

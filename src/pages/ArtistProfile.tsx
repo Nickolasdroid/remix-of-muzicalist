@@ -1458,18 +1458,16 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
 
               {/* Tabs Section */}
-              <Tabs value={!currentUserId && activeTab === "posts" ? "details" : activeTab} onValueChange={setActiveTab} className="w-full">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="flex w-full justify-start mb-5 md:mb-8 h-auto p-0 gap-2 bg-transparent border-0 rounded-none">
                   <TabsTrigger value="details" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
                     <User strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
                     <span className="hidden sm:inline">Details</span>
                   </TabsTrigger>
-                  {currentUserId && (
                   <TabsTrigger value="posts" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
                     <FileText strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
                     <span className="hidden sm:inline">Posts</span>
                   </TabsTrigger>
-                  )}
                   <TabsTrigger value="reviews" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
                     <Star strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
                     <span className="hidden sm:inline">Reviews</span>
@@ -1669,16 +1667,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       className="mb-4"
                       action={<PostsViewSwitcher mode={postsViewMode} onChange={setPostsViewMode} />}
                     />
-                    {!currentUserId ?
-                <Card className="p-8 text-center">
-                        <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                        <h3 className="text-lg font-semibold text-foreground mb-2">Login Required</h3>
-                        <p className="text-muted-foreground mb-4">Please log in or create an account to view the artist's posts.</p>
-                        <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                          <Button onClick={() => navigate('/login')} className="bg-accent text-accent-foreground hover:bg-accent/90">Login</Button>
-                          <Button variant="outline" onClick={() => navigate('/register')}>Register</Button>
-                        </div>
-                      </Card> : posts.length === 0 && announcements.filter((a) => a.is_premium && !isAdExpired(a)).length === 0 ?
+                    {posts.length === 0 && announcements.filter((a) => a.is_premium && !isAdExpired(a)).length === 0 ?
                 <Card className="p-8 text-center">
                         <FileText className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                         <p className="text-muted-foreground">This artist doesn't have any posts yet.</p>
@@ -1723,7 +1712,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       if (item.type === 'promotion') {
                         const promo = item as typeof promotions[0];
                         return (
-                          <Card key={`promo-${promo.id}`} className="overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
+                          <Card key={`promo-${promo.id}`} className="overflow-hidden my-0 rounded-lg border-0 bg-card shadow-none">
                                 <div className="px-3.5 pt-3 pb-0">
                                   <div className="flex items-start justify-between">
                                     <CardAuthorHeader
@@ -1771,7 +1760,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
                       const post = item as typeof postItems[0];
                       return (
-                        <Card key={post.id} className="overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
+                        <Card key={post.id} className="overflow-hidden my-0 rounded-lg border-0 bg-card shadow-none">
                             {/* Header */}
                             <div className="px-3.5 pt-3 pb-0">
                               <div className="flex items-start justify-between">
@@ -1849,16 +1838,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       title={postsKind === "gig" ? "Events" : "Collaborations"}
                       className="mb-4"
                     />
-                    {!currentUserId ?
-                <Card className="p-8 text-center">
-                        <Lock className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                        <h3 className="text-lg font-semibold text-foreground mb-2">Login Required</h3>
-                        <p className="text-muted-foreground mb-4">Please log in or create an account to view the artist's events and collaborations.</p>
-                        <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                          <Button onClick={() => navigate('/login')} className="bg-accent text-accent-foreground hover:bg-accent/90">Login</Button>
-                          <Button variant="outline" onClick={() => navigate('/register')}>Register</Button>
-                        </div>
-                     </Card> : activeOpps.length === 0 ?
+                    {activeOpps.length === 0 ?
                 <Card className="p-8 text-center">
                         <Megaphone className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                         <p className="text-muted-foreground">Nothing here yet.</p>
