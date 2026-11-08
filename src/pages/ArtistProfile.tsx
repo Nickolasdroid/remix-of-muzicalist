@@ -1388,36 +1388,36 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
               </div>
 
 
-              {/* Stats: one quiet line, like the listener count on a Spotify artist page */}
-              <div className="mx-4 md:mx-0 mt-4 md:mt-6 flex flex-wrap items-baseline gap-x-6 gap-y-1 text-sm md:text-base">
-                <span>
-                  <span className="font-bold text-foreground tabular-nums">{acceptedEventsCount}{acceptedEventsCount > 0 ? '+' : ''}</span>{" "}
-                  <span className="text-muted-foreground">Events</span>
-                </span>
-                <span>
-                  <span className="text-muted-foreground">Member since</span>{" "}
-                  <span className="font-bold text-foreground">
+              {/* Stats: three quiet columns, value over label, no box */}
+              <dl className="mx-4 md:mx-0 mt-4 md:mt-6 grid grid-cols-3 gap-3 md:flex md:gap-12">
+                <div className="min-w-0">
+                  <dd className="truncate text-lg md:text-xl font-bold text-foreground tabular-nums">{acceptedEventsCount}{acceptedEventsCount > 0 ? '+' : ''}</dd>
+                  <dt className="truncate text-xs md:text-sm text-muted-foreground">Events</dt>
+                </div>
+                <div className="min-w-0">
+                  <dd className="truncate text-lg md:text-xl font-bold text-foreground">
                     {artist.created_at
                       ? new Date(artist.created_at).toLocaleDateString(i18n.language || 'en', { month: 'short', year: 'numeric' }).replace('.', '')
                       : '—'}
-                  </span>
-                </span>
-                {artist.career_start_year ? (
-                  <span>
-                    <span className="text-muted-foreground">Experience</span>{" "}
-                    <span className="font-bold text-foreground">
-                      {(() => {
-                        const yrs = Math.max(1, new Date().getFullYear() - artist.career_start_year);
-                        const isRo = (i18n.language || 'en').split('-')[0] === 'ro';
-                        const unit = isRo
-                          ? (yrs === 1 ? 'an' : yrs < 20 ? 'ani' : 'de ani')
-                          : (yrs === 1 ? 'year' : 'years');
-                        return `${yrs} ${unit}`;
-                      })()}
-                    </span>
-                  </span>
-                ) : null}
-              </div>
+                  </dd>
+                  <dt className="truncate text-xs md:text-sm text-muted-foreground">Member since</dt>
+                </div>
+                <div className="min-w-0">
+                  <dd className="truncate text-lg md:text-xl font-bold text-foreground">
+                    {artist.career_start_year
+                      ? (() => {
+                          const yrs = Math.max(1, new Date().getFullYear() - artist.career_start_year);
+                          const isRo = (i18n.language || 'en').split('-')[0] === 'ro';
+                          const unit = isRo
+                            ? (yrs === 1 ? 'an' : yrs < 20 ? 'ani' : 'de ani')
+                            : (yrs === 1 ? 'year' : 'years');
+                          return `${yrs} ${unit}`;
+                        })()
+                      : '—'}
+                  </dd>
+                  <dt className="truncate text-xs md:text-sm text-muted-foreground">Experience</dt>
+                </div>
+              </dl>
 
               {/* Action buttons */}
               {!isOwnProfile && (
