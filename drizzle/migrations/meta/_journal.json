@@ -134,6 +134,13 @@
       "when": 1794086893545,
       "tag": "0018_collab_choose_collaborator",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1794168705152,
+      "tag": "0019_choose_collaborator_booking",
+      "breakpoints": true
     }
   ]
 }
