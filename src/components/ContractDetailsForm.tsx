@@ -239,7 +239,7 @@ const ContractDetailsForm = forwardRef<ContractDetailsFormHandle, ContractDetail
             <Input id="cd-county" value={form.county || ""} maxLength={100} onChange={(e) => set("county", e.target.value)} />
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="cd-country">Country</Label>
+            <Label htmlFor="cd-country">Country of residence</Label>
             <Input id="cd-country" value={form.country || ""} maxLength={100} onChange={(e) => set("country", e.target.value)} />
           </div>
         </div>

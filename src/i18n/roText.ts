@@ -618,6 +618,7 @@ export const RO_TEXT: Record<string, string> = {
   "Couldn't load timeline": "Nu s-a putut încărca cronologia",
   "Countries": "Țări",
   "Country": "Țară",
+  "Country of residence": "Țară",
   "County / Region": "Județ / Regiune",
   "Covasna": "Covasna",
   "Cover": "Copertă",
