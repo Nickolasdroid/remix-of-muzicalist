@@ -249,13 +249,14 @@ export const renderContractHtml = (c: BookingContract, opts: { preview?: boolean
 <title>${opts.preview ? "Contract (previzualizare)" : `Contract ${esc(c.contract_number)}`}</title>
 <style>
   *{box-sizing:border-box}
-  body{font-family:Georgia,"Times New Roman",serif;color:#1d1b26;margin:0 auto;padding:40px;max-width:780px;line-height:1.55;font-size:14.5px}
+  body{font-family:Inter,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:#1d1b26;margin:0 auto;padding:40px;max-width:760px;line-height:1.65;font-size:15px}
+  @media (max-width:600px){body{padding:20px 16px;font-size:14.5px}}
   .brand{display:flex;align-items:center;gap:10px;font-family:Inter,Arial,sans-serif;font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#9a6c08}
   .brand img{width:40px;height:40px;object-fit:contain}
-  h1{font-size:22px;text-align:center;margin:18px 0 4px;letter-spacing:.02em}
+  h1{font-size:22px;font-weight:700;text-align:center;margin:18px 0 4px;letter-spacing:0}
   .no{text-align:center;color:#5c5a66;font-family:Inter,Arial,sans-serif;font-size:13px;margin-bottom:24px}
-  h2{font-size:15px;margin:20px 0 6px}
-  p{margin:0 0 6px;text-align:justify}
+  h2{font-size:15.5px;font-weight:700;margin:22px 0 6px}
+  p{margin:0 0 8px;text-align:left}
   .warn{font-family:Inter,Arial,sans-serif;font-size:12.5px;background:#fff7e6;border:1px solid #f1d39a;border-radius:8px;padding:10px 12px;margin-bottom:18px}
   .sign{display:flex;gap:24px;margin-top:32px}
   .sign div{flex:1;border-top:1px solid #1d1b26;padding-top:8px;font-size:13px}
