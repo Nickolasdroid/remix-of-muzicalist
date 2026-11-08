@@ -155,6 +155,13 @@
       "when": 1794170883546,
       "tag": "0021_offer_advance_payment",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1794171086888,
+      "tag": "0022_protect_advance_and_contract_terms",
+      "breakpoints": true
     }
   ]
 }
