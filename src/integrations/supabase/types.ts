@@ -2780,6 +2780,10 @@ export type Database = {
       auto_reactivate_expired_suspensions: { Args: never; Returns: number }
       auto_reject_expired_booking_requests: { Args: never; Returns: undefined }
       billing_period_start: { Args: { _user_id: string }; Returns: string }
+      booking_day_time_range: {
+        Args: { _end: string; _idx: number; _start: string; _total: number }
+        Returns: string
+      }
       can_mention: {
         Args: { _actor: string; _target: string }
         Returns: boolean
