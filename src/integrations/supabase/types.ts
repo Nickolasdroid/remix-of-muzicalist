@@ -663,6 +663,7 @@ export type Database = {
           entity_type: string
           iban: string | null
           legal_name: string
+          phone: string | null
           reg_com: string | null
           representative: string | null
           updated_at: string
@@ -680,6 +681,7 @@ export type Database = {
           entity_type?: string
           iban?: string | null
           legal_name: string
+          phone?: string | null
           reg_com?: string | null
           representative?: string | null
           updated_at?: string
@@ -697,6 +699,7 @@ export type Database = {
           entity_type?: string
           iban?: string | null
           legal_name?: string
+          phone?: string | null
           reg_com?: string | null
           representative?: string | null
           updated_at?: string
@@ -2915,6 +2918,7 @@ export type Database = {
         Returns: number
       }
       contract_party_snapshot: { Args: { _user_id: string }; Returns: Json }
+      contract_phone_of: { Args: { _user_id: string }; Returns: string }
       create_artist_joined_post: {
         Args: { _artist_id?: string }
         Returns: string
