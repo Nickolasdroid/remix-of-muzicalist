@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Eye, EyeOff, Mail, Lock, ArrowLeft } from "lucide-react";
 import logo from "@/assets/logo.webp";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
-import AuthHeader from "@/components/AuthHeader";
+import AuthShell, { authButtonClass, authInputClass } from "@/components/AuthShell";
 import SEO from "@/components/SEO";
 import { RECOVERY_ERROR_KEY, RECOVERY_KEY } from "@/lib/recoveryCapture";
 
@@ -150,113 +150,77 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <>
       <SEO title="Reset password | Muzicalist" description="Reset your Muzicalist account password." path="/reset-password" noindex />
-      <AuthHeader />
-
-      <div className="w-full min-h-screen flex items-start md:items-center justify-center px-6 pt-24 pb-12 md:py-12 md:pb-[120px]">
-        <div className="w-full max-w-md space-y-8">
-          <div className="flex flex-col items-center text-center space-y-3">
-            <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
-              {mode === "request" ? "Forgot your password?" : "Create new password"}
-            </h2>
-          </div>
-
-
-
-          {mode === "request" ? (
-            <form onSubmit={handleRequestReset} className="space-y-6">
-              <div className="border border-border rounded-xl p-6 space-y-5">
-                <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-medium">
-                    Email Address
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-                    <Input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="h-12 bg-input border-border text-base pl-10"
-                      placeholder="your@email.com"
-                    />
-                  </div>
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300"
+      <AuthShell
+        title={mode === "request" ? "Reset your password" : "Create new password"}
+        footer={
+          <Link to="/login" className="font-medium text-foreground underline underline-offset-2 hover:text-accent">
+            Back to login
+          </Link>
+        }
+      >
+        {mode === "request" ? (
+          <form onSubmit={handleRequestReset} className="space-y-5">
+            <p className="text-sm text-muted-foreground">Enter your email and we'll send you a link to set a new password.</p>
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-bold text-foreground">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={authInputClass}
+                placeholder="Email"
+              />
+            </div>
+            <Button type="submit" disabled={isLoading} className={`${authButtonClass} !mt-8`}>
+              {isLoading ? "Sending..." : "Send reset link"}
+            </Button>
+          </form>
+        ) : (
+          <form onSubmit={handleUpdatePassword} className="space-y-5">
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-bold text-foreground">New Password</Label>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`${authInputClass} pr-12`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
                 >
-                  {isLoading ? "Sending..." : "Send reset link"}
-                </Button>
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
               </div>
-            </form>
-          ) : (
-            <form onSubmit={handleUpdatePassword} className="space-y-6">
-              <div className="border border-border rounded-xl p-6 space-y-5">
-                <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium">
-                    New Password
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-                    <Input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="h-12 bg-input border-border text-base pl-10 pr-12"
-                      placeholder="••••••••"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
-                  <PasswordStrengthIndicator password={password} />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-sm font-medium">
-                    Confirm New Password
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
-                    <Input
-                      id="confirmPassword"
-                      type={showPassword ? "text" : "password"}
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="h-12 bg-input border-border text-base pl-10"
-                      placeholder="••••••••"
-                    />
-                  </div>
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300"
-                >
-                  {isLoading ? "Updating..." : "Update password"}
-                </Button>
-              </div>
-            </form>
-          )}
-
-          <p className="text-center text-sm text-muted-foreground">
-            <Link to="/login" className="inline-flex items-center gap-1 text-accent hover:underline font-semibold">
-              <ArrowLeft size={14} /> Back to login
-            </Link>
-          </p>
-        </div>
-      </div>
-    </div>
+              <PasswordStrengthIndicator password={password} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="text-sm font-bold text-foreground">Confirm New Password</Label>
+              <Input
+                id="confirmPassword"
+                type={showPassword ? "text" : "password"}
+                autoComplete="new-password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className={authInputClass}
+              />
+            </div>
+            <Button type="submit" disabled={isLoading} className={`${authButtonClass} !mt-8`}>
+              {isLoading ? "Updating..." : "Update password"}
+            </Button>
+          </form>
+        )}
+      </AuthShell>
+    </>
   );
 };
 

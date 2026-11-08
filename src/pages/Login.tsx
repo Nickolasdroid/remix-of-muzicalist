@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import logo from "@/assets/logo.webp";
-import AuthHeader from "@/components/AuthHeader";
+import AuthShell, { authButtonClass, authInputClass } from "@/components/AuthShell";
 import SEO from "@/components/SEO";
 
 const Login = () => {
@@ -159,89 +160,68 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <>
       <SEO title="Log in | Muzicalist" description="Log in to your Muzicalist account to book musical artists, manage bookings, and message performers." path="/login" noindex />
-      <AuthHeader />
+      <AuthShell
+        title="Log in to Muzicalist"
+        footer={
+          <>
+            <span>Don't have an account?</span>{" "}
+            <Link to="/register" className="font-medium text-foreground underline underline-offset-2 hover:text-accent">
+              Sign up for Muzicalist
+            </Link>
+          </>
+        }
+      >
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm font-bold text-foreground">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              autoComplete="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className={authInputClass}
+              placeholder="Email"
+            />
+          </div>
 
-      {/* Form - full-screen on mobile, centered card on desktop */}
-      <div className="w-full min-h-screen flex items-start md:items-center justify-center p-0 md:p-4 md:pb-[120px]">
-        <div className="w-full max-w-md flex-1 md:flex-none min-h-screen md:min-h-0 md:rounded-2xl md:border md:border-border md:shadow-xl p-6 md:p-8 space-y-5 bg-background">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Header */}
-            <div className="flex flex-col items-center text-center space-y-3">
-              <h2 className="text-2xl md:text-3xl font-display font-bold text-foreground">
-                Login to your Account
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Welcome back to Muzicalist
-              </p>
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-sm font-bold text-foreground">Password</Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                className={`${authInputClass} pr-12`}
+                placeholder="Password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
+          </div>
 
+          <Button type="submit" disabled={isLoading} className={`${authButtonClass} !mt-8`}>
+            {isLoading ? "Logging in..." : "Log in"}
+          </Button>
 
-            <div className="space-y-2">
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="h-12 bg-input border-border text-base pl-10"
-                  placeholder="Email"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="h-12 bg-input border-border text-base pl-10 pr-12"
-                  placeholder="Password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-            </div>
-
-
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2 text-muted-foreground cursor-pointer">
-                <input type="checkbox" className="rounded border-border" />
-                Remember me
-              </label>
-              <Link to="/reset-password" className="text-accent hover:underline font-medium">
-                Forgot password?
-              </Link>
-            </div>
-
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full h-12 text-base font-semibold rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-black hover:from-amber-400 hover:to-amber-500 shadow-lg hover:shadow-amber-500/25 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? "Getting started..." : "Get Started"}
-            </Button>
-
-            <p className="text-center text-sm text-muted-foreground">
-              Don't have an account?{" "}
-              <Link to="/register" className="text-accent hover:underline font-semibold">
-                Register here
-              </Link>
-            </p>
-          </form>
-        </div>
-      </div>
-    </div>
+          <p className="text-center">
+            <Link to="/reset-password" className="text-base font-medium text-foreground underline underline-offset-2 hover:text-accent">
+              Forgot your password?
+            </Link>
+          </p>
+        </form>
+      </AuthShell>
+    </>
   );
 };
 

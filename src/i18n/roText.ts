@@ -7,6 +7,13 @@
 // Generated 2026-07-14 from all JSX text + placeholder/title/aria-label literals.
 
 export const RO_TEXT: Record<string, string> = {
+  "Log in to Muzicalist": "Autentifică-te pe Muzicalist",
+  "Sign up for Muzicalist": "Înscrie-te pe Muzicalist",
+  "Logging in...": "Se autentifică...",
+  "Reset your password": "Resetează parola",
+  "Enter your email and we'll send you a link to set a new password.": "Introdu emailul și îți trimitem un link ca să setezi o parolă nouă.",
+  "Hide password": "Ascunde parola",
+  "Show password": "Arată parola",
   "Are you an artist?": "Ești artist?",
   "Create your profile for free and get booking requests.": "Creează-ți profilul gratuit și primește cereri de rezervare.",
   "Create artist profile": "Creează profil de artist",
