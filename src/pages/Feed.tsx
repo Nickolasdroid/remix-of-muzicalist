@@ -558,7 +558,7 @@ const Feed = () => {
         <Navigation />
         <div className={`container mx-auto sm:px-4 pt-[60px] ${currentUserId ? 'md:pt-2' : 'md:pt-20'} pb-0 px-0`}>
           <div className="max-w-[500px] mx-auto space-y-2 sm:space-y-3" aria-busy="true">
-            {[1, 2, 3].map(i => <div key={i} className="rounded-2xl border border-border/70 bg-card px-3.5 py-3 animate-pulse">
+            {[1, 2, 3].map(i => <div key={i} className="rounded-lg bg-card px-3.5 py-3 animate-pulse">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="h-10 w-10 rounded-full bg-muted" />
                   <div className="space-y-2">

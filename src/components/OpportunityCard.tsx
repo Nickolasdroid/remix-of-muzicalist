@@ -121,7 +121,7 @@ const OpportunityCard = ({
   const place = formatPlaceWithCountry(o.city, o.county, lang);
 
   return (
-    <article className="rounded-2xl border border-border/70 bg-card px-3.5 py-3 space-y-3 shadow-sm">
+    <article className="rounded-lg bg-card px-3.5 py-3 space-y-3">
       <div className="flex items-start justify-between gap-2">
         <CardAuthorHeader
           name={author.name}

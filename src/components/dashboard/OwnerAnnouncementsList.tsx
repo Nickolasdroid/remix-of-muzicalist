@@ -265,7 +265,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
       <div
         key={a.id}
         className={cn(
-          "rounded-2xl border border-border/70 bg-card p-3.5 space-y-2.5",
+          "rounded-lg bg-card p-3.5 space-y-2.5",
           status !== "open" && status !== "filled" && "opacity-70",
         )}
       >
