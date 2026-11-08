@@ -7,6 +7,11 @@
 // Generated 2026-07-14 from all JSX text + placeholder/title/aria-label literals.
 
 export const RO_TEXT: Record<string, string> = {
+  "Go to the Register page and choose between an Artist account or a User account. You can sign up with email and password or continue with Google. Creating an account is free.": "Mergi pe pagina de înregistrare și alege între un cont de Artist și un cont de Utilizator. Te poți înregistra cu email și parolă sau poți continua cu Google. Crearea contului este gratuită.",
+  "No. Creating an account and using Muzicalist is free. Artists start on the Free plan and can choose Standard or Premium for more posts, a bigger gallery, stories and better placement. Booking an artist doesn't need a plan.": "Nu. Crearea contului și folosirea Muzicalist sunt gratuite. Artiștii încep cu planul Free și pot alege Standard sau Premium pentru mai multe postări, o galerie mai mare, stories și o poziționare mai bună. Pentru a rezerva un artist nu ai nevoie de niciun plan.",
+  "4. Plans & Subscriptions": "4. Planuri și abonamente",
+  "Creating an account is free. Artists can use the Free plan with no time limit or choose an optional paid plan": "Crearea unui cont este gratuită. Artiștii pot folosi planul Free fără limită de timp sau pot alege opțional un plan plătit",
+  ". Upgrade for more posts each month, a bigger gallery, stories, estimated prices on your profile and better placement in the feed and in search.": ". Treci la un plan superior pentru mai multe postări pe lună, o galerie mai mare, stories, prețuri estimative pe profil și o poziționare mai bună în feed și în căutare.",
   "— over your plan limit": "— peste limita planului tău",
   ", the data controller responsible for the processing of your personal data under this policy.": ", operatorul de date responsabil pentru prelucrarea datelor tale cu caracter personal conform acestei politici.",
   "? This action cannot be undone.": "? Această acțiune nu poate fi anulată.",
@@ -14,7 +19,6 @@ export const RO_TEXT: Record<string, string> = {
   ". Coordinate before making changes.": ". Coordonează-te înainte de a face modificări.",
   ". Nothing in history is overwritten. Publish the new draft to make it active.": ". Nimic din istoric nu este suprascris. Publică noua ciornă pentru a o activa.",
   ". The clip stays on the artist's account — we only embed it.": ". Clipul rămâne pe contul artistului — noi doar îl încorporăm.",
-  ". Upgrade to a paid subscription to unlock more features: publish posts and announcements, upload more photos and videos, get priority in search results, analytics, and more.": ". Treci la un abonament plătit pentru a debloca mai multe funcții: publică postări și anunțuri, încarcă mai multe fotografii și videoclipuri, obține prioritate în rezultatele căutării, statistici și altele.",
   "· Created": "· Creat",
   "\" as custom instrument": "\" ca instrument personalizat",
   "(optional)": "(opțional)",
@@ -2693,7 +2697,6 @@ export const RO_TEXT: Record<string, string> = {
   "Yes, Mark Available": "Da, marchează disponibil",
   "Yes, Mark Unavailable": "Da, marchează indisponibil",
   "Yes, you can add multiple pricing entries on your profile to give clients a clear idea of your rates.": "Da, poți adăuga mai multe intrări de preț pe profilul tău pentru a le oferi clienților o idee clară despre tarifele tale.",
-  "Yes. All new accounts (Artists and Users) must activate a subscription plan after registration. Existing accounts created before this change keep their previous access (grandfathered).": "Da. Toate conturile noi (Artiști și Utilizatori) trebuie să activeze un plan de abonament după înregistrare. Conturile existente create înainte de această schimbare își păstrează accesul anterior.",
   "Yes. Each announcement gets its own dedicated thread per user, separate from any regular conversation you already have with that person.": "Da. Fiecare anunț primește propriul fir dedicat per utilizator, separat de orice conversație obișnuită pe care o ai deja cu acea persoană.",
   "Yes. Invoices are generated automatically for every payment and are compliant with Romanian tax requirements through our integrated invoicing system.": "Da. Facturile sunt generate automat pentru fiecare plată și respectă cerințele fiscale românești prin sistemul nostru integrat de facturare.",
   "Yes. You control phone and email visibility from Settings, and we never expose your account credentials. Read our Privacy Policy for full details.": "Da. Controlezi vizibilitatea telefonului și a emailului din Setări, iar noi nu îți expunem niciodată datele de autentificare. Citește Politica noastră de confidențialitate pentru detalii complete.",

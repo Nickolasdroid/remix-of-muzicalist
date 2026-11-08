@@ -37,7 +37,7 @@ const faqSections = [
     items: [
       {
         q: "How do I create an account?",
-        a: "Go to the Register page and choose between an Artist account or a User account. You can sign up with email and password or continue with Google. All new accounts require activation via a paid subscription plan before you can fully use the platform.",
+        a: "Go to the Register page and choose between an Artist account or a User account. You can sign up with email and password or continue with Google. Creating an account is free.",
       },
       {
         q: "What's the difference between an Artist and a User account?",
@@ -45,7 +45,7 @@ const faqSections = [
       },
       {
         q: "Do I need to pay to use Muzicalist?",
-        a: "Yes. All new accounts (Artists and Users) must activate a subscription plan after registration. Existing accounts created before this change keep their previous access (grandfathered).",
+        a: "No. Creating an account and using Muzicalist is free. Artists start on the Free plan and can choose Standard or Premium for more posts, a bigger gallery, stories and better placement. Booking an artist doesn't need a plan.",
       },
       {
         q: "How do I log in?",

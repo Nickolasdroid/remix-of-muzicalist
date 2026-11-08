@@ -49,10 +49,9 @@ const TERMS_COPY: Record<"en" | "ro", TermsCopy> = {
         ],
       },
       {
-        title: "4. Paid Activation & Subscriptions",
+        title: "4. Plans & Subscriptions",
         items: [
-          "All newly created accounts (Artist and User) require activation through a paid subscription plan before full access is granted",
-          "Accounts created before this policy took effect are grandfathered and keep their previous access",
+          "Creating an account is free. Artists can use the Free plan with no time limit or choose an optional paid plan",
           "Available tiers (Free, Standard, Premium) and their feature limits are described on the Plans page and may be updated over time",
           "Subscriptions renew automatically until cancelled from the customer portal",
           "Except where required by law, fees already paid are non-refundable; cancelling stops future renewals but keeps your access until the end of the current billing period",
@@ -178,10 +177,9 @@ const TERMS_COPY: Record<"en" | "ro", TermsCopy> = {
         ],
       },
       {
-        title: "4. Activare plătită și abonamente",
+        title: "4. Planuri și abonamente",
         items: [
-          "Toate conturile nou create (Artist și Utilizator) necesită activare printr-un plan de abonament plătit înainte de acordarea accesului complet",
-          "Conturile create înainte ca această politică să intre în vigoare sunt păstrate cu accesul anterior",
+          "Crearea unui cont este gratuită. Artiștii pot folosi planul Free fără limită de timp sau pot alege opțional un plan plătit",
           "Planurile disponibile (Free, Standard, Premium) și limitele aferente sunt descrise pe pagina Planuri și pot fi actualizate în timp",
           "Abonamentele se reînnoiesc automat până la anularea lor din portalul pentru clienți",
           "Cu excepția cazurilor cerute de lege, taxele deja plătite nu sunt rambursabile; anularea oprește reînnoirile viitoare, dar păstrează accesul până la finalul perioadei curente de facturare",
