@@ -27,7 +27,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { getCurrentLanguage, translateTextsSync } from "@/i18n";
 import logo from "@/assets/logo.webp";
 import CountrySelector from "./CountrySelector";
-import { Button } from "./ui/button";
 
 /** One row of the mobile side menu: icon + label, optional trailing badge, chevron. */
 const MobileMenuRow = ({
@@ -425,7 +424,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     <>
       {/* Desktop: Top Header Bar - Only when NOT logged in */}
       {!user && (
-      <nav data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 right-0 h-16 z-50 bg-background border-b border-border hidden md:flex items-center justify-between px-8">
+      <nav data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 right-0 h-16 z-50 bg-black hidden md:flex items-center justify-between px-8">
         <div className="flex items-center gap-2">
           <Link to="/" className="flex items-center gap-2">
             <img src={logo} alt="Muzicalist — The Global Stage for Musical Artists" className="h-9 w-9 object-contain" />
@@ -434,18 +433,18 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         </div>
 
         <div className="flex items-center gap-2" aria-label={t('navigation.authActions', 'Authentication')}>
-          <Button asChild variant="ghost" size="sm" className="h-9 rounded-lg border border-[hsl(var(--header-button-border))] bg-[hsl(var(--header-button-bg))] px-3 text-sm font-medium text-foreground hover:border-[hsl(var(--header-button-border-hover))] hover:bg-[hsl(var(--header-button-bg-hover))] hover:text-foreground focus-visible:ring-accent/50">
-            <Link to="/login">{t('navigation.loginDesktop')}</Link>
-          </Button>
-          <Button asChild size="sm" className="h-9 rounded-lg border border-accent/70 bg-accent px-3 text-sm font-semibold text-accent-foreground shadow-none transition-colors hover:bg-accent/90 focus-visible:ring-accent/50">
-            <Link to="/register">{t('navigation.registerDesktop')}</Link>
-          </Button>
+          <Link to="/register" className="rounded-full px-4 py-2.5 text-base font-bold text-muted-foreground transition-all hover:scale-[1.04] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
+            {t('navigation.registerDesktop')}
+          </Link>
+          <Link to="/login" className="rounded-full bg-white px-8 py-3 text-base font-bold text-black transition-transform hover:scale-[1.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
+            {t('navigation.loginDesktop')}
+          </Link>
         </div>
       </nav>
       )}
 
       {/* Mobile: Top Header Bar */}
-      <nav data-no-translate={skipAutoTranslate ? true : undefined} className={`fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden ${hideMobileHeader ? 'hidden' : ''}`}>
+      <nav data-no-translate={skipAutoTranslate ? true : undefined} className={`fixed top-0 left-0 right-0 z-50 md:hidden ${user ? 'bg-background' : 'bg-black'} ${hideMobileHeader ? 'hidden' : ''}`}>
         <div className={`flex items-center justify-between h-14 ${user ? 'px-4' : 'gap-2 px-2 min-[375px]:px-4'}`}>
           {/* Left: Back button (when mobileTitle provided) or Menu Button (logged in) or Logo (logged out) */}
           {showMobileBack ? (
@@ -623,12 +622,12 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
               </button>
             ) : (
               <>
-                <Button asChild variant="ghost" size="sm" className="h-8 rounded-lg border border-[hsl(var(--header-button-border))] bg-[hsl(var(--header-button-bg))] px-2 text-xs font-medium text-foreground hover:border-[hsl(var(--header-button-border-hover))] hover:bg-[hsl(var(--header-button-bg-hover))] hover:text-foreground focus-visible:ring-accent/50 min-[375px]:px-2.5">
-                  <Link to="/login">{t('navigation.loginMobile')}</Link>
-                </Button>
-                <Button asChild size="sm" className="h-8 rounded-lg border border-accent/70 bg-accent px-2 text-xs font-semibold text-accent-foreground shadow-none transition-colors hover:bg-accent/90 focus-visible:ring-accent/50 min-[375px]:px-2.5">
-                  <Link to="/register">{t('navigation.registerMobile')}</Link>
-                </Button>
+                <Link to="/register" className="rounded-full px-2.5 py-2 text-sm font-bold text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
+                  {t('navigation.registerMobile')}
+                </Link>
+                <Link to="/login" className="rounded-full bg-white px-4 py-2 text-sm font-bold text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
+                  {t('navigation.loginMobile')}
+                </Link>
               </>
             )}
           </div>
@@ -638,7 +637,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       {/* Mobile: Bottom Navigation Bar (only for logged-in users, hidden on settings) */}
       <BottomNavSpacer active={showBottomNav} />
       {showBottomNav && (
-        <nav data-no-translate={skipAutoTranslate ? true : undefined} className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t border-border md:hidden safe-area-bottom">
+        <nav data-no-translate={skipAutoTranslate ? true : undefined} className="fixed bottom-0 left-0 right-0 z-50 bg-black/95 backdrop-blur md:hidden safe-area-bottom">
           <div className="flex items-center justify-around h-16 px-1">
             {mobileBottomNav.map((item) => (
               <Link
@@ -646,8 +645,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 to={item.to}
                 className={`flex flex-col items-center justify-center flex-1 py-2 transition-colors relative ${
                   (isActive(item.to.split('?')[0]) || (item.to === '/feed' && location.pathname === '/' && user))
-                    ? 'text-accent'
-                    : 'text-foreground/60 hover:text-accent'
+                    ? 'text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <div className="relative">
@@ -671,9 +670,9 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
       {/* Desktop: Left Sidebar - Only when logged in */}
       {!user ? null : (
-      <aside data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 h-screen w-64 bg-background border-r border-border z-40 hidden md:flex md:flex-col">
+      <aside data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 h-screen w-64 bg-black z-40 hidden md:flex md:flex-col">
         {/* Logo at top of sidebar - h-16 to align with header */}
-        <div className="h-16 flex items-center px-4 border-b border-border">
+        <div className="h-16 flex items-center px-6">
           <Link to="/feed" className="flex items-center gap-2">
             <img src={logo} alt="Muzicalist — The Global Stage for Musical Artists" className="h-9 w-9 object-contain" />
             <span className="font-bold text-lg text-foreground uppercase" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
@@ -688,8 +687,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
               to={link.to}
               className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                 isActive(link.to.split('?')[0])
-                  ? 'bg-accent/20 text-accent'
-                  : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                  ? 'text-foreground font-bold'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
               <link.icon className="h-5 w-5" />
@@ -703,8 +702,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
             to={userType === 'user' ? '/booking-requests' : '/calendar'}
             className={`flex items-center justify-between px-3 py-3 rounded-lg transition-colors ${
               isActive(userType === 'user' ? '/booking-requests' : '/calendar')
-                ? 'bg-accent/20 text-accent'
-                : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                ? 'text-foreground font-bold'
+                : 'text-muted-foreground hover:text-foreground'
             }`}
           >
             <div className="flex items-center gap-3">
@@ -727,8 +726,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   to={link.to}
                   className={`flex items-center justify-between px-3 py-3 rounded-lg transition-colors ${
                     isActive(link.to.split('?')[0]) || (link.to.includes('?') && location.search.includes(link.to.split('?')[1]))
-                      ? 'bg-accent/20 text-accent'
-                      : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                      ? 'text-foreground font-bold'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -747,10 +746,10 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         </div>
 
         {/* More Button at bottom */}
-        <div className="p-4 border-t border-border">
+        <div className="p-4">
           <Popover>
             <PopoverTrigger asChild>
-              <button className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-foreground/80 hover:bg-accent/10 hover:text-accent">
+              <button className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-muted-foreground hover:text-foreground">
                 <MoreHorizontal className="h-5 w-5" />
                 <span className="font-medium">{t('navigation.more')}</span>
               </button>
@@ -762,8 +761,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                     to={userType === 'user' ? "/user-dashboard?tab=settings" : "/dashboard?tab=settings"}
                     className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                       location.search.includes('tab=settings')
-                        ? 'bg-accent/20 text-accent'
-                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                        ? 'text-foreground font-bold'
+                        : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     <Settings className="h-5 w-5" />
@@ -775,8 +774,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                     to="/admin/dashboard"
                     className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                       isActive('/admin/dashboard')
-                        ? 'bg-accent/20 text-accent'
-                        : 'text-foreground/80 hover:bg-accent/10 hover:text-accent'
+                        ? 'text-foreground font-bold'
+                        : 'text-muted-foreground hover:text-foreground'
                     }`}
                   >
                     <Shield className="h-5 w-5" />

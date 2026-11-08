@@ -616,8 +616,8 @@ const Feed = () => {
                   aria-selected={filter === f.k}
                   data-active={filter === f.k ? "true" : undefined}
                   onClick={() => setFilter(f.k)}
-                  className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm transition-colors ${
-                    filter === f.k ? "border-foreground/15 bg-foreground/[0.1] font-semibold text-foreground" : "border-border text-muted-foreground hover:text-foreground"
+                  className={`h-8 shrink-0 rounded-full px-3.5 text-sm text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${
+                    filter === f.k ? "bg-white/[0.24] font-medium" : "bg-white/[0.07] hover:bg-white/[0.12]"
                   }`}
                 >
                   {f.label}
@@ -662,7 +662,7 @@ const Feed = () => {
             ) : ((item: FeedItem) =>
               item.type === "announcement" ? (
                 /* Promotion Card */
-                <Card key={`promo-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
+                <Card key={`promo-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-lg border-0 bg-card shadow-none">
                   <div className="px-3.5 pt-3 pb-0">
                     <div className="flex items-start justify-between">
                       <CardAuthorHeader
@@ -722,7 +722,7 @@ const Feed = () => {
                 </Card>
               ) : (
                 /* Regular Post Card */
-                <Card key={item.id} id={`feed-post-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-2xl border border-border/70 bg-card shadow-sm">
+                <Card key={item.id} id={`feed-post-${item.id}`} className="text-card-foreground overflow-hidden my-0 rounded-lg border-0 bg-card shadow-none">
                 <div className="px-3.5 pt-3 pb-0">
                   <div className="flex items-start justify-between">
                     <CardAuthorHeader

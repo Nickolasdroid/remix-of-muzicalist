@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Inter', 'Inter Fallback', 'sans-serif'],
-        sans: ['Inter', 'Inter Fallback', 'sans-serif'],
+        display: ['Figtree', 'Figtree Fallback', 'Inter', 'sans-serif'],
+        sans: ['Figtree', 'Figtree Fallback', 'Inter', 'sans-serif'],
         figtree: ['Figtree', 'Inter', 'Inter Fallback', 'sans-serif'],
       },
       colors: {
