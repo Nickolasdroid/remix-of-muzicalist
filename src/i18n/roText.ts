@@ -45,6 +45,7 @@ export const RO_TEXT: Record<string, string> = {
   "10. Content Ownership & License": "10. Proprietatea conținutului și licență",
   "10. Proprietatea conținutului și licență": "10. Proprietatea conținutului și licență",
   "11. Contact Us": "11. Contactează-ne",
+  "11. Data Controller & Contact": "11. Operator de date și contact",
   "11. Promotional Use of Profile Content": "11. Utilizarea promoțională a conținutului de profil",
   "11. Utilizarea promoțională a conținutului de profil": "11. Utilizarea promoțională a conținutului de profil",
   "12. Bookings Between Users": "12. Rezervări între utilizatori",
