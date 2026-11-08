@@ -43,6 +43,10 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
   const [price, setPrice] = useState("");
   const [currency, setCurrency] = useState("RON");
   const [note, setNote] = useState("");
+  // Optional advance: amount + due date (written into the contract)
+  const [askAdvance, setAskAdvance] = useState(false);
+  const [advance, setAdvance] = useState("");
+  const [advanceDue, setAdvanceDue] = useState("");
   const [saving, setSaving] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [hasContractDetails, setHasContractDetails] = useState<boolean | null>(null);
@@ -65,6 +69,9 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
       setCurrency(booking.offer_currency || "RON");
       return;
     }
+    setAskAdvance(false);
+    setAdvance("");
+    setAdvanceDue("");
     setPrice("");
     setCurrency("RON");
     // A booking made from an accepted collaboration carries the proposed fee ("Fee: 800 RON")
@@ -98,10 +105,16 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
 
   const priceNumber = Number(price.replace(",", "."));
   const priceValid = Number.isFinite(priceNumber) && priceNumber > 0;
+  const todayYmd = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  const advanceNumber = Number(advance.replace(",", "."));
+  const advanceValid =
+    !askAdvance ||
+    (Number.isFinite(advanceNumber) && advanceNumber > 0 && (!priceValid || advanceNumber <= priceNumber) &&
+      !!advanceDue && advanceDue >= todayYmd && (!booking || advanceDue <= booking.event_date));
   const isUpdate = booking?.status === "offered";
 
   const handleSend = async () => {
-    if (!booking || !priceValid || !acceptTerms || saving) return;
+    if (!booking || !priceValid || !acceptTerms || !advanceValid || saving) return;
     setSaving(true);
     const offer = {
       _price: Math.round(priceNumber * 100) / 100,
@@ -112,7 +125,20 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
     const { error } = announcementId
       ? await (supabase as any).rpc("send_announcement_offer", { _announcement_id: announcementId, ...offer })
       : await (supabase as any).rpc("send_booking_offer", { _booking_id: booking.id, ...offer });
+    // The advance is saved right after the offer (same rules for direct and event offers)
+    let advanceError: unknown = null;
+    if (!error && askAdvance) {
+      const res = await (supabase as any).rpc("set_offer_advance", {
+        ...(announcementId ? { _announcement_id: announcementId } : { _booking_id: booking.id }),
+        _amount: Math.round(advanceNumber * 100) / 100,
+        _due_date: advanceDue,
+      });
+      advanceError = res.error;
+    }
     setSaving(false);
+    if (advanceError) {
+      toast({ title: "Offer sent without the advance", description: offerErrorText(advanceError), variant: "destructive" });
+    }
     if (error) {
       toast({
         title: "Offer not sent",
@@ -199,6 +225,51 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
               />
             </div>
 
+            <div className="space-y-2 rounded-lg border border-border p-3">
+              <label className="flex cursor-pointer items-center justify-between gap-3">
+                <span className="text-sm font-medium text-foreground">Ask for an advance</span>
+                <Checkbox
+                  checked={askAdvance}
+                  onCheckedChange={(v) => {
+                    const on = v === true;
+                    setAskAdvance(on);
+                    if (on && !advance && priceValid) setAdvance(String(Math.round(priceNumber * 0.3)));
+                    if (on && !advanceDue && booking) {
+                      const in7 = new Date(Date.now() + 7 * 864e5 - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+                      setAdvanceDue(in7 < booking.event_date ? in7 : booking.event_date);
+                    }
+                  }}
+                />
+              </label>
+              {askAdvance && (
+                <>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="space-y-1">
+                      <Label htmlFor="offer-advance" className="text-xs text-muted-foreground"><span>Amount</span> <span className="notranslate" translate="no">({currency})</span></Label>
+                      <Input id="offer-advance" inputMode="decimal" value={advance} onChange={(e) => setAdvance(e.target.value)} />
+                    </div>
+                    <div className="space-y-1">
+                      <Label htmlFor="offer-advance-due" className="text-xs text-muted-foreground">Pay by</Label>
+                      <Input
+                        id="offer-advance-due"
+                        type="date"
+                        min={todayYmd}
+                        max={booking?.event_date}
+                        value={advanceDue}
+                        onChange={(e) => setAdvanceDue(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    It goes into the contract. The organizer pays it by bank transfer; you mark it as received.
+                  </p>
+                  {!advanceValid && (
+                    <p className="text-xs text-destructive">The advance must be at most the price, due between today and the event date.</p>
+                  )}
+                </>
+              )}
+            </div>
+
             {hasContractDetails === false && (
               <div className="flex items-start gap-2 rounded-lg bg-secondary/50 p-3 text-xs text-muted-foreground">
                 <FileText className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
@@ -223,7 +294,7 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
             <Button
               className="w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
               onClick={handleSend}
-              disabled={!priceValid || !acceptTerms || saving}
+              disabled={!priceValid || !acceptTerms || !advanceValid || saving}
             >
               {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
               {isUpdate ? "Update offer" : "Send offer"}

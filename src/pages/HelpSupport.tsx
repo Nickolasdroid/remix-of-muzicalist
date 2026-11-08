@@ -118,6 +118,10 @@ const faqSections = [
         a: "Posts, availability posts and collaborations share one monthly allowance: 3 on Free, 15 on Standard and 30 on Premium. A slot frees up 30 days after publishing. Upgrading increases your allowance immediately.",
       },
       {
+        q: "Can I ask for an advance?",
+        a: "Yes. When you send an offer, tick “Ask for an advance” and set the amount and the date it must be paid by. The advance goes into the contract; the organizer pays it by bank transfer to the IBAN from your contract details, and you mark it as received in the booking. Payments don't go through Muzicalist.",
+      },
+      {
         q: "How do I get more visibility?",
         a: "There is nothing to buy per post: posts from Standard artists appear higher in the feed, and posts from Premium artists appear highest.",
       },

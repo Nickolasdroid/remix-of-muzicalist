@@ -62,7 +62,8 @@ const BookingOfferPanel = ({
   onChanged,
 }: BookingOfferPanelProps) => {
   const { toast } = useToast();
-  const [busy, setBusy] = useState<"accept" | "decline" | "withdraw" | null>(null);
+  const [busy, setBusy] = useState<"accept" | "decline" | "withdraw" | "advance" | null>(null);
+  const [advanceReceivedLocal, setAdvanceReceivedLocal] = useState<string | null>(null);
   const [acceptOpen, setAcceptOpen] = useState(false);
   const [location, setLocation] = useState("");
   const [agree, setAgree] = useState(false);
@@ -147,6 +148,8 @@ const BookingOfferPanel = ({
         event_type: booking.event_type,
         time: extractTimeInterval(booking.message),
         location: location.trim() || null,
+        advance_amount: booking.advance_amount ?? null,
+        advance_due_date: booking.advance_due_date ?? null,
       },
       artist_accepted_at: booking.offer_sent_at || now,
       organizer_accepted_at: now,
@@ -243,6 +246,69 @@ const BookingOfferPanel = ({
           </p>
         )}
         {cancelledLine && <p className="mt-2 text-sm text-muted-foreground">{cancelledLine}</p>}
+
+        {/* Advance: asked in the offer, paid by bank transfer, confirmed by the artist */}
+        {booking.advance_amount != null && !cancelled && (() => {
+          const amount = formatMoney(booking.advance_amount, booking.offer_currency, lang);
+          const due = booking.advance_due_date
+            ? new Date(booking.advance_due_date + "T00:00:00").toLocaleDateString(lang.startsWith("ro") ? "ro-RO" : "en-GB", { day: "numeric", month: "long" })
+            : null;
+          const received = booking.advance_received_at || advanceReceivedLocal;
+          const iban = contract?.artist_party?.iban;
+          return (
+            <div className="mt-3 rounded-lg border border-border/70 bg-background/40 px-3 py-2.5 text-sm">
+              <p className="flex flex-wrap items-baseline gap-x-1.5">
+                <span className="text-muted-foreground">Advance</span>
+                <b className="text-foreground notranslate tabular-nums" translate="no">{amount}</b>
+                {due && !received && (
+                  <>
+                    <span className="text-muted-foreground">· by</span>
+                    <span className="text-foreground notranslate" translate="no">{due}</span>
+                  </>
+                )}
+              </p>
+              {status === "accepted" && (
+                received ? (
+                  <p className="mt-1 text-xs font-semibold text-green-500">✓ <span>Advance received</span></p>
+                ) : viewer === "requester" ? (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    <span>Pay it by bank transfer</span>
+                    {iban ? (
+                      <>
+                        <span> · IBAN </span>
+                        <span className="font-medium text-foreground notranslate" translate="no">{iban}</span>
+                      </>
+                    ) : (
+                      <span>, details in the contract.</span>
+                    )}
+                  </p>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="mt-2 rounded-lg"
+                    disabled={busy !== null}
+                    onClick={async () => {
+                      setBusy("advance");
+                      const { error } = await (supabase as any).rpc("mark_advance_received", { _booking_id: booking.id });
+                      setBusy(null);
+                      if (error) {
+                        toast({ title: "Error", description: offerErrorText(error), variant: "destructive" });
+                        return;
+                      }
+                      setAdvanceReceivedLocal(new Date().toISOString());
+                      toast({ title: "Advance marked as received" });
+                      onChanged?.();
+                    }}
+                  >
+                    {busy === "advance" && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    I received the advance
+                  </Button>
+                )
+              )}
+            </div>
+          );
+        })()}
 
         {status === "offered" && viewer === "requester" && (
           <div className="mt-3 flex gap-2">

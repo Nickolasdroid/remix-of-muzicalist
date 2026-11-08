@@ -40,6 +40,9 @@ export interface ContractTerms {
   event_type?: string | null;
   time?: string | null;
   location?: string | null;
+  /** Advance asked in the offer (optional) */
+  advance_amount?: number | string | null;
+  advance_due_date?: string | null;
 }
 
 export interface BookingContract {
@@ -170,7 +173,11 @@ export const renderContractHtml = (c: BookingContract, opts: { preview?: boolean
       "Art. 3. Prețul și modalitatea de plată",
       [
         `3.1. Prețul total agreat pentru prestația de la art. 2 este de <b>${esc(price)}</b>.${vatLine ? ` ${vatLine}` : ""}`,
-        `3.2. Plata se face direct de către Beneficiar Prestatorului, ${payTo}, cel târziu la data evenimentului, dacă părțile nu convin altfel în scris.`,
+        ...(t.advance_amount != null && Number(t.advance_amount) > 0
+          ? [
+              `3.2. Beneficiarul plătește Prestatorului un avans de <b>${esc(formatContractPrice(t.advance_amount, t.currency))}</b>, ${payTo}, cel târziu la data de <b>${esc(t.advance_due_date ? roDate(t.advance_due_date) : "convenită de părți")}</b>. Restul de <b>${esc(formatContractPrice(Math.max(Number(t.price) - Number(t.advance_amount), 0), t.currency))}</b> se plătește cel târziu la data evenimentului, dacă părțile nu convin altfel în scris.`,
+            ]
+          : [`3.2. Plata se face direct de către Beneficiar Prestatorului, ${payTo}, cel târziu la data evenimentului, dacă părțile nu convin altfel în scris.`]),
         "3.3. Platforma Muzicalist nu încasează și nu intermediază plata prețului.",
       ],
     ],

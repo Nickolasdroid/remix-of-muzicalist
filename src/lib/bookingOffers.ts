@@ -23,11 +23,15 @@ export interface BookingOfferFields {
   offer_sent_at?: string | null;
   confirmed_at?: string | null;
   declined_by?: "artist" | "requester" | null | string;
+  /** Advance asked by the artist (paid by bank transfer, outside the app) */
+  advance_amount?: number | string | null;
+  advance_due_date?: string | null;
+  advance_received_at?: string | null;
 }
 
 /** Columns needed by the offer UI (contact columns stay private, see get_booking_contact). */
 export const BOOKING_OFFER_COLUMNS =
-  "offer_price, offer_currency, offer_note, offer_sent_at, confirmed_at, declined_by";
+  "offer_price, offer_currency, offer_note, offer_sent_at, confirmed_at, declined_by, advance_amount, advance_due_date, advance_received_at";
 
 export const OFFER_NOTE_MAX = 500;
 
@@ -54,6 +58,9 @@ export const extractTimeInterval = (message?: string | null): string | null => {
 };
 
 const ERROR_TEXT: Record<string, string> = {
+  ADVANCE_INVALID_AMOUNT: "The advance must be more than 0 and at most the price.",
+  ADVANCE_INVALID_DATE: "The advance due date must be between today and the event date.",
+  ADVANCE_NOT_DUE: "There is no advance to confirm for this booking.",
   BOOKING_NOT_FOUND: "This booking request could not be found.",
   BOOKING_NOT_OPEN: "This booking request is no longer open.",
   BOOKING_DATE_PASSED: "The event date has already passed.",
