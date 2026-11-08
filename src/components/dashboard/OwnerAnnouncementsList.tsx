@@ -74,7 +74,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
       toast({ title: "Error", description: "Couldn't choose this artist. Please try again.", variant: "destructive" });
       return;
     }
-    toast({ title: "Accepted", description: "The collaboration is closed and the others were told it's filled." });
+    toast({ title: "Accepted", description: "A booking request was sent to this artist. They reply with an offer; when you accept it, the contract is generated." });
     setChooseTarget(null);
     onChosen?.();
   };
@@ -435,7 +435,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
             <AlertDialogTitle>Accept this artist?</AlertDialogTitle>
             <p className="text-sm font-semibold text-foreground notranslate" translate="no">{chooseTarget?.name}</p>
             <AlertDialogDescription>
-              The collaboration closes and leaves the feed. The artist is notified, and the others are told it has been filled.
+              The collaboration closes and leaves the feed. The artist gets a booking request for its date: they send you an offer, you accept it and the contract is generated. The others are told it has been filled.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

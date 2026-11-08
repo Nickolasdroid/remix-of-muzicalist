@@ -91,7 +91,7 @@ const AnnouncementHeader = ({ ad, viewerId, otherId, rejected }: { ad: Announcem
     : !chosen
     ? null
     : chosen === viewerId
-      ? { ok: true, text: "You were chosen for this collaboration" }
+      ? { ok: true, text: "You were chosen for this collaboration. Send your offer from Bookings" }
       : chosen === otherId && ad.profile_id === viewerId
         ? { ok: true, text: "You chose this artist" }
         : { ok: false, text: "This collaboration has been filled" };

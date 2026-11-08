@@ -67,6 +67,15 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
     }
     setPrice("");
     setCurrency("RON");
+    // A booking made from an accepted collaboration carries the proposed fee ("Fee: 800 RON")
+    const fee = /(?:^|\n)Fee: ([\d.]+) ([A-Z]{3})/.exec((booking as any).message || "");
+    if (fee) {
+      setPrice(fee[1]);
+      setCurrency(fee[2]);
+      return () => {
+        cancelled = true;
+      };
+    }
     // Pre-fill from the artist's price list (same event type first)
     (async () => {
       const { data } = await supabase

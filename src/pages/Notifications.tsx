@@ -106,7 +106,7 @@ const messageForType = (type: string): string | null => {
     case "new_announcement": return "posted a new announcement";
     case "message": return "sent you a message";
     case "mention": return "mentioned you in a post";
-    case "collab_chosen": return "chose you for their collaboration";
+    case "collab_chosen": return "chose you for their collaboration. Send your offer from Bookings";
     case "collab_filled": return "found a collaborator for the collaboration you answered";
     case "collab_rejected": return "chose someone else for their collaboration";
     default: return null;
