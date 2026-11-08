@@ -7,6 +7,8 @@
 // Generated 2026-07-14 from all JSX text + placeholder/title/aria-label literals.
 
 export const RO_TEXT: Record<string, string> = {
+  "This link has expired": "Linkul a expirat",
+  "Reset links work once and only for a short time. Enter your email to get a new one.": "Linkurile de resetare funcționează o singură dată și doar pentru scurt timp. Introdu emailul ca să primești unul nou.",
   "Enter a valid phone number.": "Introdu un număr de telefon valid.",
   "Your phone (for the contract)": "Telefonul tău (pentru contract)",
   "Please add your phone number for the contract.": "Adaugă numărul de telefon pentru contract.",

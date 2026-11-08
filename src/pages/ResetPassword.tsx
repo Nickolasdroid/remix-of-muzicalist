@@ -10,6 +10,7 @@ import logo from "@/assets/logo.webp";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
 import AuthHeader from "@/components/AuthHeader";
 import SEO from "@/components/SEO";
+import { RECOVERY_ERROR_KEY, RECOVERY_KEY } from "@/lib/recoveryCapture";
 
 const ResetPassword = () => {
   const { toast } = useToast();
@@ -32,15 +33,29 @@ const ResetPassword = () => {
       }
     });
 
-    // Also handle direct landings: if URL contains a recovery hash/type, switch to update.
-    const hash = window.location.hash;
-    if (hash.includes("type=recovery")) {
-      setMode("update");
+    // The link is usually read before this page loads (see recoveryCapture)
+    let linkError: string | null = null;
+    try {
+      if (sessionStorage.getItem(RECOVERY_KEY) === "1" || window.location.hash.includes("type=recovery")) {
+        setMode("update");
+      }
+      linkError = sessionStorage.getItem(RECOVERY_ERROR_KEY);
+      sessionStorage.removeItem(RECOVERY_ERROR_KEY);
+    } catch {
+      /* storage unavailable */
+    }
+    if (linkError) {
+      toast({
+        title: "This link has expired",
+        description: "Reset links work once and only for a short time. Enter your email to get a new one.",
+        variant: "destructive",
+      });
     }
 
     return () => {
       sub.subscription.unsubscribe();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRequestReset = async (e: React.FormEvent) => {
@@ -116,6 +131,11 @@ const ResetPassword = () => {
         description: "You can now log in with your new password.",
       });
 
+      try {
+        sessionStorage.removeItem(RECOVERY_KEY);
+      } catch {
+        /* storage unavailable */
+      }
       await supabase.auth.signOut({ scope: "local" });
       navigate("/login");
     } catch (error: any) {

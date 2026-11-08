@@ -1,3 +1,4 @@
+import "./lib/recoveryCapture";
 import React from "react";
 import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
@@ -7,8 +8,10 @@ import "./index.css";
 // Import i18n after React
 import "./i18n";
 import { startActivityTracking } from "@/lib/activityTracker";
+import { watchPasswordRecovery } from "@/lib/passwordRecovery";
 
 startActivityTracking();
+watchPasswordRecovery();
 
 // iOS Safari ignores `user-scalable=no` in the viewport meta, so pinch-to-zoom
 // on the page is blocked here via the iOS-only `gesture*` events. These events
