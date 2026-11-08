@@ -1389,11 +1389,14 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
 
               {/* Stats: three quiet columns, value over label, no box */}
-              <dl className="mx-4 md:mx-0 mt-4 md:mt-6 grid grid-cols-3 gap-3 md:flex md:gap-12">
-                <div className="min-w-0">
-                  <dd className="truncate text-lg md:text-xl font-bold text-foreground tabular-nums">{acceptedEventsCount}{acceptedEventsCount > 0 ? '+' : ''}</dd>
-                  <dt className="truncate text-xs md:text-sm text-muted-foreground">Events</dt>
-                </div>
+              <dl className="mx-4 md:mx-0 mt-4 md:mt-6 flex gap-8 md:gap-12">
+                {/* Hidden until the first confirmed event: a big 0 says nothing useful */}
+                {acceptedEventsCount > 0 && (
+                  <div className="min-w-0">
+                    <dd className="truncate text-lg md:text-xl font-bold text-foreground tabular-nums">{acceptedEventsCount}+</dd>
+                    <dt className="truncate text-xs md:text-sm text-muted-foreground">Events</dt>
+                  </div>
+                )}
                 <div className="min-w-0">
                   <dd className="truncate text-lg md:text-xl font-bold text-foreground">
                     {artist.created_at
@@ -1421,7 +1424,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
               {/* Action buttons */}
               {!isOwnProfile && (
-                <div className="mx-4 md:mx-0 mt-3 md:mt-4 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
+                <div className="mx-4 md:mx-0 mt-6 md:mt-7 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
                   <Button
                     onClick={() => {
                       if (!currentUserId) { navigate('/login'); return; }
