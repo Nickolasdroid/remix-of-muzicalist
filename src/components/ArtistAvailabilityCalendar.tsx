@@ -26,9 +26,9 @@ export const calendarAvailabilityStyles = {
 
 // Free days have no color (same as the booking page); the selected day is white
 const legendItems = [
-  { label: "Partially booked", swatch: "bg-amber-500/80" },
+  { label: "Partially booked", swatch: "bg-orange-600/80" },
   { label: "Booked", swatch: "bg-destructive/70" },
-  { label: "Unavailable", swatch: "bg-muted/80" },
+  { label: "Unavailable", swatch: "bg-[#535353]" },
 ];
 
 function CalendarLegend({ desktop = false }: { desktop?: boolean }) {
@@ -36,7 +36,7 @@ function CalendarLegend({ desktop = false }: { desktop?: boolean }) {
     <div
       className={
         desktop
-          ? "hidden lg:block w-48 shrink-0 rounded-lg bg-secondary/50 p-4"
+          ? "hidden lg:block w-48 shrink-0 rounded-lg bg-card p-4"
           : "w-full lg:hidden"
       }
     >
@@ -47,7 +47,7 @@ function CalendarLegend({ desktop = false }: { desktop?: boolean }) {
           <div key={item.label} className="flex items-center gap-2">
             <span
               aria-hidden="true"
-              className={`${desktop ? "h-6 w-6" : "h-3 w-3"} shrink-0 rounded ${item.swatch}`}
+              className={`${desktop ? "h-5 w-5" : "h-3 w-3"} shrink-0 rounded-full ${item.swatch}`}
             />
             <span className={`${desktop ? "text-sm" : "text-xs"} text-muted-foreground`}>
               {item.label}
@@ -76,21 +76,21 @@ export function ArtistAvailabilityCalendar({
         mode="single"
         selected={selected}
         onSelect={onSelect}
-        className="pointer-events-auto rounded-lg border border-border shadow-sm"
+        className="pointer-events-auto rounded-lg bg-card"
         classNames={{
           // Same as the booking page: selected day white, today only underlined
           day_selected:
             "bg-foreground text-background font-semibold hover:bg-foreground hover:text-background focus:bg-foreground focus:text-background",
-          day_today: "font-semibold underline decoration-accent decoration-2 underline-offset-4",
+          day_today: "font-bold underline decoration-foreground/70 decoration-2 underline-offset-4",
         }}
         modifiers={{ busy: busyDates, partial: partialDates, blocked: blockedDates }}
         modifiersClassNames={{
           busy:
             "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
           partial:
-            "bg-amber-500/80 text-black hover:bg-amber-500/80 hover:text-black",
+            "bg-orange-600/80 text-white hover:bg-orange-600/80 hover:text-white",
           blocked:
-            "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80",
+            "bg-[#535353] text-foreground/80 hover:bg-[#535353] hover:text-foreground/80",
         }}
         disabled={disablePastDates ? (date) => date < startOfToday : undefined}
       />

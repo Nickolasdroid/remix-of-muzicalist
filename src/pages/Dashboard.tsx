@@ -94,6 +94,8 @@ import { QuotaInfoButton } from "@/components/dashboard/QuotaInfoButton";
 import BookingOfferDialog from "@/components/BookingOfferDialog";
 import BookingDetailsDialog from "@/components/BookingDetailsDialog";
 import { isDayFullyBooked, parseSlotsFromNotes } from "@/lib/calendarSlots";
+const capitalizeFirst = (v: string) => (v ? v.charAt(0).toUpperCase() + v.slice(1) : v);
+
 const Dashboard = () => {
   const {
     toast
@@ -2896,12 +2898,12 @@ const Dashboard = () => {
                                   // Read-only view for past dates
                                   return <div>
                                     <h4 className="font-semibold text-foreground mb-3">
-                                      {selectedDate.toLocaleDateString('en-US', {
+                                      {capitalizeFirst(selectedDate.toLocaleDateString(i18n.language || 'ro', {
                                         weekday: 'long',
                                         year: 'numeric',
                                         month: 'long',
                                         day: 'numeric'
-                                      })}
+                                      }))}
                                     </h4>
                                     {pastEvent ? (
                                       <div className="space-y-3">
@@ -2935,12 +2937,12 @@ const Dashboard = () => {
                                 // Editable view for today and future dates
                                 return <div>
                                   <h4 className="font-semibold text-foreground mb-3">
-                                    {selectedDate.toLocaleDateString('en-US', {
+                                    {capitalizeFirst(selectedDate.toLocaleDateString(i18n.language || 'ro', {
                           weekday: 'long',
                           year: 'numeric',
                           month: 'long',
                           day: 'numeric'
-                        })}
+                        }))}
                                   </h4>
                                   <div className="space-y-3">
                                     <div>
@@ -2949,26 +2951,26 @@ const Dashboard = () => {
                             const currentEvent = getEventForDate(selectedDate);
                             const isBooked = currentEvent?.status === 'busy' || currentEvent?.status === 'booked';
                             const showAsBooked = isBooked && !userChangedStatus;
-                            return <Select value={showAsBooked ? 'busy' : eventStatus} onValueChange={(v) => {
-                              if (v !== 'busy') {
-                                setEventStatus(v as 'available' | 'blocked');
-                                setUserChangedStatus(true);
-                                if (isBooked) {
-                                  setEventNotes("");
-                                }
-                              }
-                            }}>
-                                            <SelectTrigger className={showAsBooked ? "text-destructive" : eventStatus === 'available' ? calendarAvailabilityStyles.availableText : ""}>
-                                              <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                              {isBooked && !userChangedStatus && <SelectItem value="busy" disabled className="opacity-50 cursor-not-allowed text-destructive">
-                                                  Booked
-                                                </SelectItem>}
-                                              <SelectItem value="available">Available</SelectItem>
-                                              <SelectItem value="blocked">Unavailable</SelectItem>
-                                            </SelectContent>
-                                          </Select>;
+                            const chip = (selected: boolean) => `h-9 rounded-full px-4 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${selected ? 'bg-foreground/[0.24] font-medium text-foreground' : 'bg-foreground/[0.07] text-foreground hover:bg-foreground/[0.12]'}`;
+                            return <div className="mt-1.5 flex flex-wrap gap-2" role="radiogroup" aria-label="Status">
+                                            {showAsBooked && <span role="radio" aria-checked="true" className="inline-flex h-9 items-center rounded-full bg-destructive/20 px-4 text-sm font-medium text-destructive">Booked</span>}
+                                            {(['available', 'blocked'] as const).map((v) => (
+                                              <button
+                                                key={v}
+                                                type="button"
+                                                role="radio"
+                                                aria-checked={!showAsBooked && eventStatus === v}
+                                                onClick={() => {
+                                                  setEventStatus(v);
+                                                  setUserChangedStatus(true);
+                                                  if (isBooked) setEventNotes("");
+                                                }}
+                                                className={chip(!showAsBooked && eventStatus === v)}
+                                              >
+                                                {v === 'available' ? 'Available' : 'Unavailable'}
+                                              </button>
+                                            ))}
+                                          </div>;
                           })()}
                                     </div>
                                     
@@ -3056,7 +3058,7 @@ const Dashboard = () => {
 
                               return (
                                 <div className="w-full lg:min-w-0 lg:w-auto">
-                                  {detailsNode ? <Card className="p-4 h-full">{detailsNode}</Card> : <div className="h-full flex items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 text-muted-foreground">
+                                  {detailsNode ? <div className="h-full rounded-lg bg-card p-5">{detailsNode}</div> : <div className="h-full flex items-center justify-center p-8 rounded-lg bg-card text-muted-foreground">
                                     <p className="text-sm text-center">Select a date to set availability</p>
                                   </div>}
                                 </div>
@@ -3069,8 +3071,7 @@ const Dashboard = () => {
                           {/* Booking Requests Section */}
                           <div className="mt-8 pt-8 border-t border-border">
                             <div className="flex items-center justify-between mb-4 gap-2">
-                              <h3 className="text-xl font-display font-bold flex items-center gap-2">
-                                <CalendarIcon className="h-5 w-5 text-accent" />
+                              <h3 className="text-xl md:text-2xl font-display font-bold tracking-[-0.01em] flex items-center gap-2">
                                 Booking Requests
                                 {(() => {
                                   const todayStr = new Date().toISOString().split("T")[0];
@@ -3096,7 +3097,7 @@ const Dashboard = () => {
                               )}
                             </div>
                             
-                            {bookingPreview.length === 0 ? <Card className="border-2 border-dashed border-border/50">
+                            {bookingPreview.length === 0 ? <Card className="border-0 bg-card shadow-none">
                                 <CardContent className="p-8 text-center">
                                   <CalendarIcon className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
                                   <p className="text-muted-foreground">No booking requests yet</p>
