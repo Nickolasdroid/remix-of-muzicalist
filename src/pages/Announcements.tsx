@@ -103,7 +103,7 @@ const Announcements = ({ embeddedKind }: { embeddedKind?: "gig" | "collab" } = {
         .from("announcements")
         .select(`
           *,
-          profiles!inner (
+          profiles!profile_id!inner (
             avatar_url,
             stage_name,
             first_name,

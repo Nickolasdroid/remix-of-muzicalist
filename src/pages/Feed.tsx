@@ -223,7 +223,7 @@ const Feed = () => {
           .range(from, to),
         supabase
           .from('announcements')
-          .select(`*, profiles!inner (avatar_url, stage_name, county, specialization, plan, country)`)
+          .select(`*, profiles!profile_id!inner (avatar_url, stage_name, county, specialization, plan, country)`)
           .eq('is_premium', true)
           .order('created_at', { ascending: false })
           .range(from, to),
@@ -386,7 +386,7 @@ const Feed = () => {
     (async () => {
       const { data } = await supabase
         .from("announcements")
-        .select(`*, profiles!inner (avatar_url, stage_name, first_name, last_name, county, specialization, plan, country)`)
+        .select(`*, profiles!profile_id!inner (avatar_url, stage_name, first_name, last_name, county, specialization, plan, country)`)
         .in("kind", ["gig", "collab"])
         .neq("profile_id", currentUserId)
         .order("created_at", { ascending: false })
