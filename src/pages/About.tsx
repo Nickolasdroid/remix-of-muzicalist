@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Star, User } from "lucide-react";
 import Footer from "@/components/Footer";
+import CategoryTile, { CATEGORY_TILES } from "@/components/CategoryTile";
 import Navigation from "@/components/Navigation";
 import GuestSignupBar from "@/components/GuestSignupBar";
 import GuestSidebar from "@/components/GuestSidebar";
@@ -175,22 +176,8 @@ const About = () => {
             <section className="mt-10">
               <h2 className="mb-4 px-1 font-figtree text-[22px] font-bold leading-tight tracking-[-0.01em] text-white md:text-2xl">Browse categories</h2>
               <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
-                {CATEGORIES.map((c) => (
-                  <Link
-                    key={c.value}
-                    to={c.href}
-                    className="relative aspect-[16/10] overflow-hidden rounded-lg p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-                    style={{ backgroundColor: c.color }}
-                  >
-                    <span className="relative z-10 font-figtree text-lg font-bold text-white md:text-2xl">{t(`platformStats.${c.statKey}`)}</span>
-                    <img
-                      src={c.img}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                      className="absolute -bottom-3 -right-5 h-[78%] rotate-[25deg] object-contain opacity-90"
-                    />
-                  </Link>
+                {CATEGORY_TILES.map((tile) => (
+                  <CategoryTile key={tile.value} tile={tile} />
                 ))}
               </div>
             </section>

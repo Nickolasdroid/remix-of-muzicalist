@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
-import CategoryCard from "@/components/CategoryCard";
+import CategoryTile, { CATEGORY_TILES } from "@/components/CategoryTile";
 import { Mic, Guitar, Headphones } from "lucide-react";
 import BandIcon from "@/components/icons/BandIcon";
 import { supabase } from "@/integrations/supabase/client";
@@ -86,32 +86,6 @@ const Categories = () => {
   }, [isAuthChecked, selectedCountry]);
 
   const countryParam = selectedCountry ? `?country=${encodeURIComponent(selectedCountry)}` : '';
-  const categories = [{
-    icon: Mic,
-    title: "Singer",
-    description: "Professional vocalists for any event",
-    count: counts.Singer,
-    href: `/categories/Singers${countryParam}`
-  }, {
-    icon: Guitar,
-    title: "Instrumentalist",
-    description: "Skilled musicians with various instruments",
-    count: counts.Instrumentalist,
-    href: `/categories/Instrumentalists${countryParam}`
-  }, {
-    icon: Headphones,
-    title: "DJ",
-    description: "Expert DJs for parties and events",
-    count: counts.DJ,
-    href: `/categories/DJs${countryParam}`
-  }, {
-    icon: BandIcon as any,
-    title: "Band",
-    description: "Complete musical groups for your events",
-    count: counts.Band,
-    href: `/categories/Bands${countryParam}`
-  }];
-
   if (!isAuthChecked) {
     return null;
   }
@@ -120,20 +94,17 @@ const Categories = () => {
       <SEO title="Artist Categories — Singers, Bands, DJs & Instrumentalists | Muzicalist" description="Explore musical artists by category: professional singers, complete bands, expert DJs and skilled instrumentalists, ready to book for your event." path="/categories" />
       <Navigation />
       
-      <div className={`relative z-10 container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20`}>
-        <div className="text-center mb-8 md:mb-16">
-          <h1 className="hidden md:block text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4 md:mb-6">Categories</h1>
-          
-          <div className="flex justify-center mb-4">
-            <CountryPickerButton
-              selectedCountry={selectedCountry}
-              onCountryChange={setSelectedCountry}
-            />
-          </div>
+      <div className={`relative z-10 mx-auto max-w-6xl px-4 pt-16 ${currentUserId ? 'md:pt-10' : 'md:pt-24'} pb-10 md:px-8 md:pb-20`}>
+        <h1 className="hidden text-4xl font-display font-bold tracking-[-0.03em] text-foreground md:block md:text-6xl">Categories</h1>
+        <p className="mt-1 text-sm text-muted-foreground md:mt-3 md:text-base">Choose the kind of artist you're looking for.</p>
+        <div className="mt-5 md:mt-8">
+          <CountryPickerButton selectedCountry={selectedCountry} onCountryChange={setSelectedCountry} />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 max-w-7xl mx-auto">
-          {categories.map(category => <CategoryCard key={category.title} {...category} />)}
+        <div className="mt-6 grid grid-cols-2 gap-3 md:mt-8 md:gap-5 lg:grid-cols-4">
+          {CATEGORY_TILES.map((tile) => (
+            <CategoryTile key={tile.value} tile={tile} href={`${tile.path}${countryParam}`} count={counts[tile.value]} />
+          ))}
         </div>
       </div>
     </div>;
