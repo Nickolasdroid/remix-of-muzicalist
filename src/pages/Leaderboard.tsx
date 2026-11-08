@@ -803,257 +803,146 @@ const Leaderboard = () => {
     );
   }
 
+  const chipClass = (selected: boolean) =>
+    `h-9 shrink-0 rounded-full px-4 text-sm text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${
+      selected ? "bg-foreground/[0.24] font-medium" : "bg-foreground/[0.07] hover:bg-foreground/[0.12]"
+    }`;
+  const categoryChips = [
+    { value: "singers", label: "Singers" },
+    { value: "instrumentalists", label: "Instrumentalists" },
+    { value: "djs", label: "DJs" },
+    { value: "bands", label: "Bands" },
+  ];
+  const regionTrigger = (
+    <button type="button" className={`${chipClass(selectedCounty !== "All Regions")} inline-flex items-center gap-1.5`}>
+      <span className="truncate">{selectedCounty}</span>
+      <ChevronDown className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+    </button>
+  );
+
   return <div className="min-h-screen md:ml-64 bg-background relative">
       <SEO title="Top Rated Artists — Leaderboard | Muzicalist" description="See the highest-rated musical artists on Muzicalist, ranked by client reviews and engagement. Find proven performers for your next event." path="/leaderboard" />
       <Navigation hideMobileNotifications />
-      
-      <div className="relative z-10 pt-16 md:pt-8 pb-6 md:pb-20 px-0">
-        <div className="px-4 md:container md:mx-auto">
-          <div className="text-center mb-8 md:mb-12 py-0">
-            <h1 className="hidden md:flex items-center justify-center gap-3 text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-4 text-foreground">
-              Leaderboard
-            </h1>
-            
 
-            <div className="sm:flex-row gap-3 md:gap-4 justify-center mt-6 md:mt-8 items-center flex flex-row">
-              <CountryPickerButton
-                selectedCountry={selectedCountry}
-                onCountryChange={(country) => {
-                  setSelectedCountry(country);
-                  setSelectedCounty("All Regions");
-                }}
-                hideAllOption
-              />
-              {isMobile ? (
-                <Drawer open={regionDrawerOpen} onOpenChange={setRegionDrawerOpen}>
-                  <DrawerTrigger asChild>
-                    <Button variant="outline" className="h-10 w-auto min-w-[180px] justify-between px-4 border-accent/20 hover:bg-accent/10 hover:border-accent transition-all">
-                      <span className="text-sm font-medium truncate">{selectedCounty}</span>
-                      <ChevronDown className="ml-2 h-4 w-4 shrink-0" />
-                    </Button>
-                  </DrawerTrigger>
-                  <DrawerContent className="px-4 pb-6">
-                    <DrawerHeader className="text-left px-0">
-                      <DrawerTitle>Select Region</DrawerTitle>
-                      <p className="text-sm text-muted-foreground">Choose a region to filter by</p>
-                    </DrawerHeader>
-                    <ScrollArea className="h-72">
-                      <div className="space-y-0.5">
-                        {["All Regions", ...getAvailableCounties()].map(county => (
-                          <button
-                            key={county}
-                            type="button"
-                            onClick={() => { setSelectedCounty(county); setRegionDrawerOpen(false); }}
-                            className={`w-full flex items-center gap-3 px-4 py-3 text-base rounded-md transition-colors hover:bg-accent/10 ${
-                              selectedCounty === county ? "bg-accent/20 text-accent" : "text-foreground"
-                            }`}
-                          >
-                            <MapPin className="h-5 w-5" />
-                            <span className="flex-1 text-left font-medium">{county}</span>
-                          </button>
-                        ))}
-                      </div>
-                    </ScrollArea>
-                  </DrawerContent>
-                </Drawer>
-              ) : (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="h-10 w-auto min-w-[180px] justify-between px-4 border-accent/20 hover:bg-accent/10 hover:border-accent transition-all">
-                      <span className="text-sm font-medium truncate">{selectedCounty}</span>
-                      <ChevronDown className="ml-2 h-4 w-4 shrink-0" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="center" className="min-w-[180px] max-h-[300px] overflow-y-auto bg-card border-border">
+      <div className="relative z-10 mx-auto max-w-4xl px-4 pb-10 pt-16 md:px-8 md:pb-20 md:pt-10">
+        {/* Header, like a Spotify chart */}
+        <h1 className="hidden text-4xl font-display font-bold tracking-[-0.03em] text-foreground md:block md:text-6xl">Leaderboard</h1>
+        <p className="mt-1 text-sm text-muted-foreground md:mt-3 md:text-base">Artists with the best reviews from their clients.</p>
+
+        {/* Filters: artist type, then country and region */}
+        <div className="-mx-4 mt-5 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:mt-8 md:px-0 [&::-webkit-scrollbar]:hidden" role="tablist" aria-label="Artist type">
+          {categoryChips.map((c) => (
+            <button key={c.value} type="button" role="tab" aria-selected={selectedCategory === c.value} onClick={() => setSelectedCategory(c.value)} className={chipClass(selectedCategory === c.value)}>
+              {c.label}
+            </button>
+          ))}
+        </div>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <CountryPickerButton
+            selectedCountry={selectedCountry}
+            onCountryChange={(country) => {
+              setSelectedCountry(country);
+              setSelectedCounty("All Regions");
+            }}
+            hideAllOption
+          />
+          {isMobile ? (
+            <Drawer open={regionDrawerOpen} onOpenChange={setRegionDrawerOpen}>
+              <DrawerTrigger asChild>{regionTrigger}</DrawerTrigger>
+              <DrawerContent className="px-4 pb-6">
+                <DrawerHeader className="text-left px-0">
+                  <DrawerTitle>Select Region</DrawerTitle>
+                </DrawerHeader>
+                <ScrollArea className="h-72">
+                  <div className="space-y-0.5">
                     {["All Regions", ...getAvailableCounties()].map(county => (
-                      <DropdownMenuItem key={county} onClick={() => setSelectedCounty(county)} className="cursor-pointer">
+                      <button
+                        key={county}
+                        type="button"
+                        onClick={() => { setSelectedCounty(county); setRegionDrawerOpen(false); }}
+                        className={`w-full rounded-md px-4 py-3 text-left text-base transition-colors hover:bg-foreground/[0.07] ${selectedCounty === county ? "font-bold text-foreground" : "text-muted-foreground"}`}
+                      >
                         {county}
-                      </DropdownMenuItem>
+                      </button>
                     ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              )}
+                  </div>
+                </ScrollArea>
+              </DrawerContent>
+            </Drawer>
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>{regionTrigger}</DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="min-w-[200px] max-h-[300px] overflow-y-auto">
+                {["All Regions", ...getAvailableCounties()].map(county => (
+                  <DropdownMenuItem key={county} onClick={() => setSelectedCounty(county)} className={`cursor-pointer ${selectedCounty === county ? "font-bold" : ""}`}>
+                    {county}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
+
+        {/* Ranking, like a chart's track list */}
+        <div className="mt-8">
+          {loading ? (
+            <div className="space-y-2" aria-hidden="true">
+              {Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-16 animate-pulse rounded-md bg-foreground/[0.04]" />)}
             </div>
-          </div>
-
-          <div className="-mx-4 md:mx-0 md:max-w-3xl md:mx-auto md:rounded-xl md:border border-border md:overflow-hidden">
-            <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-              <TabsList className="grid w-full grid-cols-4 p-0 h-auto rounded-none bg-transparent border-t border-b border-border">
-              <TabsTrigger value="singers" aria-label="Singers" title="Singers" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
-                  <Mic className="h-5 w-5 md:h-4 md:w-4" />
-                  <span className="hidden md:inline">Singers</span>
-                </TabsTrigger>
-                <TabsTrigger value="instrumentalists" aria-label="Instrumentalists" title="Instrumentalists" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
-                  <Guitar className="h-5 w-5 md:h-4 md:w-4" />
-                  <span className="hidden md:inline">Instrumentalists</span>
-                </TabsTrigger>
-                <TabsTrigger value="djs" aria-label="DJs" title="DJs" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none border-r border-border bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
-                  <Headphones className="h-5 w-5 md:h-4 md:w-4" />
-                  <span className="hidden md:inline">DJs</span>
-                </TabsTrigger>
-                <TabsTrigger value="bands" aria-label="Bands" title="Bands" className="flex items-center justify-center gap-1 md:gap-2 px-1 md:px-4 py-3 md:py-4 text-xs md:text-base rounded-none bg-transparent data-[state=active]:bg-transparent data-[state=active]:text-accent data-[state=active]:shadow-none transition-all duration-300">
-                  <BandIcon size={20} className="h-5 w-5 md:h-4 md:w-4" />
-                  <span className="hidden md:inline">Bands</span>
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-
-            {loading ? <div className="text-center py-16">
-                <p className="text-lg md:text-xl text-muted-foreground">Loading artists...</p>
-              </div> : currentArtists.length > 0 ? <>
-                {/* Podium for Top 3 */}
-                {(() => {
-                  const top3 = currentArtists.slice(0, 3);
-                  const rest = currentArtists.slice(3);
-                  const podiumStyles: Record<number, { ring: string; crown: string; badgeBg: string; gradient: string; height: string; delay: string; glow: string; }> = {
-                    1: {
-                      ring: "ring-[hsl(45_95%_55%)] shadow-[0_0_60px_hsl(45_95%_55%/0.7)]",
-                      crown: "text-[hsl(45_95%_60%)] drop-shadow-[0_0_10px_hsl(45_95%_55%/0.9)]",
-                      badgeBg: "bg-gradient-to-b from-[hsl(45_95%_60%)] to-[hsl(40_85%_45%)] text-black",
-                      gradient: "bg-gradient-to-b from-[hsl(45_95%_55%/0.9)] via-[hsl(40_85%_45%/0.7)] to-[hsl(35_70%_30%/0.4)]",
-                      glow: "bg-[hsl(45_95%_55%/0.35)]",
-                      height: "h-28 md:h-36",
-                      delay: "[animation-delay:0.1s]",
-                    },
-                    2: {
-                      ring: "ring-[hsl(0_0%_75%)] shadow-[0_0_40px_hsl(0_0%_75%/0.5)]",
-                      crown: "text-[hsl(0_0%_80%)] drop-shadow-[0_0_8px_hsl(0_0%_80%/0.8)]",
-                      badgeBg: "bg-gradient-to-b from-[hsl(0_0%_85%)] to-[hsl(0_0%_55%)] text-black",
-                      gradient: "bg-gradient-to-b from-[hsl(0_0%_80%/0.85)] via-[hsl(0_0%_55%/0.6)] to-[hsl(0_0%_25%/0.4)]",
-                      glow: "bg-[hsl(0_0%_75%/0.25)]",
-                      height: "h-20 md:h-24",
-                      delay: "[animation-delay:0.3s]",
-                    },
-                    3: {
-                      ring: "ring-[hsl(25_75%_50%)] shadow-[0_0_40px_hsl(25_75%_50%/0.5)]",
-                      crown: "text-[hsl(25_85%_55%)] drop-shadow-[0_0_8px_hsl(25_85%_55%/0.8)]",
-                      badgeBg: "bg-gradient-to-b from-[hsl(25_85%_55%)] to-[hsl(20_70%_35%)] text-black",
-                      gradient: "bg-gradient-to-b from-[hsl(25_75%_50%/0.85)] via-[hsl(20_70%_35%/0.6)] to-[hsl(15_60%_20%/0.4)]",
-                      glow: "bg-[hsl(25_75%_50%/0.25)]",
-                      height: "h-16 md:h-20",
-                      delay: "[animation-delay:0.5s]",
-                    },
-                  };
-                  // Visual order: 2nd, 1st, 3rd
-                  const visualOrder = [top3[1], top3[0], top3[2]].filter(Boolean);
-                  return (
-                    <div className="px-4 pt-10 pb-6 md:pt-14 md:pb-10 bg-gradient-to-b from-accent/5 to-transparent">
-                      <div className="flex items-end justify-center gap-2 md:gap-6 max-w-2xl mx-auto">
-                        {visualOrder.map((artist) => {
-                          const rank = top3.indexOf(artist) + 1;
-                          const s = podiumStyles[rank];
-                          const isFirst = rank === 1;
-                          return (
-                            <div
-                              key={artist.id}
-                              className={`flex-1 flex flex-col items-center animate-podium-rise ${s.delay}`}
-                            >
-                              <Link
-                                to={`/artist/${artist.id}`}
-                                className="group flex flex-col items-center w-full"
-                              >
-                                {/* Crown */}
-                                <Crown
-                                  className={`${isFirst ? "h-7 w-7 md:h-9 md:w-9" : "h-5 w-5 md:h-7 md:w-7"} ${s.crown} animate-crown-bounce fill-current`}
-                                  strokeWidth={1.5}
-                                />
-                                {/* Floating avatar block */}
-                                <div className="relative animate-podium-float mt-1 mb-3">
-                                  {/* Glow halo */}
-                                  <div className={`absolute inset-0 rounded-full blur-2xl animate-podium-glow ${s.glow}`} />
-                                  <div className="relative">
-                                    <Avatar
-                                      className={`${isFirst ? "h-20 w-20 md:h-28 md:w-28" : "h-14 w-14 md:h-20 md:w-20"} ring-4 ${s.ring} transition-transform duration-300 group-hover:scale-105`}
-                                    >
-                                      <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                                      <AvatarFallback className="bg-muted">
-                                        <User className="h-8 w-8 text-muted-foreground" />
-                                      </AvatarFallback>
-                                    </Avatar>
-                                    
-                                    {/* Rank badge */}
-                                    <div className={`absolute -top-2 -left-2 ${isFirst ? "h-8 w-8 text-sm md:h-9 md:w-9 md:text-base" : "h-7 w-7 text-xs md:h-8 md:w-8 md:text-sm"} rounded-full ${s.badgeBg} font-bold flex items-center justify-center shadow-lg ring-2 ring-background`}>
-                                      {rank}
-                                    </div>
-                                  </div>
-                                </div>
-                                {/* Name + stats */}
-                                <div className="text-center w-full px-1">
-                                  <p className={`font-semibold text-foreground group-hover:text-accent transition-colors truncate notranslate ${isFirst ? "text-sm md:text-lg" : "text-xs md:text-sm"}`} data-user-content="true" data-no-translate="true" translate="no">
-                                    {artist.stage_name}
-                                  </p>
-                                  <ArtistCardStatusBadge
-                                    rating={artistReviewCounts[artist.id] > 0 ? artistRatings[artist.id] ?? null : null}
-                                    reviewCount={artistReviewCounts[artist.id] || 0}
-                                    className="mt-1"
-                                  />
-                                </div>
-                              </Link>
-                              {/* Pedestal */}
-                              <div className={`mt-3 w-full ${s.height} rounded-t-lg ${s.gradient} border-t border-x border-white/10 shadow-[inset_0_2px_0_hsl(0_0%_100%/0.15)] relative overflow-hidden`}>
-                                <div className={`absolute inset-x-0 top-0 h-1 ${isFirst ? "bg-[hsl(45_95%_70%)]" : rank === 2 ? "bg-[hsl(0_0%_90%)]" : "bg-[hsl(25_85%_65%)]"} opacity-80`} />
-                                <div className={`absolute inset-0 flex items-center justify-center text-3xl md:text-5xl font-black ${isFirst ? "text-black/30" : "text-black/25"}`}>
-                                  {rank}
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  );
-                })()}
-
-                {/* Ranks 4+ — complete ranking, rendered progressively */}
-                {currentArtists.length > 3 && (
-                  <ol className="divide-y divide-border/50 border-t border-border">
-                    {currentArtists.slice(3, visibleCount).map((artist, index) => (
-                      <li key={artist.id}>
-                        <Link to={`/artist/${artist.id}`} className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-accent/10">
-                          <span className="w-8 shrink-0 text-center text-base font-bold tabular-nums text-foreground">{index + 4}</span>
-                          <Avatar className="h-11 w-11 shrink-0">
-                            <AvatarImage src={artist.avatar_url ? getThumbUrl(artist.avatar_url, 96) : undefined} alt={artist.stage_name} loading="lazy" />
-                            <AvatarFallback className="bg-muted"><User className="h-5 w-5 text-muted-foreground" /></AvatarFallback>
-                          </Avatar>
-                          <div className="min-w-0 flex-1 space-y-0.5">
-                            <p className="truncate font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</p>
-                            <p className="truncate text-xs text-muted-foreground">
-                              {[translateSpecialization(artist.specialization), artist.county].filter(Boolean).join(" · ")}{artist.country && getCountryFlag(artist.country) ? ` ${getCountryFlag(artist.country)}` : ""}
-                            </p>
-                            <ArtistCardStatusBadge
-                              rating={artistReviewCounts[artist.id] > 0 ? artistRatings[artist.id] ?? null : null}
-                              reviewCount={artistReviewCounts[artist.id] || 0}
-                            />
-                          </div>
-                        </Link>
-                      </li>
-                    ))}
-                  </ol>
-                )}
-                {visibleCount < currentArtists.length && (
-                  <div ref={loadMoreRef} className="flex justify-center py-4">
-                    <Loader2 className="h-5 w-5 animate-spin text-accent" />
-                  </div>
-                )}
-              </> : (
-                <div className="flex flex-col items-center px-6 py-14 text-center">
-                  <div className="mb-4 rounded-2xl bg-accent/10 p-3">
-                    <Trophy className="h-7 w-7 text-accent" aria-hidden="true" />
-                  </div>
-                  <p className="text-base md:text-lg font-semibold text-foreground">{EMPTY_COPY[selectedCategory]?.title ?? "No reviewed artists yet"}</p>
-                  <p className="mt-1.5 max-w-sm text-sm text-muted-foreground">
-                    The leaderboard ranks artists by verified reviews from completed bookings.
-                  </p>
-                  <Button
-                    variant="outline"
-                    className="mt-5 h-10 px-4 border-accent/20 hover:bg-accent/10 hover:border-accent"
-                    onClick={() => navigate(`/categories/${EMPTY_COPY[selectedCategory]?.path ?? "Singers"}${selectedCountry ? `?country=${encodeURIComponent(selectedCountry)}` : ""}`)}
-                  >
-                    {EMPTY_COPY[selectedCategory]?.cta ?? "See all artists"}
-                  </Button>
+          ) : currentArtists.length > 0 ? (
+            <>
+              <div className="hidden grid-cols-[3rem_1fr_auto] gap-4 border-b border-border px-3 pb-2 text-sm text-muted-foreground md:grid">
+                <span className="text-right">#</span>
+                <span>Artist</span>
+                <span>Reviews</span>
+              </div>
+              <ol className="mt-2">
+                {currentArtists.slice(0, visibleCount).map((artist, index) => (
+                  <li key={artist.id}>
+                    <Link
+                      to={`/artist/${artist.id}`}
+                      className="group grid grid-cols-[2rem_1fr_auto] items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-foreground/[0.07] focus-visible:bg-foreground/[0.07] focus-visible:outline-none md:grid-cols-[3rem_1fr_auto] md:gap-4 md:px-3"
+                    >
+                      <span className={`text-right font-display font-bold tabular-nums ${index < 3 ? "text-xl text-foreground md:text-2xl" : "text-base text-muted-foreground"}`}>{index + 1}</span>
+                      <span className="flex min-w-0 items-center gap-3">
+                        <Avatar className="h-12 w-12 shrink-0">
+                          <AvatarImage src={artist.avatar_url ? getThumbUrl(artist.avatar_url, 96) : undefined} alt="" loading="lazy" />
+                          <AvatarFallback className="bg-secondary"><User className="h-5 w-5 text-muted-foreground" /></AvatarFallback>
+                        </Avatar>
+                        <span className="min-w-0">
+                          <span className="block truncate text-base font-medium text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">{artist.stage_name}</span>
+                          <span className="block truncate text-sm text-muted-foreground">
+                            <span>{translateSpecialization(artist.specialization)}</span>
+                            {artist.county ? <><span>, </span><span className="notranslate" translate="no">{artist.county}</span></> : null}
+                          </span>
+                        </span>
+                      </span>
+                      <ArtistCardStatusBadge
+                        rating={artistReviewCounts[artist.id] > 0 ? artistRatings[artist.id] ?? null : null}
+                        reviewCount={artistReviewCounts[artist.id] || 0}
+                      />
+                    </Link>
+                  </li>
+                ))}
+              </ol>
+              {visibleCount < currentArtists.length && (
+                <div ref={loadMoreRef} className="flex justify-center py-4">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                 </div>
               )}
-          </div>
+            </>
+          ) : (
+            <p className="border-t border-border pt-6 text-base text-muted-foreground">
+              <span>{EMPTY_COPY[selectedCategory]?.title ?? "No reviewed artists yet"}</span>
+              <span>. </span>
+              <Link
+                to={`/categories/${EMPTY_COPY[selectedCategory]?.path ?? "Singers"}${selectedCountry ? `?country=${encodeURIComponent(selectedCountry)}` : ""}`}
+                className="font-medium text-foreground underline underline-offset-4 hover:text-accent"
+              >
+                {EMPTY_COPY[selectedCategory]?.cta ?? "See all artists"}
+              </Link>
+            </p>
+          )}
         </div>
       </div>
     </div>;

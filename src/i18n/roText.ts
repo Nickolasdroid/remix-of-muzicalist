@@ -7,6 +7,7 @@
 // Generated 2026-07-14 from all JSX text + placeholder/title/aria-label literals.
 
 export const RO_TEXT: Record<string, string> = {
+  "Artists with the best reviews from their clients.": "Artiștii cu cele mai bune recenzii de la clienți.",
   "Log in to Muzicalist": "Autentifică-te pe Muzicalist",
   "Sign up for Muzicalist": "Înscrie-te pe Muzicalist",
   "Logging in...": "Se autentifică...",
