@@ -1363,7 +1363,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                 </button>
 
                 <div className="flex-1 min-w-0">
-                  <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                  <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-[-0.03em] text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
                     {artist.stage_name}
                   </h1>
                   <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
@@ -1388,44 +1388,35 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
               </div>
 
 
-              {/* Stats card row */}
-              <div className="mx-4 md:mx-0 mt-3 md:mt-5 rounded-xl border border-border bg-secondary/40 p-3 md:p-5 grid grid-cols-3 divide-x divide-border">
-                <div className="flex flex-col items-center justify-center text-center px-1">
-                  <div className="flex items-center gap-1.5 md:gap-2">
-                    <CalendarCheck className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                    <span className="text-base md:text-2xl font-bold text-foreground">{acceptedEventsCount}{acceptedEventsCount > 0 ? '+' : ''}</span>
-                  </div>
-                  <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Events</span>
-                </div>
-                <div className="flex flex-col items-center justify-center text-center px-1">
-                  <div className="flex items-center gap-1.5 md:gap-2">
-                    <Clock className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                    <span className="text-base md:text-2xl font-bold text-foreground">
-                      {artist.created_at
-                        ? new Date(artist.created_at).toLocaleDateString(i18n.language || 'en', { month: 'short', year: 'numeric' }).replace('.', '')
-                        : '—'}
+              {/* Stats: one quiet line, like the listener count on a Spotify artist page */}
+              <div className="mx-4 md:mx-0 mt-4 md:mt-6 flex flex-wrap items-baseline gap-x-6 gap-y-1 text-sm md:text-base">
+                <span>
+                  <span className="font-bold text-foreground tabular-nums">{acceptedEventsCount}{acceptedEventsCount > 0 ? '+' : ''}</span>{" "}
+                  <span className="text-muted-foreground">Events</span>
+                </span>
+                <span>
+                  <span className="text-muted-foreground">Member since</span>{" "}
+                  <span className="font-bold text-foreground">
+                    {artist.created_at
+                      ? new Date(artist.created_at).toLocaleDateString(i18n.language || 'en', { month: 'short', year: 'numeric' }).replace('.', '')
+                      : '—'}
+                  </span>
+                </span>
+                {artist.career_start_year ? (
+                  <span>
+                    <span className="text-muted-foreground">Experience</span>{" "}
+                    <span className="font-bold text-foreground">
+                      {(() => {
+                        const yrs = Math.max(1, new Date().getFullYear() - artist.career_start_year);
+                        const isRo = (i18n.language || 'en').split('-')[0] === 'ro';
+                        const unit = isRo
+                          ? (yrs === 1 ? 'an' : yrs < 20 ? 'ani' : 'de ani')
+                          : (yrs === 1 ? 'year' : 'years');
+                        return `${yrs} ${unit}`;
+                      })()}
                     </span>
-                  </div>
-                  <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Member since</span>
-                </div>
-                <div className="flex flex-col items-center justify-center text-center px-1">
-                  <div className="flex items-center gap-1.5 md:gap-2">
-                    <Award className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                    <span className="text-base md:text-2xl font-bold text-foreground">
-                      {artist.career_start_year
-                        ? (() => {
-                            const yrs = Math.max(1, new Date().getFullYear() - artist.career_start_year);
-                            const isRo = (i18n.language || 'en').split('-')[0] === 'ro';
-                            const unit = isRo
-                              ? (yrs === 1 ? 'an' : yrs < 20 ? 'ani' : 'de ani')
-                              : (yrs === 1 ? 'year' : 'years');
-                            return `${yrs} ${unit}`;
-                          })()
-                        : '—'}
-                    </span>
-                  </div>
-                  <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Experience</span>
-                </div>
+                  </span>
+                ) : null}
               </div>
 
               {/* Action buttons */}
@@ -1436,7 +1427,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       if (!currentUserId) { navigate('/login'); return; }
                       navigate(`/book/${artist.id}`);
                     }}
-                    className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-semibold rounded-lg shadow-md"
+                    className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-bold text-[15px]"
                   >
                     <CalendarIcon className="mr-2 h-5 w-5" />
                     Check availability
@@ -1447,7 +1438,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       navigate(`/messages?artistId=${artist.id}`);
                     }}
                     variant="outline"
-                    className="w-full h-12 border-accent text-accent hover:bg-accent/10 font-semibold rounded-lg"
+                    className="w-full h-12 font-bold text-[15px]"
                   >
                     <MessageCircle className="mr-2 h-5 w-5" />
                     Send Message
@@ -1461,22 +1452,22 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
               {/* Tabs Section */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-4 mb-4 md:mb-8 h-auto p-1.5 gap-1 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]">
-                  <TabsTrigger value="details" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-foreground/[0.08] data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                    <User strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
-                    <span className="hidden lg:inline">Details</span>
+                <TabsList className="flex w-full justify-start mb-5 md:mb-8 h-auto p-0 gap-2 bg-transparent border-0 rounded-none">
+                  <TabsTrigger value="details" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                    <User strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
+                    <span className="hidden sm:inline">Details</span>
                   </TabsTrigger>
-                  <TabsTrigger value="posts" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-foreground/[0.08] data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                    <FileText strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
-                    <span className="hidden lg:inline">Posts</span>
+                  <TabsTrigger value="posts" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                    <FileText strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
+                    <span className="hidden sm:inline">Posts</span>
                   </TabsTrigger>
-                  <TabsTrigger value="reviews" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-foreground/[0.08] data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                    <Star strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
-                    <span className="hidden lg:inline">Reviews</span>
+                  <TabsTrigger value="reviews" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                    <Star strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
+                    <span className="hidden sm:inline">Reviews</span>
                   </TabsTrigger>
-                  <TabsTrigger value="gallery" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-foreground/[0.08] data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                    <Images strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
-                    <span className="hidden lg:inline">Gallery</span>
+                  <TabsTrigger value="gallery" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                    <Images strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
+                    <span className="hidden sm:inline">Gallery</span>
                   </TabsTrigger>
                 </TabsList>
 
@@ -1516,7 +1507,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                                 icon={<Music2 className="h-5 w-5 text-accent" />}
                                 title="Instrument:"
                               />
-                              <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
+                              <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal hover:bg-foreground/[0.07]">
                                 <InstrumentIcon className="h-4 w-4 mr-1.5" />
                                 {instrumentName}
                               </Badge>
@@ -1536,7 +1527,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                           icon={<Users className="h-5 w-5 text-accent" />}
                           title="Members"
                         />
-                        <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
+                        <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal hover:bg-foreground/[0.07]">
                           <span className="notranslate" translate="no">{bandMembersLabel(artist.band_members, i18n.language || "ro")}</span>
                         </Badge>
                       </div>
@@ -1556,7 +1547,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                         className="mb-4"
                       />
                       <div className="flex flex-wrap gap-1.5 md:gap-2 justify-start">
-                        {getGenresArray().length > 0 ? getGenresArray().map((genre: string) => <Badge key={genre} variant="outline" className="border-accent/50 text-accent px-2 md:px-3 py-0.5 md:py-1 text-xs md:text-sm">
+                        {getGenresArray().length > 0 ? getGenresArray().map((genre: string) => <Badge key={genre} variant="secondary" className="rounded-full border-0 bg-foreground/[0.07] text-foreground font-normal px-3 py-1 text-sm hover:bg-foreground/[0.07]">
                               {genre}
                             </Badge>) : <p className="text-muted-foreground text-sm text-left">No genres specified</p>}
                       </div>
@@ -1591,7 +1582,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-left">
                       <div className="flex items-center justify-between gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                         <div className="flex items-center gap-3 min-w-0">
-                          <Mail className="h-4 w-4 text-accent flex-shrink-0" />
+                          <Mail className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                           <div className="min-w-0">
                             <p className="text-xs md:text-sm text-muted-foreground">
                               Email
@@ -1606,7 +1597,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
                       <div className="flex items-center justify-between gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
                         <div className="flex items-center gap-3 min-w-0">
-                          <Phone className="h-4 w-4 text-accent flex-shrink-0" />
+                          <Phone className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                           <div className="min-w-0">
                             <p className="text-xs md:text-sm text-muted-foreground">
                               Phone

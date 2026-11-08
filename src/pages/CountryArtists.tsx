@@ -370,7 +370,7 @@ const CountryArtists = () => {
               <p className="text-muted-foreground">Loading artists...</p>
             </div>
           ) : filteredArtists.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3">
+            <div className="-mx-2 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:-mx-3">
               {filteredArtists.map(artist => (
                 <ArtistProfileCard
                   key={artist.id}

@@ -390,7 +390,7 @@ const CategoryArtists = () => {
             <p className="text-xl text-muted-foreground">Loading artists...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 max-w-7xl mx-auto">
+          <div className="-mx-2 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:-mx-3">
             {filteredArtists.length > 0 ? (
               filteredArtists.map((artist) => (
               <ArtistProfileCard

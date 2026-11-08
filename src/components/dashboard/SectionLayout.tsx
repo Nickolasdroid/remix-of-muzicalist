@@ -36,8 +36,7 @@ export function SectionHeader({
         className,
       )}
     >
-      <h2 className="text-xl font-display font-bold flex items-center gap-2 min-w-0">
-        {icon}
+      <h2 className="text-xl md:text-2xl font-display font-bold tracking-[-0.01em] flex items-center gap-2 min-w-0">
         <span className="truncate">{title}</span>
       </h2>
       {action && <div className="flex items-center gap-2 shrink-0">{action}</div>}
@@ -91,8 +90,7 @@ export function SectionHeaderWithUsage({
       )}
     >
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
-        {icon && <div className="shrink-0 text-accent">{icon}</div>}
-        <h2 className="text-base md:text-lg font-display font-bold truncate">
+        <h2 className="text-xl md:text-2xl font-display font-bold tracking-[-0.01em] truncate">
           {title}
         </h2>
         {usageContent}

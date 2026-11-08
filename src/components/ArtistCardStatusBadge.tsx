@@ -14,36 +14,19 @@ interface ArtistCardStatusBadgeProps {
 
 const ArtistCardStatusBadge = ({ rating, reviewCount, className }: ArtistCardStatusBadgeProps) => {
   const { t } = useTranslation();
-
-  if (rating === null || reviewCount === 0) {
-    return (
-      <span
-        className={cn(
-          "inline-flex max-w-full items-center gap-0.5 rounded-full border border-border/70 bg-secondary/80 px-1.5 py-1 text-[9px] leading-none whitespace-nowrap sm:gap-1 sm:px-2 sm:text-[11px]",
-          className,
-        )}
-      >
-        <Star className="h-3 w-3 shrink-0 text-accent" aria-hidden="true" />
-        <span className="text-foreground/80 tabular-nums">
-          {t("artistCard.reviewCount", { count: 0 })}
-        </span>
-      </span>
-    );
-  }
+  const rated = rating !== null && reviewCount > 0;
 
   return (
-    <span
-      className={cn(
-        "inline-flex max-w-full items-center gap-0.5 rounded-full border border-border/70 bg-secondary/80 px-1.5 py-1 text-[9px] leading-none whitespace-nowrap sm:gap-1 sm:px-2 sm:text-[11px]",
-        className,
+    <span className={cn("flex max-w-full items-center gap-1 whitespace-nowrap text-sm leading-tight text-muted-foreground", className)}>
+      <Star className={cn("h-3.5 w-3.5 shrink-0", rated && "fill-current")} aria-hidden="true" />
+      {rated ? (
+        <>
+          <span className="font-medium tabular-nums text-foreground/90">{rating!.toFixed(1)}</span>
+          <span className="tabular-nums">({t("artistCard.reviewCount", { count: reviewCount })})</span>
+        </>
+      ) : (
+        <span className="tabular-nums">{t("artistCard.reviewCount", { count: 0 })}</span>
       )}
-    >
-      <Star className="h-3 w-3 shrink-0 fill-accent text-accent" aria-hidden="true" />
-      <span className="font-semibold text-accent tabular-nums">{rating.toFixed(1)}</span>
-      <span className="text-muted-foreground" aria-hidden="true">·</span>
-      <span className="text-foreground/80 tabular-nums">
-        {t("artistCard.reviewCount", { count: reviewCount })}
-      </span>
     </span>
   );
 };

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { User, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
-import PlanBadge from "@/components/PlanBadge";
+import ArtistTile from "@/components/ArtistTile";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
 import { getThumbUrl } from "@/lib/imageUrl";
@@ -102,57 +102,21 @@ const AllArtists = () => {
         ) : artists.length === 0 ? (
           <p className="text-muted-foreground text-center py-20">No artists found.</p>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
-            {artists.map((artist) => {
-              const isFree = !artist.plan || artist.plan === "Free";
-              const flag = artist.country ? getCountryFlag(artist.country) : "";
-
-              return (
-                <Link key={artist.id} to={`/artist/${artist.id}`} className="group block">
-                  <div className="overflow-hidden rounded-lg border border-border shadow-sm">
-                    <div className="relative aspect-square overflow-hidden">
-                      <PlanBadge plan={artist.plan} />
-                      {artist.avatar_url ? (
-                        <img
-                          src={getThumbUrl(artist.avatar_url, 320)}
-                          alt={artist.stage_name}
-                          width={320}
-                          height={320}
-                          loading="lazy"
-                          decoding="async"
-                          className="w-full h-full object-cover bg-muted"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">
-                          <User className="h-16 w-16 text-accent" />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="bg-card border-t border-border p-2 space-y-0.5">
-                      <h3 className="text-base font-sans font-semibold text-foreground text-left group-hover:text-accent transition-colors truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                        {artist.stage_name}
-                      </h3>
-
-                      <p className="text-xs text-muted-foreground truncate text-left">
-                        {translateSpecialization(artist.specialization)}
-                        {artist.county ? ` · ${artist.county}` : ''} {flag}
-                      </p>
-
-                      <div className="flex items-center justify-between min-h-[20px]">
-                        <ArtistCardStatusBadge
-                          createdAt={artist.created_at}
-                          rating={artist.rating}
-                          reviewCount={artist.reviewCount}
-                            specialization={artist.specialization}
-                            location={artist.county}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
+          <div className="-mx-2 grid grid-cols-2 md:-mx-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {artists.map((artist) => (
+              <ArtistTile
+                key={artist.id}
+                id={artist.id}
+                stageName={artist.stage_name}
+                imageUrl={artist.avatar_url}
+                plan={artist.plan}
+                specialization={artist.specialization}
+                county={artist.county}
+                country={artist.country}
+                rating={artist.rating}
+                reviewCount={artist.reviewCount}
+              />
+            ))}
           </div>
         )}
       </div>
