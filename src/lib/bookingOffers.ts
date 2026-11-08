@@ -79,7 +79,10 @@ const ERROR_TEXT: Record<string, string> = {
 export const offerErrorText = (error: unknown): string => {
   const msg = (error as { message?: string } | null)?.message ?? "";
   const code = Object.keys(ERROR_TEXT).find((k) => msg.includes(k));
-  return code ? ERROR_TEXT[code] : "Something went wrong. Please try again.";
+  if (code) return ERROR_TEXT[code];
+  // Unknown server error: keep it visible so it can be reported
+  console.error("Booking error:", error);
+  return msg ? `Something went wrong (${msg.slice(0, 160)}).` : "Something went wrong. Please try again.";
 };
 
 const escapeHtml = (s: string) =>
