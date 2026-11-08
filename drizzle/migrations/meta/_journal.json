@@ -148,6 +148,13 @@
       "when": 1794168844585,
       "tag": "0020_choose_collaborator_fix_time_text",
       "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1794170883546,
+      "tag": "0021_offer_advance_payment",
+      "breakpoints": true
     }
   ]
 }

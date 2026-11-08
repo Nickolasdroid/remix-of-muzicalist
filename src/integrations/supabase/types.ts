@@ -366,6 +366,9 @@ export type Database = {
       }
       booking_requests: {
         Row: {
+          advance_amount: number | null
+          advance_due_date: string | null
+          advance_received_at: string | null
           announcement_id: string | null
           confirmed_at: string | null
           created_at: string
@@ -389,6 +392,9 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          advance_amount?: number | null
+          advance_due_date?: string | null
+          advance_received_at?: string | null
           announcement_id?: string | null
           confirmed_at?: string | null
           created_at?: string
@@ -412,6 +418,9 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          advance_amount?: number | null
+          advance_due_date?: string | null
+          advance_received_at?: string | null
           announcement_id?: string | null
           confirmed_at?: string | null
           created_at?: string
@@ -3258,6 +3267,10 @@ export type Database = {
           updated_at: string
         }[]
       }
+      mark_advance_received: {
+        Args: { _booking_id: string }
+        Returns: undefined
+      }
       moderation_require_mod: { Args: never; Returns: string }
       move_to_dlq: {
         Args: {
@@ -3431,6 +3444,15 @@ export type Database = {
           _currency: string
           _note?: string
           _price: number
+        }
+        Returns: undefined
+      }
+      set_offer_advance: {
+        Args: {
+          _amount?: number
+          _announcement_id?: string
+          _booking_id?: string
+          _due_date?: string
         }
         Returns: undefined
       }
