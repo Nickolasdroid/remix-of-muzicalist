@@ -458,7 +458,7 @@ const UserDashboard = () => {
                       </label>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                      <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-[-0.03em] text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
                         {profile?.first_name} {profile?.last_name}
                       </h1>
                       <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
@@ -478,21 +478,18 @@ const UserDashboard = () => {
                   </div>
 
                   {/* Stats card row, same as the artist's */}
-                  <div className="mx-4 md:mx-0 mt-3 md:mt-5 rounded-xl border border-border bg-secondary/40 p-3 md:p-5 grid grid-cols-3 divide-x divide-border">
+                  <dl className="mx-4 md:mx-0 mt-4 md:mt-6 flex gap-8 md:gap-12">
                     {[
                       { icon: Send, value: String(sentRequests), label: "Requests sent" },
                       { icon: CalendarCheck, value: String(confirmedBookings), label: "Artists booked" },
                       { icon: Clock, value: profile?.created_at ? new Date(profile.created_at).toLocaleDateString(i18n.language || 'en', { month: 'short', year: 'numeric' }).replace('.', '') : '—', label: "Member since" },
                     ].map((st) => (
-                      <div key={st.label} className="flex flex-col items-center justify-center text-center px-1">
-                        <div className="flex items-center gap-1.5 md:gap-2">
-                          <st.icon className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                          <span className="text-base md:text-2xl font-bold text-foreground">{st.value}</span>
-                        </div>
-                        <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">{st.label}</span>
+                      <div key={st.label} className="min-w-0">
+                        <dd className="truncate text-lg md:text-xl font-bold text-foreground tabular-nums">{st.value}</dd>
+                        <dt className="truncate text-xs md:text-sm text-muted-foreground">{st.label}</dt>
                       </div>
                     ))}
-                  </div>
+                  </dl>
                 </div>
 
               {/* ===== Bookings, then my events (one column, like the artist dashboard) ===== */}

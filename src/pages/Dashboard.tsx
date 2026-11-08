@@ -1820,7 +1820,7 @@ const Dashboard = () => {
                             <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h1 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                            <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-[-0.03em] text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
                               {formData.stageName}
                             </h1>
                             <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
@@ -1845,45 +1845,38 @@ const Dashboard = () => {
                         </div>
 
 
-                        {/* Stats card row */}
-                        <div className="mx-4 md:mx-0 mt-3 md:mt-5 rounded-xl border border-border bg-secondary/40 p-3 md:p-5 grid grid-cols-3 divide-x divide-border">
-                          <div className="flex flex-col items-center justify-center text-center px-1">
-                            <div className="flex items-center gap-1.5 md:gap-2">
-                              <CalendarCheck className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                              <span className="text-base md:text-2xl font-bold text-foreground">{acceptedEventsCount}{acceptedEventsCount > 0 ? '+' : ''}</span>
-                            </div>
-                            <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Events</span>
+                        {/* Stats: three quiet columns, same as the public profile */}
+                        <dl className="mx-4 md:mx-0 mt-4 md:mt-6 flex gap-8 md:gap-12">
+                          <div className="min-w-0">
+                            <dd className="truncate text-lg md:text-xl font-bold text-foreground tabular-nums">
+                              {acceptedEventsCount > 0 ? `${acceptedEventsCount}+` : <span>None yet</span>}
+                            </dd>
+                            <dt className="truncate text-xs md:text-sm text-muted-foreground">Events</dt>
                           </div>
-                          <div className="flex flex-col items-center justify-center text-center px-1">
-                            <div className="flex items-center gap-1.5 md:gap-2">
-                              <Clock className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                              <span className="text-base md:text-2xl font-bold text-foreground">
-                                {profile?.created_at
-                                  ? new Date(profile.created_at).toLocaleDateString(i18n.language || 'en', { month: 'short', year: 'numeric' }).replace('.', '')
-                                  : '—'}
-                              </span>
-                            </div>
-                            <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Member since</span>
+                          <div className="min-w-0">
+                            <dd className="truncate text-lg md:text-xl font-bold text-foreground">
+                              {profile?.created_at
+                                ? new Date(profile.created_at).toLocaleDateString(i18n.language || 'en', { month: 'short', year: 'numeric' }).replace('.', '')
+                                : '—'}
+                            </dd>
+                            <dt className="truncate text-xs md:text-sm text-muted-foreground">Member since</dt>
                           </div>
-                          <div className="flex flex-col items-center justify-center text-center px-1">
-                            <div className="flex items-center gap-1.5 md:gap-2">
-                              <Award className="h-4 w-4 md:h-5 md:w-5 text-accent" />
-                              <span className="text-base md:text-2xl font-bold text-foreground">
-                                {formData.careerStartYear
-                                  ? (() => {
-                                      const yrs = Math.max(1, new Date().getFullYear() - Number(formData.careerStartYear));
-                                      const isRo = (i18n.language || 'en').split('-')[0] === 'ro';
-                                      const unit = isRo
-                                        ? (yrs === 1 ? 'an' : yrs < 20 ? 'ani' : 'de ani')
-                                        : (yrs === 1 ? 'year' : 'years');
-                                      return `${yrs} ${unit}`;
-                                    })()
-                                  : '—'}
-                              </span>
-                            </div>
-                            <span className="text-[11px] md:text-sm text-muted-foreground mt-0.5">Experience</span>
+                          <div className="min-w-0">
+                            <dd className="truncate text-lg md:text-xl font-bold text-foreground">
+                              {formData.careerStartYear
+                                ? (() => {
+                                    const yrs = Math.max(1, new Date().getFullYear() - Number(formData.careerStartYear));
+                                    const isRo = (i18n.language || 'en').split('-')[0] === 'ro';
+                                    const unit = isRo
+                                      ? (yrs === 1 ? 'an' : yrs < 20 ? 'ani' : 'de ani')
+                                      : (yrs === 1 ? 'year' : 'years');
+                                    return `${yrs} ${unit}`;
+                                  })()
+                                : '—'}
+                            </dd>
+                            <dt className="truncate text-xs md:text-sm text-muted-foreground">Experience</dt>
                           </div>
-                        </div>
+                        </dl>
 
 
 
@@ -1940,27 +1933,27 @@ const Dashboard = () => {
 
                     {/* Tabs Section */}
                     <Tabs value={profileSection} onValueChange={setProfileSection} className="w-full">
-                      {!calendarOnly && <TabsList className={`grid w-full ${isAdmin ? 'grid-cols-1' : 'grid-cols-4'} mb-4 md:mb-8 h-auto p-1.5 gap-1 rounded-none md:rounded-[18px] -mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full bg-card dark:bg-[#111111] border-y md:border border-border dark:border-[#2A2A2A]`}>
+                      {!calendarOnly && <TabsList className="flex w-full justify-start mt-6 mb-5 md:mb-8 h-auto p-0 gap-2 bg-transparent border-0 rounded-none">
                         {!isAdmin && (
-                          <TabsTrigger value="details" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-foreground/[0.08] data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                            <User strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
-                            <span className="hidden lg:inline">Details</span>
+                          <TabsTrigger value="details" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                            <User strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
+                            <span className="hidden sm:inline">Details</span>
                           </TabsTrigger>
                         )}
-                        <TabsTrigger value="posts" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-foreground/[0.08] data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                          <FileText strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
-                          <span className="hidden lg:inline">Posts</span>
+                        <TabsTrigger value="posts" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                          <FileText strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
+                          <span className="hidden sm:inline">Posts</span>
                         </TabsTrigger>
                         {!isAdmin && (
-                          <TabsTrigger value="reviews" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-foreground/[0.08] data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                            <Star strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
-                            <span className="hidden lg:inline">Reviews</span>
+                          <TabsTrigger value="reviews" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                            <Star strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
+                            <span className="hidden sm:inline">Reviews</span>
                           </TabsTrigger>
                         )}
                         {!isAdmin && (
-                          <TabsTrigger value="gallery" className="group relative flex flex-1 items-center justify-center gap-2 px-2 md:px-3 lg:px-4 py-2.5 rounded-xl border-0 font-medium text-muted-foreground transition-colors duration-200 ease-in-out hover:bg-foreground/[0.04] data-[state=active]:bg-foreground/[0.08] data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                            <Images strokeWidth={2.25} className="h-[1.4rem] w-[1.4rem] md:h-[1.15rem] md:w-[1.15rem] transition-colors duration-200 ease-in-out group-data-[state=active]:text-[#D4AF37]" />
-                            <span className="hidden lg:inline">Gallery</span>
+                          <TabsTrigger value="gallery" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                            <Images strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
+                            <span className="hidden sm:inline">Gallery</span>
                           </TabsTrigger>
                         )}
                       </TabsList>}
@@ -2033,7 +2026,7 @@ const Dashboard = () => {
                                       title="Instrument:"
                                     />
 
-                                    <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium cursor-pointer hover:border-accent/50 transition-colors group" onClick={() => handleInstrumentsChange("")}>
+                                    <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal cursor-pointer hover:bg-foreground/[0.12] transition-colors group" onClick={() => handleInstrumentsChange("")}>
                                       <InstrumentIcon className="h-4 w-4 mr-1.5" />
                                       {instrumentName}
                                       <X className="h-3 w-3 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -2132,7 +2125,7 @@ const Dashboard = () => {
                                       Cancel
                                     </Button>
                                   </div>
-                                </div> : formData.bandMembers ? <Badge className="bg-muted/50 text-muted-foreground border border-accent/30 px-4 py-1.5 text-base font-medium">
+                                </div> : formData.bandMembers ? <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal hover:bg-foreground/[0.07]">
                                     <span className="notranslate" translate="no">{bandMembersLabel(formData.bandMembers, i18n.language || "ro")}</span>
                                   </Badge> : <p className="text-muted-foreground italic text-sm">Not specified</p>}
                             </div>
@@ -2229,7 +2222,7 @@ const Dashboard = () => {
                                 </div>
                               </div> : <div>
                                 <div className="flex flex-wrap gap-2">
-                                  {formData.musicGenres?.split(',').filter((g) => g.trim()).map((genre: string) => <Badge key={genre.trim()} variant="outline" className="border-accent/50 text-accent px-2 md:px-3 py-1 text-xs md:text-sm">
+                                  {formData.musicGenres?.split(',').filter((g) => g.trim()).map((genre: string) => <Badge key={genre.trim()} variant="secondary" className="rounded-full border-0 bg-foreground/[0.07] text-foreground font-normal px-3 py-1 text-sm hover:bg-foreground/[0.07]">
                                       {genreLabel(genre.trim())}
                                     </Badge>)}
                                   {(!formData.musicGenres || !formData.musicGenres.trim()) && <span className="text-muted-foreground text-sm">No genres added</span>}

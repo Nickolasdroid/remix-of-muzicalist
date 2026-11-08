@@ -709,86 +709,69 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
       {/* Desktop: Left Sidebar - Only when logged in */}
       {!user ? null : (
-      <aside data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 h-screen w-64 bg-black z-40 hidden md:flex md:flex-col">
-        {/* Logo at top of sidebar - h-16 to align with header */}
-        <div className="h-16 flex items-center px-6">
-          <Link to="/feed" className="flex items-center gap-2">
-            <img src={logo} alt="Muzicalist — The Global Stage for Musical Artists" className="h-9 w-9 object-contain" />
-            <span className="font-bold text-lg text-foreground uppercase" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
+      <aside data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 h-screen w-64 bg-black z-40 hidden md:flex md:flex-col gap-2 p-2">
+        {/* Panel 1: logo and browsing (like Spotify's Home / Search box) */}
+        <div className="rounded-lg bg-background px-3 pb-2 pt-3">
+          <Link to="/feed" className="mb-2 flex h-10 items-center gap-2 px-2">
+            <img src={logo} alt="Muzicalist — The Global Stage for Musical Artists" className="h-8 w-8 object-contain" />
+            <span className="font-bold text-foreground uppercase" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
           </Link>
+          {sidebarLinks.map((link) => {
+            const active = isActive(link.to.split('?')[0]);
+            return (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`flex h-10 items-center gap-4 rounded-md px-2 text-[15px] font-bold transition-colors ${active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                <link.icon className="h-6 w-6" strokeWidth={active ? 2.4 : 2} />
+                <span>{link.label}</span>
+              </Link>
+            );
+          })}
         </div>
-        
-        {/* Main navigation links */}
-        <div className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {sidebarLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
-                isActive(link.to.split('?')[0])
-                  ? 'text-foreground font-bold'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <link.icon className="h-5 w-5" />
-              <span className="font-medium">{link.label}</span>
-            </Link>
-          ))}
 
-          {/* Calendar (artists) / Bookings (organizers) - between Regions and Notifications,
-              swapped with Search like the bottom bar */}
-          <Link
-            to={userType === 'user' ? '/booking-requests' : '/calendar'}
-            className={`flex items-center justify-between px-3 py-3 rounded-lg transition-colors ${
-              isActive(userType === 'user' ? '/booking-requests' : '/calendar')
-                ? 'text-foreground font-bold'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <CalendarCheck className="h-5 w-5" />
-              <span className="font-medium">{userType === 'user' ? t('navigation.bookings', 'Bookings') : t('navigation.calendar', 'Calendar')}</span>
-            </div>
-            {bookingActionCount > 0 && (
-              <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
-                {bookingActionCount > 9 ? '9+' : bookingActionCount}
-              </span>
-            )}
-          </Link>
-
-          {/* User-specific links */}
-          {user && (
-            <>
-              {userSidebarLinks.map((link) => (
+        {/* Panel 2: your things (like Spotify's library) */}
+        <div className="flex min-h-0 flex-1 flex-col rounded-lg bg-background px-3 py-3">
+          <p className="mb-1 px-2 text-[15px] font-bold text-foreground">{t('navigation.yourSpace', 'Your space')}</p>
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            {[
+              {
+                to: userType === 'user' ? '/booking-requests' : '/calendar',
+                icon: CalendarCheck,
+                label: userType === 'user' ? t('navigation.bookings', 'Bookings') : t('navigation.calendar', 'Calendar'),
+                badge: bookingActionCount,
+              },
+              ...userSidebarLinks,
+            ].map((link) => {
+              const active = isActive(link.to.split('?')[0]) || (link.to.includes('?') && location.search.includes(link.to.split('?')[1]));
+              return (
                 <Link
                   key={link.to}
                   to={link.to}
-                  className={`flex items-center justify-between px-3 py-3 rounded-lg transition-colors ${
-                    isActive(link.to.split('?')[0]) || (link.to.includes('?') && location.search.includes(link.to.split('?')[1]))
-                      ? 'text-foreground font-bold'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
+                  className={`flex h-12 items-center justify-between gap-3 rounded-md px-2 transition-colors hover:bg-foreground/[0.07] ${active ? 'bg-foreground/[0.1] text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                 >
-                  <div className="flex items-center gap-3">
-                    <link.icon className="h-5 w-5" />
-                    <span className="font-medium">{link.label}</span>
-                  </div>
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-md ${active ? 'bg-foreground/[0.14] text-foreground' : 'bg-[#282828] text-foreground/80'}`}>
+                      <link.icon className="h-[18px] w-[18px]" />
+                    </span>
+                    <span className="truncate text-[15px] font-medium text-foreground">{link.label}</span>
+                  </span>
                   {link.badge !== undefined && link.badge > 0 && (
-                    <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-destructive text-destructive-foreground text-xs font-semibold rounded-full">
+                    <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-destructive px-1.5 text-xs font-semibold text-destructive-foreground">
                       {link.badge > 9 ? '9+' : link.badge}
                     </span>
                   )}
                 </Link>
-              ))}
-            </>
-          )}
-        </div>
+              );
+            })}
+          </div>
 
-        {/* More Button at bottom */}
-        <div className="p-4">
+          {/* More Button at bottom */}
+          <div className="pt-2">
           <Popover>
             <PopoverTrigger asChild>
-              <button className="w-full flex items-center gap-3 px-3 py-3 rounded-lg transition-colors text-muted-foreground hover:text-foreground">
+              <button className="w-full flex h-10 items-center gap-4 rounded-md px-2 text-[15px] font-bold transition-colors text-muted-foreground hover:text-foreground">
                 <MoreHorizontal className="h-5 w-5" />
                 <span className="font-medium">{t('navigation.more')}</span>
               </button>
@@ -838,6 +821,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
               </div>
             </PopoverContent>
           </Popover>
+        </div>
         </div>
       </aside>
       )}

@@ -82,7 +82,8 @@
     "upgrade": "Upgrade",
     "plans": "Plans",
     "help": "Help",
-    "searchArtists": "Which artist are you looking for?"
+    "searchArtists": "Which artist are you looking for?",
+    "yourSpace": "Your space"
   },
   "footer": {
     "quickLinks": "Quick Links",
