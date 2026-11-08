@@ -50,7 +50,8 @@ BEGIN
   IF v_ann.event_on IS NOT NULL THEN
     v_msg := '';
     IF v_ann.start_time IS NOT NULL AND v_ann.end_time IS NOT NULL THEN
-      v_msg := 'Time: ' || to_char(v_ann.start_time, 'HH24:MI') || ' - ' || to_char(v_ann.end_time, 'HH24:MI') || E'\n';
+      -- start_time / end_time are stored as text ("18:00" or "18:00:00")
+      v_msg := 'Time: ' || left(v_ann.start_time::text, 5) || ' - ' || left(v_ann.end_time::text, 5) || E'\n';
     END IF;
     v_msg := v_msg || 'Collaboration: ' || COALESCE(NULLIF(v_ann.title, ''), 'Collaboration');
     IF v_ann.budget_min IS NOT NULL THEN
