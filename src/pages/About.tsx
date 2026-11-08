@@ -1,157 +1,221 @@
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/components/ui/button";
+import { Star, User } from "lucide-react";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
-import DiscoverArtistsSection from "@/components/DiscoverArtistsSection";
-import AISearchShowcase from "@/components/AISearchShowcase";
-import CommunitySections from "@/components/CommunitySections";
-import LeaderboardPreviewSection from "@/components/LeaderboardPreviewSection";
-import HeroSearchBar from "@/components/HeroSearchBar";
-import { usePlatformStats } from "@/hooks/usePlatformStats";
 import { useHomeArtists, type HomeArtist } from "@/hooks/useHomeArtists";
 import { getThumbUrl } from "@/lib/imageUrl";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import { cn } from "@/lib/utils";
-import ctaPhoto from "@/assets/about-story-live.webp";
+import singerImg from "@/assets/singer-silhouette.png";
+import instrumentalistImg from "@/assets/instrumentalist-silhouette.png";
+import djImg from "@/assets/dj-silhouette.png";
+import bandImg from "@/assets/band-silhouette.png";
 
-/** One artist photo in the hero: the artists themselves are the first thing a visitor sees. */
-const HeroPortrait = ({ artist, className }: { artist: HomeArtist; className?: string }) => (
-  <Link
-    to={`/artist/${artist.id}`}
-    className={cn("group relative block overflow-hidden rounded-2xl bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", className)}
-  >
-    <img
-      src={getThumbUrl(artist.avatar_url!, 480)}
-      alt={artist.stage_name}
-      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-      loading="eager"
-      decoding="async"
-    />
-    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-3.5 pb-3 pt-10">
-      <p className="truncate text-[15px] font-semibold text-white notranslate" translate="no" data-user-content="true">
-        {artist.stage_name}
-      </p>
-      <p className="truncate text-xs text-white/70">{translateSpecialization(artist.specialization)}</p>
-    </div>
-  </Link>
-);
+type Category = "Singer" | "Instrumentalist" | "DJ" | "Band";
 
-const CATEGORY_LINKS = [
-  { key: "singers", href: "/categories/Singers" },
-  { key: "instrumentalists", href: "/categories/Instrumentalists" },
-  { key: "djs", href: "/categories/DJs" },
-  { key: "bands", href: "/categories/Bands" },
-] as const;
+const CATEGORIES: { value: Category; statKey: string; href: string; color: string; img: string }[] = [
+  { value: "Singer", statKey: "singers", href: "/categories/Singers", color: "#B3261E", img: singerImg },
+  { value: "Instrumentalist", statKey: "instrumentalists", href: "/categories/Instrumentalists", color: "#1E4D8C", img: instrumentalistImg },
+  { value: "DJ", statKey: "djs", href: "/categories/DJs", color: "#6A2FB5", img: djImg },
+  { value: "Band", statKey: "bands", href: "/categories/Bands", color: "#1F7A5C", img: bandImg },
+];
 
+const SHELF_SIZE = 10;
+
+/** A row of artists, Spotify style: title, "Show all", then items side by side. */
+const Shelf = ({
+  title,
+  showAllHref,
+  artists,
+  round = false,
+  showRating = false,
+}: {
+  title: string;
+  showAllHref: string;
+  artists: HomeArtist[];
+  round?: boolean;
+  showRating?: boolean;
+}) => {
+  const { t } = useTranslation();
+  if (artists.length === 0) return null;
+  return (
+    <section className="mt-8 first:mt-6 md:mt-10">
+      <div className="mb-2 flex items-end justify-between gap-4 px-1">
+        <h2 className="font-figtree text-[22px] font-bold leading-tight tracking-[-0.01em] text-white md:text-2xl">{title}</h2>
+        <Link to={showAllHref} className="shrink-0 text-sm font-bold text-white/60 transition-colors hover:text-white hover:underline">
+          Show all
+        </Link>
+      </div>
+      <div className="-mx-1 flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {artists.slice(0, SHELF_SIZE).map((a) => (
+          <Link
+            key={a.id}
+            to={`/artist/${a.id}`}
+            className="group w-[44%] shrink-0 rounded-md p-2.5 transition-colors hover:bg-white/[0.07] focus-visible:bg-white/[0.07] focus-visible:outline-none sm:w-[29%] md:w-[188px] md:p-3"
+          >
+            <div className={cn("aspect-square overflow-hidden bg-white/[0.06] shadow-[0_8px_24px_rgba(0,0,0,0.5)]", round ? "rounded-full" : "rounded-md")}>
+              {a.avatar_url ? (
+                <img src={getThumbUrl(a.avatar_url, 320)} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
+              ) : (
+                <span className="flex h-full w-full items-center justify-center">
+                  <User className="h-10 w-10 text-white/30" />
+                </span>
+              )}
+            </div>
+            <p className="mt-2.5 truncate font-figtree text-base font-medium text-white notranslate" translate="no" data-user-content="true">
+              {a.stage_name}
+            </p>
+            <p className="mt-0.5 truncate font-figtree text-sm text-white/60">
+              {showRating && a.rating !== null ? (
+                <span className="inline-flex items-center gap-1">
+                  <Star className="h-3.5 w-3.5 fill-current" aria-hidden="true" />
+                  <span className="tabular-nums">{a.rating.toFixed(1)}</span>
+                  <span className="tabular-nums">({a.reviewCount})</span>
+                </span>
+              ) : (
+                <>
+                  <span>{translateSpecialization(a.specialization)}</span>
+                  {a.county ? (
+                    <>
+                      <span>, </span>
+                      <span className="notranslate" translate="no">{a.county}</span>
+                    </>
+                  ) : null}
+                </>
+              )}
+            </p>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+/**
+ * Public home page for visitors without an account: one dark panel with filter chips
+ * and rows of artists, a "browse categories" grid and a sign-up bar at the bottom.
+ */
 const About = () => {
   const { t } = useTranslation();
-  const { stats } = usePlatformStats();
-  const artists = useHomeArtists();
-  const withPhoto = (artists || []).filter((a) => !!a.avatar_url);
-  const portraits = withPhoto.length >= 4 ? withPhoto.slice(0, 4) : [];
+  const all = useHomeArtists();
+  const [category, setCategory] = useState<Category | null>(null);
+
+  const { recommended, topRated, newest } = useMemo(() => {
+    const list = (all || []).filter((a) => !category || a.specialization === category);
+    return {
+      // Plan order (Premium first) is the placement the plans promise
+      recommended: list,
+      topRated: list
+        .filter((a) => a.rating !== null)
+        .sort((x, y) => y.rating! - x.rating! || y.reviewCount - x.reviewCount),
+      newest: [...list].sort((x, y) => (y.created_at || "").localeCompare(x.created_at || "")),
+    };
+  }, [all, category]);
+
+  const active = CATEGORIES.find((c) => c.value === category);
+  const showAllHref = active ? active.href : "/artists";
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       <Navigation />
 
-      {/* Hero */}
-      <section className="px-4 pt-24 pb-14 md:px-8 md:pt-36 md:pb-24">
-        <div className="container mx-auto grid max-w-6xl items-center gap-12 px-0 lg:grid-cols-[1.25fr_1fr] lg:gap-14">
-          <div>
-            <h1 className="font-headline text-[2.6rem] font-bold leading-[1.02] tracking-[-0.035em] text-foreground sm:text-6xl lg:text-[4.5rem]">
-              Find the right artist for your event
-            </h1>
-            <p className="mt-5 max-w-[34rem] text-base leading-relaxed text-muted-foreground md:mt-6 md:text-lg">
-              Singers, DJs, bands and instrumentalists. See their work, check when they're free and book with a contract.
-            </p>
-            <div className="mt-8 md:mt-10">
-              <HeroSearchBar />
-            </div>
-            <nav aria-label="Categories" className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm md:mt-7">
-              {CATEGORY_LINKS.map(({ key, href }) => (
-                <Link key={key} to={href} className="group inline-flex items-baseline gap-1.5 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                  <span className="font-semibold tabular-nums text-foreground">{stats ? stats[key] : "—"}</span>
-                  <span className="text-muted-foreground transition-colors group-hover:text-foreground">{t(`platformStats.${key}`)}</span>
-                </Link>
-              ))}
-            </nav>
+      <main className="px-0 pb-28 pt-14 md:px-2 md:pt-[72px]">
+        <div
+          className="min-h-[70vh] rounded-none px-3 pb-10 pt-4 md:rounded-lg md:px-6 md:pt-6"
+          style={{ background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" }}
+        >
+          <h1 className="sr-only">Muzicalist: find and book artists for your event</h1>
+
+          {/* Filter chips */}
+          <div className="-mx-3 flex gap-2 overflow-x-auto px-3 [scrollbar-width:none] md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden" role="tablist" aria-label="Artist type">
+            {[{ value: null as Category | null, label: "All" }, ...CATEGORIES.map((c) => ({ value: c.value as Category | null, label: t(`platformStats.${c.statKey}`) }))].map((chip) => {
+              const selected = category === chip.value;
+              return (
+                <button
+                  key={chip.label}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  onClick={() => setCategory(chip.value)}
+                  className={cn(
+                    "h-8 shrink-0 rounded-full px-3.5 font-figtree text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60",
+                    selected ? "bg-white/[0.24] font-medium text-white" : "bg-white/[0.07] text-white hover:bg-white/[0.12]",
+                  )}
+                >
+                  {chip.label}
+                </button>
+              );
+            })}
           </div>
 
-          {portraits.length === 4 && (
+          {all === null ? (
+            <div className="mt-8 flex gap-4" aria-hidden="true">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="w-[44%] shrink-0 sm:w-[29%] md:w-[188px]">
+                  <div className="aspect-square animate-pulse rounded-md bg-white/[0.06]" />
+                  <div className="mt-3 h-3.5 w-3/4 animate-pulse rounded bg-white/[0.06]" />
+                </div>
+              ))}
+            </div>
+          ) : (
             <>
-              {/* Desktop: two staggered columns */}
-              <div className="hidden grid-cols-2 gap-4 lg:grid">
-                <div className="space-y-4">
-                  <HeroPortrait artist={portraits[0]} className="aspect-[3/4]" />
-                  <HeroPortrait artist={portraits[1]} className="aspect-[4/3]" />
-                </div>
-                <div className="space-y-4 pt-14">
-                  <HeroPortrait artist={portraits[2]} className="aspect-[4/3]" />
-                  <HeroPortrait artist={portraits[3]} className="aspect-[3/4]" />
-                </div>
-              </div>
-              {/* Phones and tablets: a row to swipe */}
-              <div className="-mx-4 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden">
-                {portraits.map((a) => (
-                  <HeroPortrait key={a.id} artist={a} className="aspect-[3/4] w-[44%] shrink-0 snap-start sm:w-[30%]" />
-                ))}
-              </div>
+              <Shelf title="Recommended artists" showAllHref={showAllHref} artists={recommended} round />
+              <Shelf title="Top rated" showAllHref="/leaderboard" artists={topRated} showRating />
+              <Shelf title="New on Muzicalist" showAllHref={showAllHref} artists={newest} />
             </>
           )}
+
+          {!category && (
+            <section className="mt-10">
+              <h2 className="mb-4 px-1 font-figtree text-[22px] font-bold leading-tight tracking-[-0.01em] text-white md:text-2xl">Browse categories</h2>
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
+                {CATEGORIES.map((c) => (
+                  <Link
+                    key={c.value}
+                    to={c.href}
+                    className="relative aspect-[16/10] overflow-hidden rounded-lg p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                    style={{ backgroundColor: c.color }}
+                  >
+                    <span className="relative z-10 font-figtree text-lg font-bold text-white md:text-2xl">{t(`platformStats.${c.statKey}`)}</span>
+                    <img
+                      src={c.img}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="absolute -bottom-3 -right-5 h-[78%] rotate-[25deg] object-contain opacity-90"
+                    />
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
-      </section>
-
-      <DiscoverArtistsSection artists={artists ? artists.filter((a) => !portraits.includes(a)) : null} />
-
-      <AISearchShowcase />
-
-      <CommunitySections />
-
-      <LeaderboardPreviewSection />
-
-      {/* How it works: a real sequence, so the steps are numbered */}
-      <section className="px-4 py-16 md:px-8 md:py-24">
-        <div className="container mx-auto max-w-6xl px-0">
-          <h2 className="font-headline text-3xl font-bold tracking-[-0.025em] text-foreground md:text-[2.75rem]">
-            How Muzicalist Works
-          </h2>
-          <ol className="mt-10 grid gap-10 md:mt-14 md:grid-cols-3 md:gap-8">
-            {[
-              { step: 1, title: "Search", description: "Find artists by location, genre and availability." },
-              { step: 2, title: "Connect", description: "Chat and finalize event details directly." },
-              { step: 3, title: "Book", description: "Confirm your artist and organize your event with confidence." },
-            ].map(({ step, title, description }) => (
-              <li key={step} className="border-t border-border pt-6">
-                <span className="font-headline text-sm font-semibold tabular-nums text-muted-foreground">{step}</span>
-                <h3 className="mt-3 font-headline text-2xl font-semibold tracking-[-0.02em] text-foreground">{title}</h3>
-                <p className="mt-2 max-w-xs text-[15px] leading-relaxed text-muted-foreground">{description}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      {/* For artists */}
-      <section className="px-4 pb-16 md:px-8 md:pb-24">
-        <div className="container mx-auto max-w-6xl px-0">
-          <div className="relative overflow-hidden rounded-3xl">
-            <img src={ctaPhoto} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/20" />
-            <div className="relative max-w-xl px-6 py-14 md:px-14 md:py-20">
-              <h2 className="font-headline text-3xl font-bold tracking-[-0.025em] text-white md:text-5xl">Are you an artist?</h2>
-              <p className="mt-4 text-base leading-relaxed text-white/75 md:text-lg">
-                Create your profile for free, show what you do and get booking requests.
-              </p>
-              <Button asChild size="lg" className="mt-8 h-12 rounded-full bg-accent px-7 text-[15px] font-semibold text-accent-foreground hover:bg-accent/90">
-                <Link to="/register">Create artist profile</Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      </main>
 
       <Footer />
+
+      {/* Sign-up bar, always in reach */}
+      <div className="fixed inset-x-0 bottom-0 z-40 px-0 pb-[env(safe-area-inset-bottom)] md:px-2 md:pb-2">
+        <div
+          className="flex items-center justify-between gap-4 px-4 py-3 md:rounded-md md:px-5 md:py-3.5"
+          style={{ background: "linear-gradient(90deg, #8C6A12 0%, #C99A22 100%)" }}
+        >
+          <div className="min-w-0">
+            <p className="font-figtree text-sm font-bold text-white md:text-[15px]">Find and book artists for your event</p>
+            <p className="hidden font-figtree text-sm text-white/90 sm:block">
+              Sign up for free to message artists and send booking requests.
+            </p>
+          </div>
+          <Link
+            to="/register"
+            className="shrink-0 rounded-full bg-white px-5 py-2.5 font-figtree text-sm font-bold text-black transition-transform hover:scale-[1.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 md:px-7 md:py-3 md:text-base"
+          >
+            Sign up free
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };

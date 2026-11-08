@@ -16,7 +16,7 @@ export interface HomeArtist {
 }
 
 /** Artists shown on the public home page (hero photos and the "Discover artists" row). */
-export function useHomeArtists(limit = 12) {
+export function useHomeArtists(limit = 60) {
   const [artists, setArtists] = useState<HomeArtist[] | null>(null);
 
   useEffect(() => {
