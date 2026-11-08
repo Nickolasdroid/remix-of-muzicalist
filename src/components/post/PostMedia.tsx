@@ -104,7 +104,7 @@ const Carousel = ({ items, onMediaClick }: { items: PostMediaItem[]; onMediaClic
 
       <div className="flex justify-center gap-1.5 py-2" aria-hidden="true">
         {items.map((_, i) => (
-          <span key={i} className={cn("h-1.5 w-1.5 rounded-full transition-colors", i === index ? "bg-accent" : "bg-muted-foreground/40")} />
+          <span key={i} className={cn("h-1.5 w-1.5 rounded-full transition-colors", i === index ? "bg-foreground" : "bg-muted-foreground/40")} />
         ))}
       </div>
     </div>

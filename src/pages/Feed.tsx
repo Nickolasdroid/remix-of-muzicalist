@@ -141,6 +141,14 @@ const Feed = () => {
   const errorNotifiedRef = useRef(false);
   const [page, setPage] = useState(0);
   const [canCreate, setCanCreate] = useState(false);
+  // Sidebar "+ Create" on desktop lands here with ?create=1
+  useEffect(() => {
+    if (searchParams.get("create") !== "1" || !canCreate) return;
+    setShowChooser(true);
+    const next = new URLSearchParams(searchParams);
+    next.delete("create");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, canCreate, setSearchParams]);
   const contentRef = useRef<HTMLDivElement>(null);
   const { isAdmin } = useUserRole();
   const adminIds = useAdminIds();
@@ -817,13 +825,14 @@ const Feed = () => {
         </div>
       </div>
 
+      {/* Phones: floating +. Desktop: "+ Create" in the sidebar (opens /feed?create=1) */}
       {/* Organizers: the + creates an event ("looking for an artist") */}
       {viewer && !viewer.isArtist && (
         <Button
           onClick={() => navigate('/user-dashboard?new=announcement')}
           size="icon"
           aria-label="New event"
-          className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
+          className="fixed bottom-20 right-4 z-40 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90 md:hidden"
         >
           <Plus className="h-6 w-6" />
         </Button>
@@ -835,7 +844,7 @@ const Feed = () => {
           onClick={() => setShowChooser(true)}
           size="icon"
           aria-label="Create"
-          className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90"
+          className="fixed bottom-20 right-4 z-40 h-14 w-14 rounded-full shadow-lg bg-accent text-accent-foreground hover:bg-accent/90 md:hidden"
         >
           <Plus className="h-6 w-6" />
         </Button>

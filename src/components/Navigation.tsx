@@ -3,7 +3,7 @@ import { canGoBackInApp, goBack, isRootPath, parentPathFor } from "@/lib/backNav
 import { PrefetchLink as Link } from "@/components/PrefetchLink";
 import { preloadForPath } from "@/lib/routePreload";
 import { getPlan } from "@/lib/planLimits";
-import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle, Shield, ChevronRight, CalendarCheck } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle, Shield, ChevronRight, CalendarCheck, Plus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Popover,
@@ -733,7 +733,18 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
         {/* Panel 2: your things (like Spotify's library) */}
         <div className="flex min-h-0 flex-1 flex-col rounded-lg bg-background px-3 py-3">
-          <p className="mb-1 px-2 text-[15px] font-bold text-foreground">{t('navigation.yourSpace', 'Your space')}</p>
+          <div className="mb-1 flex items-center justify-between gap-2 px-2">
+            <p className="text-[15px] font-bold text-foreground">{t('navigation.yourSpace', 'Your space')}</p>
+            {/* Create: posts, stories, collaborations (artists) or a new event (organizers) */}
+            <button
+              type="button"
+              onClick={() => navigate(userType === 'user' ? '/user-dashboard?new=announcement' : '/feed?create=1')}
+              className="inline-flex h-8 items-center gap-1.5 rounded-full bg-foreground/[0.07] px-3 text-sm font-bold text-foreground transition-colors hover:bg-foreground/[0.14] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+            >
+              <Plus className="h-4 w-4" />
+              {t('navigation.create', 'Create')}
+            </button>
+          </div>
           <div className="min-h-0 flex-1 overflow-y-auto">
             {[
               {

@@ -83,7 +83,8 @@
     "plans": "Plans",
     "help": "Help",
     "searchArtists": "Which artist are you looking for?",
-    "yourSpace": "Your space"
+    "yourSpace": "Your space",
+    "create": "Create"
   },
   "footer": {
     "quickLinks": "Quick Links",

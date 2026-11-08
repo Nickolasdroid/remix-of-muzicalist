@@ -1,3 +1,4 @@
+import { useState } from "react";
 import SmoothVideoPlayer from "@/components/SmoothVideoPlayer";
 import { cn } from "@/lib/utils";
 
@@ -15,11 +16,13 @@ interface PostMediaFrameProps {
  * Single, shared media frame for every post/announcement in the product.
  *
  * Principles:
- * - The FEED controls the available media space (width + max height).
- * - The MEDIA controls its own proportions (never cropped, never distorted).
+ * - Photos fill the post's full width, like Instagram.
+ * - Tall photos are trimmed to 4:5 and very wide ones to 1.91:1; in between they keep
+ *   their own proportions. Tapping opens the whole photo.
  */
 const PostMediaFrame = ({ url, type, alt = "Post media", onClick, className }: PostMediaFrameProps) => {
   const isVideo = type === "video";
+  const [ratio, setRatio] = useState<number | null>(null);
 
   return (
     <div
@@ -44,7 +47,12 @@ const PostMediaFrame = ({ url, type, alt = "Post media", onClick, className }: P
           alt={alt}
           loading="lazy"
           decoding="async"
-          className="w-auto max-w-full h-auto max-h-[65vh] sm:max-h-[520px] object-contain hover:opacity-95 transition-opacity"
+          onLoad={(e) => {
+            const { naturalWidth: w, naturalHeight: h } = e.currentTarget;
+            if (w && h) setRatio(Math.min(1.91, Math.max(0.8, w / h)));
+          }}
+          style={ratio ? { aspectRatio: String(ratio) } : undefined}
+          className="block h-auto w-full object-cover transition-opacity hover:opacity-95"
         />
       )}
     </div>
