@@ -3,7 +3,7 @@ import SEO from "@/components/SEO";
 import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import HeaderFilterTrigger from "@/components/HeaderFilterTrigger";
-import { ArrowLeft, Filter } from "lucide-react";
+import { ArrowLeft, SlidersHorizontal } from "lucide-react";
 import ArtistProfileCard from "@/components/ArtistProfileCard";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -134,7 +134,7 @@ const FilterButton = (props: FilterButtonProps & { placement: "header" | "page";
             <HeaderFilterTrigger activeCount={activeFilterCount(props)} />
           ) : (
             <Button variant="outline" size="sm" className="text-xs h-9 px-3">
-              <Filter className="h-3 w-3 mr-1" />
+              <SlidersHorizontal className="h-3 w-3 mr-1" />
               Filter
               {activeFilterCount(props) > 0 && (
                 <span className="ml-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-accent px-1 text-[10px] font-semibold text-accent-foreground">
@@ -161,7 +161,7 @@ const FilterButton = (props: FilterButtonProps & { placement: "header" | "page";
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
-          <Filter className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+          <SlidersHorizontal className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
           Filter
         </Button>
       </PopoverTrigger>
