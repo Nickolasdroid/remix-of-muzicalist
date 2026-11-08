@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         display: ['Inter', 'Inter Fallback', 'sans-serif'],
         sans: ['Inter', 'Inter Fallback', 'sans-serif'],
+        headline: ['"Schibsted Grotesk"', 'Inter', 'Inter Fallback', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

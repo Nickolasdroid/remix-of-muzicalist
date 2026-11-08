@@ -175,19 +175,19 @@ const HeroSearchBar = () => {
   );
 
   const allFieldsFilled = !!selectedCategory && !!selectedCountry && !!selectedDate;
-  const fieldClass = "flex items-center gap-2 px-4 py-3 cursor-pointer hover:bg-muted/20 transition-colors text-sm font-medium whitespace-nowrap";
-  const dividerClass = "w-px bg-border/50 self-stretch my-2";
+  const fieldClass = "flex items-center gap-2.5 px-5 py-3.5 cursor-pointer hover:bg-secondary/60 transition-colors text-[15px] font-medium whitespace-nowrap focus-visible:outline-none focus-visible:bg-secondary/60";
+  const dividerClass = "w-px bg-border self-stretch my-3";
 
   // Mobile: stacked layout
   if (isMobile) {
     return (
-      <div className="w-full max-w-md mx-auto">
-        <div className="bg-card/90 backdrop-blur-sm rounded-2xl border border-border/50 overflow-hidden shadow-lg">
+      <div className="w-full">
+        <div className="bg-card rounded-2xl border border-border overflow-hidden">
           {/* Category */}
           <Drawer open={categoryOpen} onOpenChange={setCategoryOpen}>
             <DrawerTrigger asChild>
-              <button type="button" className={cn(fieldClass, "w-full border-b border-border/30")}>
-                <Music className="h-4 w-4 text-accent shrink-0" />
+              <button type="button" className={cn(fieldClass, "w-full border-b border-border")}>
+                <Music className="h-4 w-4 text-muted-foreground shrink-0" />
                 <span className="text-foreground/90">{categoryLabel}</span>
               </button>
             </DrawerTrigger>
@@ -202,8 +202,8 @@ const HeroSearchBar = () => {
           {/* Location */}
           <Drawer open={locationOpen} onOpenChange={setLocationOpen}>
             <DrawerTrigger asChild>
-              <button type="button" className={cn(fieldClass, "w-full border-b border-border/30")}>
-                <MapPin className="h-4 w-4 text-accent shrink-0" />
+              <button type="button" className={cn(fieldClass, "w-full border-b border-border")}>
+                <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
                 <span className="truncate text-foreground/90">{locationLabel}</span>
               </button>
             </DrawerTrigger>
@@ -218,8 +218,8 @@ const HeroSearchBar = () => {
           {/* Date */}
           <Drawer open={dateOpen} onOpenChange={setDateOpen}>
             <DrawerTrigger asChild>
-              <button type="button" className={cn(fieldClass, "w-full border-b border-border/30")}>
-                <CalendarIcon className="h-4 w-4 text-accent shrink-0" />
+              <button type="button" className={cn(fieldClass, "w-full border-b border-border")}>
+                <CalendarIcon className="h-4 w-4 text-muted-foreground shrink-0" />
                 <span className="text-foreground/90">{dateLabel}</span>
               </button>
             </DrawerTrigger>
@@ -245,7 +245,7 @@ const HeroSearchBar = () => {
           <Button
             onClick={handleSearch}
             disabled={!allFieldsFilled}
-            className="w-full rounded-none rounded-b-2xl bg-accent text-accent-foreground hover:bg-accent/90 py-3 text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-none bg-accent text-accent-foreground hover:bg-accent/90 h-12 text-[15px] font-semibold disabled:opacity-100 disabled:bg-secondary disabled:text-muted-foreground disabled:cursor-not-allowed"
           >
             <Search className="h-4 w-4 mr-2" />
             Search
@@ -257,13 +257,13 @@ const HeroSearchBar = () => {
 
   // Desktop: horizontal bar
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      <div className="flex items-center bg-card/90 backdrop-blur-sm rounded-full border border-border/50 overflow-hidden shadow-lg">
+    <div className="w-full max-w-2xl">
+      <div className="flex items-center bg-card rounded-full border border-border overflow-hidden">
         {/* Category */}
         <Popover open={categoryOpen} onOpenChange={setCategoryOpen}>
           <PopoverTrigger asChild>
-            <button type="button" className={cn(fieldClass, "flex-1 min-w-0 rounded-l-full")}>
-              <Music className="h-4 w-4 text-accent shrink-0" />
+            <button type="button" className={cn(fieldClass, "shrink-0 rounded-l-full pl-6")}>
+              <Music className="h-4 w-4 text-muted-foreground shrink-0" />
               <span className="truncate text-foreground/90">{categoryLabel}</span>
             </button>
           </PopoverTrigger>
@@ -278,7 +278,7 @@ const HeroSearchBar = () => {
         <Popover open={locationOpen} onOpenChange={setLocationOpen}>
           <PopoverTrigger asChild>
             <button type="button" className={cn(fieldClass, "flex-1 min-w-0")}>
-              <MapPin className="h-4 w-4 text-accent shrink-0" />
+              <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
               <span className="truncate text-foreground/90">{locationLabel}</span>
             </button>
           </PopoverTrigger>
@@ -293,7 +293,7 @@ const HeroSearchBar = () => {
         <Popover open={dateOpen} onOpenChange={setDateOpen}>
           <PopoverTrigger asChild>
             <button type="button" className={cn(fieldClass, "flex-1 min-w-0")}>
-              <CalendarIcon className="h-4 w-4 text-accent shrink-0" />
+              <CalendarIcon className="h-4 w-4 text-muted-foreground shrink-0" />
               <span className="truncate text-foreground/90">{dateLabel}</span>
             </button>
           </PopoverTrigger>
@@ -312,7 +312,7 @@ const HeroSearchBar = () => {
         <Button
           onClick={handleSearch}
           disabled={!allFieldsFilled}
-          className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90 px-6 py-3 text-base font-semibold m-1.5 shadow-[var(--shadow-gold)] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="rounded-full bg-accent text-accent-foreground hover:bg-accent/90 h-11 px-6 text-[15px] font-semibold m-1.5 disabled:opacity-100 disabled:bg-secondary disabled:text-muted-foreground disabled:cursor-not-allowed"
         >
           <Search className="h-4 w-4 mr-2" />
           Search

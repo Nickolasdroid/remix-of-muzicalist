@@ -1,157 +1,103 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { ChevronRight, User, Trophy, Crown } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
+import { Star, User } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { getThumbUrl } from "@/lib/imageUrl";
+import { translateSpecialization } from "@/lib/specializationLabel";
 
-interface PreviewArtist {
+interface TopArtist {
+  id: string;
   stage_name: string;
+  avatar_url: string | null;
+  specialization: string | null;
   rating: number;
-  review_count: number;
+  reviewCount: number;
 }
 
-const FICTIONAL_TOP3: PreviewArtist[] = [
-  { stage_name: "Artist 1", review_count: 248, rating: 4.9 },
-  { stage_name: "Artist 2", review_count: 215, rating: 4.8 },
-  { stage_name: "Artist 3", review_count: 187, rating: 4.8 },
-];
-
-const podiumStyles: Record<number, {
-  ring: string;
-  crown: string;
-  badgeBg: string;
-  gradient: string;
-  height: string;
-  delay: string;
-  glow: string;
-}> = {
-  1: {
-    ring: "ring-[hsl(45_95%_55%)] shadow-[0_0_60px_hsl(45_95%_55%/0.7)]",
-    crown: "text-[hsl(45_95%_60%)] drop-shadow-[0_0_10px_hsl(45_95%_55%/0.9)]",
-    badgeBg: "bg-gradient-to-b from-[hsl(45_95%_60%)] to-[hsl(40_85%_45%)] text-black",
-    gradient: "bg-gradient-to-b from-[hsl(45_95%_55%/0.9)] via-[hsl(40_85%_45%/0.7)] to-[hsl(35_70%_30%/0.4)]",
-    glow: "bg-[hsl(45_95%_55%/0.35)]",
-    height: "h-28 md:h-36",
-    delay: "[animation-delay:0.1s]",
-  },
-  2: {
-    ring: "ring-[hsl(0_0%_75%)] shadow-[0_0_40px_hsl(0_0%_75%/0.5)]",
-    crown: "text-[hsl(0_0%_80%)] drop-shadow-[0_0_8px_hsl(0_0%_80%/0.8)]",
-    badgeBg: "bg-gradient-to-b from-[hsl(0_0%_85%)] to-[hsl(0_0%_55%)] text-black",
-    gradient: "bg-gradient-to-b from-[hsl(0_0%_80%/0.85)] via-[hsl(0_0%_55%/0.6)] to-[hsl(0_0%_25%/0.4)]",
-    glow: "bg-[hsl(0_0%_75%/0.25)]",
-    height: "h-20 md:h-24",
-    delay: "[animation-delay:0.3s]",
-  },
-  3: {
-    ring: "ring-[hsl(25_75%_50%)] shadow-[0_0_40px_hsl(25_75%_50%/0.5)]",
-    crown: "text-[hsl(25_85%_55%)] drop-shadow-[0_0_8px_hsl(25_85%_55%/0.8)]",
-    badgeBg: "bg-gradient-to-b from-[hsl(25_85%_55%)] to-[hsl(20_70%_35%)] text-black",
-    gradient: "bg-gradient-to-b from-[hsl(25_75%_50%/0.85)] via-[hsl(20_70%_35%/0.6)] to-[hsl(15_60%_20%/0.4)]",
-    glow: "bg-[hsl(25_75%_50%/0.25)]",
-    height: "h-16 md:h-20",
-    delay: "[animation-delay:0.5s]",
-  },
-};
-
+/**
+ * The three artists with the most reviews (then the best rating), like the Leaderboard
+ * page sorts them. Hidden until there are reviews to rank by.
+ */
 const LeaderboardPreviewSection = () => {
-  const top3 = FICTIONAL_TOP3;
-  // Visual order: 2nd, 1st, 3rd
-  const visualOrder = [top3[1], top3[0], top3[2]].filter(Boolean);
+  const [top, setTop] = useState<TopArtist[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: reviews } = await supabase.from("reviews").select("profile_id, rating");
+      if (cancelled || !reviews?.length) return;
+      const byArtist: Record<string, number[]> = {};
+      reviews.forEach((r: any) => (byArtist[r.profile_id] ||= []).push(r.rating));
+      const ranked = Object.entries(byArtist)
+        .map(([id, list]) => ({ id, reviewCount: list.length, rating: list.reduce((s, v) => s + v, 0) / list.length }))
+        .sort((a, b) => b.reviewCount - a.reviewCount || b.rating - a.rating)
+        .slice(0, 10);
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("id, stage_name, avatar_url, specialization")
+        .in("id", ranked.map((r) => r.id))
+        .not("specialization", "is", null);
+      if (cancelled || !profiles) return;
+      const byId = new Map(profiles.map((p: any) => [p.id, p]));
+      setTop(
+        ranked
+          .filter((r) => byId.has(r.id))
+          .slice(0, 3)
+          .map((r) => ({ ...(byId.get(r.id) as any), rating: r.rating, reviewCount: r.reviewCount })),
+      );
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (top.length < 3) return null;
 
   return (
-    <section className="py-10 md:py-20 px-4 md:px-8">
-      <div className="container mx-auto px-0">
-        <div className="mb-6 md:mb-12 px-2">
-          <div className="flex items-center justify-between">
-            <h2 className="flex items-center gap-2 md:gap-3 text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground">
-              <Trophy className="h-6 w-6 md:h-9 md:w-9 text-accent" />
-              Leaderboard
-            </h2>
-            <Link
-              to="/leaderboard"
-              className="flex items-center gap-1 text-sm md:text-base text-accent hover:text-accent/80 font-medium transition-colors"
-            >
-              See full
-              <ChevronRight className="h-4 w-4" />
-            </Link>
+    <section className="px-4 py-16 md:px-8 md:py-24">
+      <div className="container mx-auto max-w-6xl px-0">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <h2 className="font-headline text-3xl font-bold tracking-[-0.025em] text-foreground md:text-[2.75rem]">Leaderboard</h2>
+            <p className="mt-3 text-base text-muted-foreground md:text-lg">Artists ranked by their clients' reviews.</p>
           </div>
+          <Link to="/leaderboard" className="shrink-0 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:text-[15px]">
+            See full
+          </Link>
         </div>
 
-        <div className="max-w-3xl mx-auto rounded-lg border border-border overflow-hidden">
-          <div className="flex items-center justify-start gap-2 px-4 pt-4">
-            <Crown className="h-5 w-5 text-accent fill-accent" />
-            <span className="text-sm md:text-base font-bold tracking-wider text-accent uppercase">
-              Top 10 Artists
-            </span>
-          </div>
-
-          <div className="px-4 pt-6 pb-6 md:pt-10 md:pb-10 bg-gradient-to-b from-accent/5 to-transparent">
-            <div className="flex items-end justify-center gap-2 md:gap-6 max-w-2xl mx-auto">
-              {visualOrder.map((artist) => {
-                const rank = top3.indexOf(artist) + 1;
-                const s = podiumStyles[rank];
-                const isFirst = rank === 1;
-                return (
-                  <div
-                    key={artist.stage_name}
-                    className={`flex-1 flex flex-col items-center animate-podium-rise ${s.delay}`}
-                  >
-                    <div className="group flex flex-col items-center w-full">
-                      <Crown
-                        className={`${isFirst ? "h-7 w-7 md:h-9 md:w-9" : "h-5 w-5 md:h-7 md:w-7"} ${s.crown} animate-crown-bounce fill-current`}
-                        strokeWidth={1.5}
-                      />
-                      <div className="relative animate-podium-float mt-1 mb-3">
-                        <div className={`absolute inset-0 rounded-full blur-2xl animate-podium-glow ${s.glow}`} />
-                        <div className="relative">
-                          <Avatar
-                            className={`${isFirst ? "h-20 w-20 md:h-28 md:w-28" : "h-14 w-14 md:h-20 md:w-20"} ring-4 ${s.ring} transition-transform duration-300 group-hover:scale-105`}
-                          >
-                            <AvatarFallback className="bg-foreground">
-                              <User className="h-8 w-8 text-background" fill="currentColor" />
-                            </AvatarFallback>
-                          </Avatar>
-                          <div
-                            className={`absolute -top-2 -left-2 ${isFirst ? "h-8 w-8 text-sm md:h-9 md:w-9 md:text-base" : "h-7 w-7 text-xs md:h-8 md:w-8 md:text-sm"} rounded-full ${s.badgeBg} font-bold flex items-center justify-center shadow-lg ring-2 ring-background`}
-                          >
-                            {rank}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-center w-full px-1">
-                        <p
-                          className={`font-semibold text-foreground truncate notranslate ${isFirst ? "text-sm md:text-lg" : "text-xs md:text-sm"}`}
-                          data-user-content="true"
-                          data-no-translate="true"
-                          translate="no"
-                        >
-                          {artist.stage_name}
-                        </p>
-                        <ArtistCardStatusBadge
-                          rating={artist.rating}
-                          reviewCount={artist.review_count}
-                          className="mt-1"
-                        />
-                      </div>
-                    </div>
-                    <div
-                      className={`mt-3 w-full ${s.height} rounded-t-lg ${s.gradient} border-t border-x border-white/10 shadow-[inset_0_2px_0_hsl(0_0%_100%/0.15)] relative overflow-hidden`}
-                    >
-                      <div
-                        className={`absolute inset-x-0 top-0 h-1 ${isFirst ? "bg-[hsl(45_95%_70%)]" : rank === 2 ? "bg-[hsl(0_0%_90%)]" : "bg-[hsl(25_85%_65%)]"} opacity-80`}
-                      />
-                      <div
-                        className={`absolute inset-0 flex items-center justify-center text-3xl md:text-5xl font-black ${isFirst ? "text-black/30" : "text-black/25"}`}
-                      >
-                        {rank}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+        <ol className="mt-8 md:mt-10">
+          {top.map((a, i) => (
+            <li key={a.id} className="border-t border-border last:border-b">
+              <Link
+                to={`/artist/${a.id}`}
+                className="group flex items-center gap-4 py-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:gap-6 md:py-5"
+              >
+                <span className="w-8 font-headline text-3xl font-bold tabular-nums text-muted-foreground/70 md:w-12 md:text-5xl">{i + 1}</span>
+                <span className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-secondary md:h-16 md:w-16">
+                  {a.avatar_url ? (
+                    <img src={getThumbUrl(a.avatar_url, 128)} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" />
+                  ) : (
+                    <span className="flex h-full w-full items-center justify-center">
+                      <User className="h-6 w-6 text-muted-foreground/60" />
+                    </span>
+                  )}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-base font-semibold text-foreground group-hover:underline group-hover:underline-offset-4 md:text-lg notranslate" translate="no" data-user-content="true">
+                    {a.stage_name}
+                  </span>
+                  <span className="block truncate text-[13px] text-muted-foreground md:text-sm">{translateSpecialization(a.specialization)}</span>
+                </span>
+                <span className="flex shrink-0 items-center gap-1 text-sm text-muted-foreground">
+                  <Star className="h-4 w-4 fill-accent text-accent" aria-hidden="true" />
+                  <span className="font-semibold tabular-nums text-foreground">{a.rating.toFixed(1)}</span>
+                  <span className="tabular-nums">({a.reviewCount})</span>
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ol>
       </div>
     </section>
   );

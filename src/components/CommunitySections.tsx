@@ -1,212 +1,55 @@
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Play, Star, ThumbsUp, MessageCircle, Eye, Share2, MapPin, CalendarDays, Megaphone, Newspaper } from "lucide-react";
 import artistFeedImg from "@/assets/artist-feed-mockup.webp";
-import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
-import { useIsMobile } from "@/hooks/use-mobile";
 
-const PhoneMockup = () => (
-  <div className="w-64 md:w-72 flex-shrink-0">
-    <div className="rounded-[2rem] border-2 border-black bg-card overflow-hidden shadow-[0_0_40px_-5px_hsl(var(--accent)/0.4)] relative">
-      {/* Status bar */}
-      <div className="flex items-center justify-between px-5 py-1.5 bg-black/80 text-white text-[9px]">
-        <span className="font-semibold">9:41</span>
-        <div className="flex items-center gap-1">
-          <span>●●●</span>
-        </div>
+const BLOCKS = [
+  {
+    title: "Artist posts",
+    text: "Artists share videos from their shows, photos and the dates they're free. Follow them and see what they're up to.",
+    link: "/feed",
+    linkLabel: "See posts",
+  },
+  {
+    title: "Events looking for artists",
+    text: "Organizers post the event and the kind of artist they need. Artists answer with a price, and the organizer picks.",
+    link: "/feed?f=gig",
+    linkLabel: "See events",
+  },
+];
+
+const CommunitySections = () => (
+  <section className="px-4 py-16 md:px-8 md:py-24">
+    <div className="container mx-auto grid max-w-6xl items-center gap-10 px-0 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+      <div className="overflow-hidden rounded-3xl bg-secondary lg:order-2">
+        <img
+          src={artistFeedImg}
+          alt="A singer on stage, as a post in the Muzicalist feed"
+          className="aspect-[4/3] h-full w-full object-cover lg:aspect-[5/4]"
+          loading="lazy"
+          decoding="async"
+        />
       </div>
 
-      {/* Artist image area */}
-      <div className="aspect-[3/3.2] relative flex items-end overflow-hidden">
-        <img src={artistFeedImg} alt="Artist performing" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-12 h-12 rounded-full bg-background/40 backdrop-blur-sm flex items-center justify-center">
-            <Play className="h-5 w-5 text-accent fill-accent" />
-          </div>
-        </div>
-        {/* Artist info overlay */}
-        <div className="relative z-10 p-3 w-full bg-gradient-to-t from-black/70 to-transparent">
-          <h4 className="font-display font-bold text-sm text-white">Mark Rivers</h4>
-          <p className="text-[10px] text-white/80">DJ · Cluj-Napoca, RO</p>
-          <div className="flex items-center justify-between mt-1">
-            <div className="flex items-center gap-0.5">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="h-2.5 w-2.5 text-accent fill-accent" />
-              ))}
-              <span className="text-[9px] text-white/80 ml-1">4.9</span>
+      <div>
+        <h2 className="font-headline text-3xl font-bold tracking-[-0.025em] text-foreground md:text-[2.75rem] md:leading-[1.08]">
+          More than a list of names
+        </h2>
+        <div className="mt-8 space-y-8 md:mt-10">
+          {BLOCKS.map((b) => (
+            <div key={b.title} className="border-t border-border pt-6">
+              <h3 className="font-headline text-xl font-semibold tracking-[-0.015em] text-foreground md:text-2xl">{b.title}</h3>
+              <p className="mt-2 max-w-md text-[15px] leading-relaxed text-muted-foreground md:text-base">{b.text}</p>
+              <Link
+                to={b.link}
+                className="mt-4 inline-block rounded-sm text-[15px] font-semibold text-foreground underline decoration-border underline-offset-[6px] transition-colors hover:decoration-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {b.linkLabel}
+              </Link>
             </div>
-            <span className="text-[8px] font-bold border border-accent text-accent px-2 py-0.5 rounded-md">BOOK</span>
-          </div>
+          ))}
         </div>
       </div>
-
-      {/* Engagement bar */}
-      <div className="flex items-center justify-between px-3 py-1.5 text-[8px] text-muted-foreground border-b border-border/30">
-        <span className="flex items-center gap-0.5"><ThumbsUp className="h-2.5 w-2.5" /> Like</span>
-        <span className="flex items-center gap-0.5"><MessageCircle className="h-2.5 w-2.5" /> 121</span>
-        <span className="flex items-center gap-0.5"><Eye className="h-2.5 w-2.5" /> 87K</span>
-        <span className="flex items-center gap-0.5"><Share2 className="h-2.5 w-2.5" /> Share</span>
-      </div>
-
-      {/* Event Request section inside phone */}
-      <div className="p-2.5 space-y-1.5">
-        <h4 className="font-display font-bold text-sm text-foreground">Events</h4>
-
-        {[
-          { name: "Electric Club", location: "New York, NY", date: "Saturday, May 18" },
-          { name: "Lucia Events", location: "Cluj-Napoca", date: "June 14" },
-        ].map((event, i) => (
-          <div key={i} className="rounded-md border border-accent/20 bg-secondary/50 p-2 flex items-center justify-between">
-            <div className="space-y-0.5">
-              <h5 className="font-display font-bold text-[9px] text-foreground">{event.name}</h5>
-              <p className="text-[7px] text-muted-foreground flex items-center gap-0.5">
-                <MapPin className="h-2 w-2 text-accent" /> {event.location}
-              </p>
-              <p className="text-[7px] text-muted-foreground flex items-center gap-0.5">
-                <CalendarDays className="h-2 w-2 text-accent" /> {event.date}
-              </p>
-            </div>
-            <span className="text-[7px] font-bold border border-accent text-accent px-1.5 py-0.5 rounded">APPLY NOW</span>
-          </div>
-        ))}
-      </div>
-
     </div>
-  </div>
+  </section>
 );
-
-const RightContent = () => (
-  <div className="flex flex-col gap-6 md:gap-8 max-w-md">
-    {/* Artist Feed */}
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <Newspaper className="h-5 w-5 md:h-6 md:w-6 text-accent" />
-        <h3 className="text-lg md:text-2xl font-display font-bold text-foreground">Artist Feed</h3>
-      </div>
-      <p className="text-foreground/90 text-base font-normal">
-        Share performances, build your audience, and get booked.
-      </p>
-      <p className="text-foreground/90 text-base font-normal">
-        Post your performance videos, grow your followers, and turn visibility into real bookings.
-      </p>
-      <Link to="/feed" className="mt-2 inline-block">
-        <Button
-          size="sm"
-          className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 text-xs md:text-sm px-6 py-2"
-        >
-          Explore Feed
-        </Button>
-      </Link>
-    </div>
-
-    {/* Event Request */}
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <Megaphone className="h-5 w-5 md:h-6 md:w-6 text-accent" />
-        <h3 className="text-lg md:text-2xl font-display font-bold text-foreground">Event Opportunities</h3>
-      </div>
-      <p className="text-foreground/90 text-base font-normal">
-        Browse real event requests, apply quickly, and secure new bookings.
-      </p>
-      <p className="text-foreground/90 text-base font-normal">
-        Connect with verified organizers and turn opportunities into confirmed events.
-      </p>
-
-      <Link to="/feed?f=gig" className="mt-2 inline-block">
-        <Button
-          size="sm"
-          className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] hover:scale-105 transition-all duration-300 text-xs md:text-sm px-6 py-2"
-        >
-          Explore Announcements
-        </Button>
-      </Link>
-    </div>
-  </div>
-);
-
-/* Compact mobile card for carousel */
-const MobileCard = ({ type }: { type: "feed" | "events" }) => {
-  if (type === "feed") {
-    return (
-      <div className="group relative rounded-2xl border border-border/50 bg-card/60 backdrop-blur-sm p-5 overflow-hidden transition-all duration-500 hover:border-accent/50 hover:shadow-[0_0_30px_-5px_hsl(var(--accent)/0.3)]">
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none bg-[linear-gradient(105deg,transparent_40%,hsl(var(--accent)/0.08)_45%,hsl(var(--accent)/0.15)_50%,hsl(var(--accent)/0.08)_55%,transparent_60%)] bg-[length:200%_100%] group-hover:animate-[shimmer_1.5s_ease-in-out]" />
-        <div className="relative z-10 flex flex-col gap-3">
-          <div className="flex items-center gap-2">
-            <Newspaper className="h-5 w-5 text-accent" />
-            <h3 className="text-lg font-display font-bold text-foreground">Artist Feed</h3>
-          </div>
-          <p className="text-foreground/90 text-base font-normal">Share performances, build your audience, and get booked.</p>
-          <p className="text-foreground/90 text-base font-normal">Post your performance videos, grow your followers, and turn visibility into real bookings.</p>
-          <Link to="/feed">
-            <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] text-xs px-5 py-2 mt-1">
-              Explore Feed
-            </Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="group relative rounded-2xl border border-border/50 bg-card/60 backdrop-blur-sm p-5 overflow-hidden transition-all duration-500 hover:border-accent/50 hover:shadow-[0_0_30px_-5px_hsl(var(--accent)/0.3)]">
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none bg-[linear-gradient(105deg,transparent_40%,hsl(var(--accent)/0.08)_45%,hsl(var(--accent)/0.15)_50%,hsl(var(--accent)/0.08)_55%,transparent_60%)] bg-[length:200%_100%] group-hover:animate-[shimmer_1.5s_ease-in-out]" />
-      <div className="relative z-10 flex flex-col gap-3">
-        <div className="flex items-center gap-2">
-          <Megaphone className="h-5 w-5 text-accent" />
-           <h3 className="text-lg font-display font-bold text-foreground">Event Opportunities</h3>
-        </div>
-        <p className="text-foreground/90 text-base font-normal">Browse real event requests, apply quickly, and secure new bookings.</p>
-        <p className="text-foreground/90 text-base font-normal">Connect with verified organizers and turn opportunities into confirmed events.</p>
-        <Link to="/feed?f=gig">
-          <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-[var(--shadow-gold)] text-xs px-5 py-2 mt-1">
-            Explore Announcements
-          </Button>
-        </Link>
-      </div>
-    </div>
-  );
-};
-
-const CommunitySections = () => {
-  const [isCompact, setIsCompact] = useState(false);
-
-  useEffect(() => {
-    const mql = window.matchMedia("(max-width: 1023px)");
-    const onChange = () => setIsCompact(mql.matches);
-    onChange();
-    mql.addEventListener("change", onChange);
-    return () => mql.removeEventListener("change", onChange);
-  }, []);
-
-  return (
-    <section className="py-12 md:py-20 lg:py-28 px-4 md:px-6 lg:px-8 relative overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsl(var(--accent)/0.08)_0%,transparent_70%)]" />
-
-      <div className="container mx-auto relative z-10">
-        <div className="text-center mb-8 md:mb-12 lg:mb-16">
-          <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground mb-2 md:mb-4">
-            Posts & Event Opportunities
-          </h2>
-          <p className="md:text-lg text-muted-foreground max-w-xl mx-auto text-sm">
-            Share performances, explore real event requests, and turn activity into bookings.
-          </p>
-        </div>
-
-        {isCompact ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto">
-            <MobileCard type="feed" />
-            <MobileCard type="events" />
-          </div>
-        ) : (
-          <div className="flex items-center justify-center gap-12 lg:gap-20 max-w-5xl mx-auto">
-            <PhoneMockup />
-            <RightContent />
-          </div>
-        )}
-      </div>
-    </section>
-  );
-};
 
 export default CommunitySections;

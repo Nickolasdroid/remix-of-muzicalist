@@ -1,13 +1,8 @@
-import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
-import { User, ChevronRight, TrendingUp } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { getCountryFlag } from "@/lib/countryFlags";
-import PlanBadge from "@/components/PlanBadge";
-import { sortByPlanPriority, isPremium, isStandard } from "@/lib/planLimits";
-import { translateSpecialization } from "@/lib/specializationLabel";
-import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
+import { Star, User } from "lucide-react";
 import { getThumbUrl } from "@/lib/imageUrl";
+import { translateSpecialization } from "@/lib/specializationLabel";
+import type { HomeArtist } from "@/hooks/useHomeArtists";
 import {
   Carousel,
   CarouselContent,
@@ -16,178 +11,74 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 
-interface ArtistData {
-  id: string;
-  stage_name: string;
-  avatar_url: string | null;
-  specialization: string | null;
-  county: string;
-  country: string | null;
-  plan: string;
-  created_at: string;
-}
-
-interface ArtistWithRating extends ArtistData {
-  rating: number | null;
-  reviewCount: number;
-}
-
-
-const NEW_ARTIST_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
-
-const DiscoverArtistsSection = () => { 
-  const [artists, setArtists] = useState<ArtistWithRating[]>([]);
-  const [isVisible, setIsVisible] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    if (loading || artists.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.15 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, [loading, artists]);
-
-  useEffect(() => {
-    const fetchArtists = async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, stage_name, avatar_url, specialization, county, country, plan, created_at')
-        .not('specialization', 'is', null)
-        .limit(12);
-
-      if (error || !data) {
-        setLoading(false);
-        return;
-      }
-
-      const ids = data.map(a => a.id);
-      const { data: reviews } = await supabase
-        .from('reviews')
-        .select('profile_id, rating')
-        .in('profile_id', ids);
-
-      const ratingMap: Record<string, number[]> = {};
-      reviews?.forEach(r => {
-        if (!ratingMap[r.profile_id]) ratingMap[r.profile_id] = [];
-        ratingMap[r.profile_id].push(r.rating);
-      });
-
-      const withRatings: ArtistWithRating[] = data.map(a => ({
-        ...a,
-        rating: ratingMap[a.id]
-          ? Math.round((ratingMap[a.id].reduce((s, v) => s + v, 0) / ratingMap[a.id].length) * 10) / 10
-          : null,
-        reviewCount: ratingMap[a.id]?.length ?? 0,
-      }));
-
-      withRatings.sort((a, b) => sortByPlanPriority(a, b));
-      setArtists(withRatings);
-      setLoading(false);
-    };
-
-    fetchArtists();
-  }, []);
-
-  if (loading || artists.length === 0) return null;
+/** Home page row of artists: photo first, name and details under it, nothing boxed. */
+const DiscoverArtistsSection = ({ artists }: { artists: HomeArtist[] | null }) => {
+  if (!artists || artists.length === 0) return null;
 
   return (
-    <section ref={sectionRef} className="py-10 md:py-20 px-4 md:px-8">
-      <div className="container mx-auto px-0">
-        <div className="text-center mb-6 md:mb-12 px-2">
-          <div className="flex items-center justify-between">
-            <h2 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground">
-              Discover Artists
-            </h2>
-            <Link
-              to="/artists"
-              className="flex items-center gap-1 text-sm md:text-base text-accent hover:text-accent/80 font-medium transition-colors"
-            >
-              See more
-              <ChevronRight className="h-4 w-4" />
-            </Link>
-          </div>
+    <section className="px-4 py-10 md:px-8 md:py-16">
+      <div className="container mx-auto max-w-6xl px-0">
+        <div className="mb-6 flex items-end justify-between gap-4 md:mb-8">
+          <h2 className="font-headline text-3xl font-bold tracking-[-0.025em] text-foreground md:text-[2.75rem]">
+            Discover artists
+          </h2>
+          <Link to="/artists" className="shrink-0 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:text-[15px]">
+            See all
+          </Link>
         </div>
 
-        <Carousel opts={{ align: "start", loop: true }} className="w-full">
-          <CarouselContent className="-ml-3 md:-ml-4">
-            {artists.map((artist, index) => {
-              const flag = artist.country ? getCountryFlag(artist.country) : '';
-
-              return (
-                <CarouselItem
-                  key={artist.id}
-                  className="pl-3 md:pl-4 basis-1/2 md:basis-1/4 transition-all duration-700 ease-out"
-                  style={{
-                    opacity: isVisible ? 1 : 0,
-                    transform: isVisible ? 'translateY(0)' : 'translateY(30px)',
-                    transitionDelay: `${index * 100}ms`,
-                  }}
-                >
-                  <Link to={`/artist/${artist.id}`} className="group block">
-                    <div className="overflow-hidden rounded-lg border border-border">
-                      <div className="relative aspect-square overflow-hidden">
-                        <PlanBadge plan={artist.plan} />
-                        {artist.avatar_url ? (
-                          <img
-                            src={getThumbUrl(artist.avatar_url, 320)}
-                            alt={artist.stage_name}
-                            width={320}
-                            height={320}
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-full object-cover bg-muted"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-card to-secondary flex items-center justify-center">
-                            <User className="h-16 w-16 text-accent" />
-                          </div>
-                        )}
-                        {artist.rating !== null && artist.rating >= 4.5 && (
-                          <div className="absolute top-2 left-2 flex items-center gap-1 bg-accent text-accent-foreground text-[10px] md:text-xs font-bold px-2 py-0.5 rounded-full shadow-md">
-                            <TrendingUp className="h-3 w-3" />
-                            Top Rated
-                          </div>
-                        )}
+        <Carousel opts={{ align: "start", loop: false }} className="w-full">
+          <CarouselContent className="-ml-3 md:-ml-5">
+            {artists.map((artist) => (
+              <CarouselItem key={artist.id} className="basis-[46%] pl-3 sm:basis-1/3 md:basis-1/4 md:pl-5 lg:basis-1/5">
+                <Link to={`/artist/${artist.id}`} className="group block rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                  <div className="aspect-square overflow-hidden rounded-xl bg-secondary">
+                    {artist.avatar_url ? (
+                      <img
+                        src={getThumbUrl(artist.avatar_url, 320)}
+                        alt={artist.stage_name}
+                        width={320}
+                        height={320}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center">
+                        <User className="h-12 w-12 text-muted-foreground/60" />
                       </div>
-
-
-                      <div className="bg-card border-t border-border p-2 space-y-0.5">
-                        <h3 className="text-base font-sans font-semibold text-foreground text-left group-hover:text-accent transition-colors truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                          {artist.stage_name}
-                        </h3>
-
-                        <p className="text-xs text-muted-foreground truncate text-left">
-                          {translateSpecialization(artist.specialization)}{artist.county ? ` · ${artist.county}` : ''} {flag}
-                        </p>
-
-                        <div className="flex items-center justify-between min-h-[20px]">
-                          <ArtistCardStatusBadge
-                            createdAt={artist.created_at}
-                            rating={artist.rating}
-                            reviewCount={artist.reviewCount}
-                            specialization={artist.specialization}
-                            location={artist.county}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                </CarouselItem>
-              );
-            })}
+                    )}
+                  </div>
+                  <h3
+                    className="mt-3 truncate text-[15px] font-semibold text-foreground notranslate"
+                    data-user-content="true"
+                    data-no-translate="true"
+                    translate="no"
+                  >
+                    {artist.stage_name}
+                  </h3>
+                  <p className="mt-0.5 truncate text-[13px] text-muted-foreground">
+                    <span>{translateSpecialization(artist.specialization)}</span>
+                    {artist.county ? (
+                      <>
+                        <span>, </span>
+                        <span className="notranslate" translate="no">{artist.county}</span>
+                      </>
+                    ) : null}
+                  </p>
+                  {artist.rating !== null && (
+                    <p className="mt-1 flex items-center gap-1 text-[13px] text-muted-foreground">
+                      <Star className="h-3.5 w-3.5 fill-accent text-accent" aria-hidden="true" />
+                      <span className="font-medium tabular-nums text-foreground">{artist.rating.toFixed(1)}</span>
+                      <span className="tabular-nums">({artist.reviewCount})</span>
+                    </p>
+                  )}
+                </Link>
+              </CarouselItem>
+            ))}
           </CarouselContent>
-          <CarouselPrevious className="left-1 md:-left-12" />
-          <CarouselNext className="right-1 md:-right-12" />
+          <CarouselPrevious className="hidden md:flex -left-5 top-[38%] border-border bg-background/90" />
+          <CarouselNext className="hidden md:flex -right-5 top-[38%] border-border bg-background/90" />
         </Carousel>
       </div>
     </section>
