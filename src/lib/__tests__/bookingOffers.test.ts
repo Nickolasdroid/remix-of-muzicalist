@@ -39,7 +39,8 @@ describe("bookingOffers helpers", () => {
 
   it("maps database error codes to readable messages", () => {
     expect(offerErrorText({ message: "BOOKING_DATE_PASSED" })).toBe("The event date has already passed.");
-    expect(offerErrorText({ message: "boom" })).toBe("Something went wrong. Please try again.");
+    expect(offerErrorText({ message: "boom" })).toBe("Something went wrong (boom).");
+    expect(offerErrorText({})).toBe("Something went wrong. Please try again.");
   });
 
   it("writes an escaped, Romanian confirmation into a new window", () => {
