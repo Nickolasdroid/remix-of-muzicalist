@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Star, User } from "lucide-react";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
+import GuestSignupBar from "@/components/GuestSignupBar";
 import { useHomeArtists, type HomeArtist } from "@/hooks/useHomeArtists";
 import { getThumbUrl } from "@/lib/imageUrl";
 import { translateSpecialization } from "@/lib/specializationLabel";
@@ -121,7 +122,7 @@ const About = () => {
     <div className="min-h-screen bg-black">
       <Navigation />
 
-      <main className="px-0 pb-28 pt-14 md:px-2 md:pt-[72px]">
+      <main className="px-0 pb-8 pt-14 md:px-2 md:pt-[72px]">
         <div
           className="min-h-[70vh] rounded-none px-3 pb-10 pt-4 md:rounded-lg md:px-6 md:pt-6"
           style={{ background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" }}
@@ -196,26 +197,7 @@ const About = () => {
 
       <Footer />
 
-      {/* Sign-up bar, always in reach */}
-      <div className="fixed inset-x-0 bottom-0 z-40 px-0 pb-[env(safe-area-inset-bottom)] md:px-2 md:pb-2">
-        <div
-          className="flex items-center justify-between gap-4 px-4 py-3 md:rounded-md md:px-5 md:py-3.5"
-          style={{ background: "linear-gradient(90deg, #8C6A12 0%, #C99A22 100%)" }}
-        >
-          <div className="min-w-0">
-            <p className="font-figtree text-sm font-bold text-white md:text-[15px]">Find and book artists for your event</p>
-            <p className="hidden font-figtree text-sm text-white/90 sm:block">
-              Sign up for free to message artists and send booking requests.
-            </p>
-          </div>
-          <Link
-            to="/register"
-            className="shrink-0 rounded-full bg-white px-5 py-2.5 font-figtree text-sm font-bold text-black transition-transform hover:scale-[1.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 md:px-7 md:py-3 md:text-base"
-          >
-            Sign up free
-          </Link>
-        </div>
-      </div>
+      <GuestSignupBar />
     </div>
   );
 };
