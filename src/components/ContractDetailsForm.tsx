@@ -13,7 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { ContractDetails, ENTITY_TYPE_OPTIONS, EntityType, isCompany } from "@/lib/contracts";
+import { ContractDetails, ENTITY_TYPE_OPTIONS, EntityType, isCompany, isValidPhone } from "@/lib/contracts";
 
 export interface ContractDetailsFormHandle {
   /** Validates and saves. Returns true on success. */
@@ -41,6 +41,7 @@ const EMPTY: ContractDetails = {
   vat_payer: false,
   iban: "",
   bank: "",
+  phone: "",
 };
 
 const clean = (s?: string | null) => {
@@ -71,13 +72,22 @@ const ContractDetailsForm = forwardRef<ContractDetailsFormHandle, ContractDetail
         }
         const { data } = await (supabase as any)
           .from("contract_profiles")
-          .select("entity_type, legal_name, cui, reg_com, address, city, county, country, representative, vat_payer, iban, bank")
+          .select("entity_type, legal_name, cui, reg_com, address, city, county, country, representative, vat_payer, iban, bank, phone")
           .eq("user_id", uid)
           .maybeSingle();
         if (cancelled) return;
+        // The account phone (private) pre-fills the contract phone
+        let accountPhone = "";
+        if (!data?.phone) {
+          const { data: rows } = await (supabase as any).rpc("get_my_full_profile");
+          const me = Array.isArray(rows) ? rows[0] : rows;
+          accountPhone = me?.phone || "";
+          if (cancelled) return;
+        }
         if (data) {
-          setForm({ ...EMPTY, ...data });
+          setForm({ ...EMPTY, ...data, phone: data.phone || accountPhone });
         } else {
+          if (accountPhone) setForm((f) => ({ ...f, phone: accountPhone }));
           // Pre-fill from the public profile
           const { data: p } = await supabase
             .from("profiles")
@@ -110,6 +120,7 @@ const ContractDetailsForm = forwardRef<ContractDetailsFormHandle, ContractDetail
       const nextErrors: Record<string, boolean> = {};
       if ((form.legal_name || "").trim().length < 2) nextErrors.legal_name = true;
       if (!clean(form.address)) nextErrors.address = true;
+      if (!isValidPhone(form.phone)) nextErrors.phone = true;
       if (company && !clean(form.cui)) nextErrors.cui = true;
       setErrors(nextErrors);
       if (Object.keys(nextErrors).length > 0) {
@@ -138,6 +149,7 @@ const ContractDetailsForm = forwardRef<ContractDetailsFormHandle, ContractDetail
         city: clean(form.city),
         county: clean(form.county),
         country: clean(form.country),
+        phone: clean(form.phone),
         representative: form.entity_type === "srl" || form.entity_type === "other_company" ? clean(form.representative) : null,
         vat_payer: company ? !!form.vat_payer : false,
         iban: variant === "artist" ? clean(form.iban)?.replace(/\s+/g, "").toUpperCase() ?? null : null,
@@ -202,6 +214,22 @@ const ContractDetailsForm = forwardRef<ContractDetailsFormHandle, ContractDetail
             placeholder={company ? "e.g. Pop Andrei PFA" : "e.g. Andrei Pop"}
             onChange={(e) => set("legal_name", e.target.value)}
           />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="cd-phone">Phone</Label>
+          <Input
+            id="cd-phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            className={err("phone")}
+            value={form.phone || ""}
+            maxLength={30}
+            placeholder="07xx xxx xxx"
+            onChange={(e) => set("phone", e.target.value)}
+          />
+          {errors.phone && <p className="text-xs text-destructive">Enter a valid phone number.</p>}
         </div>
 
         {company && (

@@ -7,6 +7,11 @@
 // Generated 2026-07-14 from all JSX text + placeholder/title/aria-label literals.
 
 export const RO_TEXT: Record<string, string> = {
+  "Enter a valid phone number.": "Introdu un număr de telefon valid.",
+  "Your phone (for the contract)": "Telefonul tău (pentru contract)",
+  "Please add your phone number for the contract.": "Adaugă numărul de telefon pentru contract.",
+  "Please check the phone number and try again.": "Verifică numărul de telefon și încearcă din nou.",
+  "07xx xxx xxx": "07xx xxx xxx",
   "Go to the Register page and choose between an Artist account or a User account. You can sign up with email and password or continue with Google. Creating an account is free.": "Mergi pe pagina de înregistrare și alege între un cont de Artist și un cont de Utilizator. Te poți înregistra cu email și parolă sau poți continua cu Google. Crearea contului este gratuită.",
   "No. Creating an account and using Muzicalist is free. Artists start on the Free plan and can choose Standard or Premium for more posts, a bigger gallery, stories and better placement. Booking an artist doesn't need a plan.": "Nu. Crearea contului și folosirea Muzicalist sunt gratuite. Artiștii încep cu planul Free și pot alege Standard sau Premium pentru mai multe postări, o galerie mai mare, stories și o poziționare mai bună. Pentru a rezerva un artist nu ai nevoie de niciun plan.",
   "4. Plans & Subscriptions": "4. Planuri și abonamente",

@@ -72,6 +72,7 @@ const ERROR_TEXT: Record<string, string> = {
   CONTRACT_TERMS_NOT_ACCEPTED: "Please confirm that you agree to the contract terms.",
   CONTRACT_LOCATION_REQUIRED: "Please enter where the event takes place.",
   CONTRACT_DETAILS_REQUIRED: "Please fill in your contract details (name and address).",
+  CONTRACT_PHONE_REQUIRED: "Please add your phone number for the contract.",
   BOOKING_HAS_CONTRACT: "This booking has a contract and can't be deleted. You can cancel it instead.",
 };
 

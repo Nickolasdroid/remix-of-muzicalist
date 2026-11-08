@@ -24,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 import { CURRENCIES } from "@/lib/currencies";
 import { BookingOfferFields, OFFER_NOTE_MAX, offerErrorText } from "@/lib/bookingOffers";
 import { opportunityErrorText } from "@/lib/opportunities";
+import { isValidPhone } from "@/lib/contracts";
 
 interface BookingOfferDialogProps {
   open: boolean;
@@ -50,6 +51,10 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
   const [saving, setSaving] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [hasContractDetails, setHasContractDetails] = useState<boolean | null>(null);
+  // The contract needs the artist's phone: asked here only when it's missing
+  const [needsPhone, setNeedsPhone] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [legalName, setLegalName] = useState("");
 
   useEffect(() => {
     if (!open || !booking) return;
@@ -59,10 +64,21 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
     (async () => {
       const { data } = await (supabase as any)
         .from("contract_profiles")
-        .select("user_id")
+        .select("user_id, phone")
         .eq("user_id", booking.profile_id)
         .maybeSingle();
-      if (!cancelled) setHasContractDetails(!!data);
+      if (cancelled) return;
+      setHasContractDetails(!!data);
+      if (data?.phone) {
+        setNeedsPhone(false);
+        return;
+      }
+      const { data: rows } = await (supabase as any).rpc("get_my_full_profile");
+      const me = Array.isArray(rows) ? rows[0] : rows;
+      if (cancelled) return;
+      setNeedsPhone(true);
+      setPhone(me?.phone || "");
+      setLegalName([me?.first_name, me?.last_name].filter(Boolean).join(" ") || me?.stage_name || "");
     })();
     if (booking.offer_price != null) {
       setPrice(String(booking.offer_price));
@@ -112,10 +128,28 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
     (Number.isFinite(advanceNumber) && advanceNumber > 0 && (!priceValid || advanceNumber <= priceNumber) &&
       !!advanceDue && advanceDue >= todayYmd && (!booking || advanceDue <= booking.event_date));
   const isUpdate = booking?.status === "offered";
+  const phoneValid = !needsPhone || isValidPhone(phone);
 
   const handleSend = async () => {
-    if (!booking || !priceValid || !acceptTerms || !advanceValid || saving) return;
+    if (!booking || !priceValid || !acceptTerms || !advanceValid || !phoneValid || saving) return;
     setSaving(true);
+    if (needsPhone) {
+      const cleanPhone = phone.trim();
+      const { error: phoneError } = hasContractDetails
+        ? await (supabase as any).from("contract_profiles").update({ phone: cleanPhone }).eq("user_id", booking.profile_id)
+        : await (supabase as any).from("contract_profiles").insert({
+            user_id: booking.profile_id,
+            legal_name: legalName.trim().length >= 2 ? legalName.trim() : "Artist",
+            phone: cleanPhone,
+          });
+      if (phoneError) {
+        setSaving(false);
+        toast({ title: "Could not save", description: "Please check the phone number and try again.", variant: "destructive" });
+        return;
+      }
+      setHasContractDetails(true);
+      setNeedsPhone(false);
+    }
     const offer = {
       _price: Math.round(priceNumber * 100) / 100,
       _currency: currency,
@@ -270,6 +304,25 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
               )}
             </div>
 
+            {needsPhone && (
+              <div className="space-y-1.5">
+                <Label htmlFor="offer-phone">Your phone (for the contract)</Label>
+                <Input
+                  id="offer-phone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  maxLength={30}
+                  placeholder="07xx xxx xxx"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+                {phone.trim() !== "" && !phoneValid && (
+                  <p className="text-xs text-destructive">Enter a valid phone number.</p>
+                )}
+              </div>
+            )}
+
             {hasContractDetails === false && (
               <div className="flex items-start gap-2 rounded-lg bg-secondary/50 p-3 text-xs text-muted-foreground">
                 <FileText className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
@@ -294,7 +347,7 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
             <Button
               className="w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
               onClick={handleSend}
-              disabled={!priceValid || !acceptTerms || !advanceValid || saving}
+              disabled={!priceValid || !acceptTerms || !advanceValid || !phoneValid || saving}
             >
               {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Send className="h-4 w-4 mr-2" />}
               {isUpdate ? "Update offer" : "Send offer"}

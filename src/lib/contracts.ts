@@ -21,7 +21,16 @@ export interface ContractDetails {
   vat_payer?: boolean;
   iban?: string | null;
   bank?: string | null;
+  phone?: string | null;
 }
+
+/** A phone number with 9 to 15 digits (spaces, dashes, dots, brackets and a leading + allowed). */
+export const isValidPhone = (s?: string | null) => {
+  const t = (s ?? "").trim();
+  if (!/^\+?[\d\s().-]+$/.test(t)) return false;
+  const digits = t.replace(/\D/g, "").length;
+  return digits >= 9 && digits <= 15;
+};
 
 export interface ContractParty extends Partial<ContractDetails> {
   stage_name?: string | null;
