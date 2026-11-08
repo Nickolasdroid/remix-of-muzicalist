@@ -2,14 +2,14 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Facebook, Instagram, Youtube, Mail } from "lucide-react";
 import { getCurrentLanguage } from "@/i18n";
-import logo from "@/assets/logo.webp";
 
 const TikTokIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
     <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.68 2.87 2.87 0 01-2.1-5.11 2.87 2.87 0 012.1-.87h.3V9.6a6.33 6.33 0 00-.3 0A6.24 6.24 0 003.91 16a6.24 6.24 0 006.24 6.24 6.24 6.24 0 006.24-6.24V8.91a8.17 8.17 0 004.77 1.52V7a4.81 4.81 0 01-1.57-.31z" />
   </svg>
 );
-const Footer = () => {
+/** Site footer, Spotify style. `embedded`: drawn inside a page panel (no own border or container). */
+const Footer = ({ embedded = false }: { embedded?: boolean }) => {
   const { t } = useTranslation();
   const skipAutoTranslate = getCurrentLanguage() === "ro";
   const currentYear = new Date().getFullYear();
@@ -63,76 +63,62 @@ const Footer = () => {
     href: "https://www.tiktok.com/@muzicalist",
     label: "TikTok"
   }];
-  return <footer data-no-translate={skipAutoTranslate ? true : undefined} className="border-t border-border bg-background">
-      <div className="container mx-auto px-4 py-12 bg-background">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Brand Section */}
-          <div className="space-y-4">
-            <Link to="/" className="flex items-center gap-3">
-              <img src={logo} alt="Logo" className="h-12 w-auto" />
+  const linkClass = "text-muted-foreground hover:text-foreground hover:underline";
+  const column = (title: string, links: { title: string; href: string }[]) => (
+    <div>
+      <h3 className="mb-2 text-base font-bold text-foreground">{title}</h3>
+      <ul className="space-y-2">
+        {links.map((link) => (
+          <li key={link.href}>
+            <Link to={link.href} className={linkClass}>
+              {link.title}
             </Link>
-            
-            <div className="flex gap-3">
-              {socialLinks.map(social => <a key={social.label} href={social.href} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center text-accent hover:bg-accent hover:text-accent-foreground transition-all duration-300">
-                  <social.icon className="h-5 w-5" />
-                </a>)}
-            </div>
-          </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 
-          {/* Quick Links + For Artists - same row on mobile */}
-          <div className="flex flex-row gap-8 md:contents">
+  return <footer data-no-translate={skipAutoTranslate ? true : undefined} className={embedded ? "px-4 pb-10 md:px-8" : "bg-background"}>
+      <div className={embedded ? "border-t border-border pt-10" : "container mx-auto px-4 py-12"}>
+        <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-3 lg:gap-16">
+            {column(t("footer.quickLinks", "Quick Links"), quickLinks)}
+            {column(t("footer.forArtists", "For Artists"), artistLinks)}
             <div>
-              <h3 className="font-display font-bold text-lg text-foreground mb-4">
-                {t("footer.quickLinks", "Quick Links")}
-              </h3>
-              <ul className="space-y-2">
-                {quickLinks.map(link => <li key={link.title}>
-                    <Link to={link.href} className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                      {link.title}
-                    </Link>
-                  </li>)}
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="font-display font-bold text-lg text-foreground mb-4">
-                {t("footer.forArtists", "For Artists")}
-              </h3>
-              <ul className="space-y-2">
-                {artistLinks.map(link => <li key={link.title}>
-                    <Link to={link.href} className="text-muted-foreground hover:text-accent transition-colors duration-300">
-                      {link.title}
-                    </Link>
-                  </li>)}
-              </ul>
-            </div>
-          </div>
-
-          {/* Contact Info */}
-          <div>
-            <h3 className="font-display font-bold text-lg text-foreground mb-4">
-              {t("footer.contactUs", "Contact Us")}
-            </h3>
-            <ul className="space-y-3">
-              <li className="flex items-center gap-3 text-muted-foreground">
-                <Mail className="h-5 w-5 text-accent" />
+              <h3 className="mb-2 text-base font-bold text-foreground">{t("footer.contactUs", "Contact Us")}</h3>
+              <a href="mailto:contact@muzicalist.com" className={`inline-flex items-center gap-2 ${linkClass}`}>
+                <Mail className="h-4 w-4" />
                 <span>contact@muzicalist.com</span>
-              </li>
-            </ul>
+              </a>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            {socialLinks.map((social) => (
+              <a
+                key={social.label}
+                href={social.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={social.label}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#292929] text-foreground transition-colors hover:bg-[#727272]"
+              >
+                <social.icon className="h-5 w-5" />
+              </a>
+            ))}
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-muted-foreground text-sm">
+        <div className="mt-10 flex flex-col-reverse items-start justify-between gap-4 border-t border-border pt-8 text-sm text-muted-foreground md:flex-row md:items-center">
+          <p>
             © {currentYear} Muzicalist. {t("footer.allRightsReserved", "All rights reserved.")}
           </p>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <Link to="/privacy-policy" className="hover:text-accent transition-colors duration-300">
+          <div className="flex items-center gap-4">
+            <Link to="/privacy-policy" className={linkClass}>
               {t("footer.privacyPolicy", "Privacy & Policy")}
             </Link>
-            <span className="text-border">|</span>
-            <Link to="/terms-of-service" className="hover:text-accent transition-colors duration-300">
+            <Link to="/terms-of-service" className={linkClass}>
               {t("footer.termsConditions", "Terms & Conditions")}
             </Link>
           </div>

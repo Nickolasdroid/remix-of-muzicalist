@@ -80,7 +80,10 @@
     "discover": "Descoperă",
     "account": "Cont",
     "helpSupport": "Ajutor și suport",
-    "upgrade": "Upgrade"
+    "upgrade": "Upgrade",
+    "plans": "Planuri",
+    "help": "Ajutor",
+    "searchArtists": "Ce artist cauți?"
   },
   "footer": {
     "quickLinks": "Linkuri rapide",

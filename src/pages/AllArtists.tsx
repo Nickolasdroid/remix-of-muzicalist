@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { User, ArrowLeft } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { getCountryFlag } from "@/lib/countryFlags";
@@ -30,8 +30,18 @@ interface ArtistWithRating extends ArtistData {
 }
 
 
+const normalize = (v: string) => v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
 const AllArtists = () => {
-  const [artists, setArtists] = useState<ArtistWithRating[]>([]);
+  const [searchParams] = useSearchParams();
+  const query = (searchParams.get("q") || "").trim();
+  const [allArtists, setArtists] = useState<ArtistWithRating[]>([]);
+  // Header search: name, artist type or place, accents ignored
+  const artists = query
+    ? allArtists.filter((a) =>
+        normalize([a.stage_name, a.specialization, translateSpecialization(a.specialization), a.county, a.country].filter(Boolean).join(" ")).includes(normalize(query)),
+      )
+    : allArtists;
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -89,7 +99,13 @@ const AllArtists = () => {
             </Button>
           </Link>
           <h1 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground">
-            Discover Artists
+            {query ? (
+              <>
+                <span>Results for</span> <span className="notranslate" translate="no">„{query}”</span>
+              </>
+            ) : (
+              "Discover Artists"
+            )}
           </h1>
         </div>
 
@@ -100,7 +116,7 @@ const AllArtists = () => {
             ))}
           </div>
         ) : artists.length === 0 ? (
-          <p className="text-muted-foreground text-center py-20">No artists found.</p>
+          <p className="text-muted-foreground text-center py-20">{query ? "No artists match your search." : "No artists found."}</p>
         ) : (
           <div className="-mx-2 grid grid-cols-2 md:-mx-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {artists.map((artist) => (

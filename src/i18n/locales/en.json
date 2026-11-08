@@ -79,7 +79,10 @@
     "discover": "Discover",
     "account": "Account",
     "helpSupport": "Help & Support",
-    "upgrade": "Upgrade"
+    "upgrade": "Upgrade",
+    "plans": "Plans",
+    "help": "Help",
+    "searchArtists": "Which artist are you looking for?"
   },
   "footer": {
     "quickLinks": "Quick Links",

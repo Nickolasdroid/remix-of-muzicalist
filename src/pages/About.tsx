@@ -5,6 +5,7 @@ import { Star, User } from "lucide-react";
 import Footer from "@/components/Footer";
 import Navigation from "@/components/Navigation";
 import GuestSignupBar from "@/components/GuestSignupBar";
+import GuestSidebar from "@/components/GuestSidebar";
 import { useHomeArtists, type HomeArtist } from "@/hooks/useHomeArtists";
 import { getThumbUrl } from "@/lib/imageUrl";
 import { translateSpecialization } from "@/lib/specializationLabel";
@@ -122,9 +123,11 @@ const About = () => {
     <div className="min-h-screen bg-black">
       <Navigation />
 
-      <main className="px-0 pb-8 pt-14 md:px-2 md:pt-[72px]">
+      <main className="flex items-start gap-2 px-0 pb-2 pt-14 md:px-2 md:pt-[72px]">
+        <GuestSidebar />
+        <div className="min-w-0 flex-1 overflow-hidden rounded-none bg-background md:rounded-lg">
         <div
-          className="min-h-[70vh] rounded-none px-3 pb-10 pt-4 md:rounded-lg md:px-6 md:pt-6"
+          className="min-h-[70vh] px-3 pb-10 pt-4 md:px-6 md:pt-6"
           style={{ background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" }}
         >
           <h1 className="sr-only">Muzicalist: find and book artists for your event</h1>
@@ -193,9 +196,9 @@ const About = () => {
             </section>
           )}
         </div>
+        <Footer embedded />
+        </div>
       </main>
-
-      <Footer />
 
       <GuestSignupBar />
     </div>

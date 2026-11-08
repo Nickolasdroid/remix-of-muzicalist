@@ -424,15 +424,54 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     <>
       {/* Desktop: Top Header Bar - Only when NOT logged in */}
       {!user && (
-      <nav data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 right-0 h-16 z-50 bg-black hidden md:flex items-center justify-between px-8">
-        <div className="flex items-center gap-2">
-          <Link to="/" className="flex items-center gap-2">
-            <img src={logo} alt="Muzicalist — The Global Stage for Musical Artists" className="h-9 w-9 object-contain" />
-            <span className="font-bold text-lg text-foreground uppercase" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
+      <nav data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 right-0 h-16 z-50 bg-black hidden md:flex items-center justify-between gap-2 px-4 lg:px-6">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
+          <Link to="/" className="mr-2 flex shrink-0 items-center gap-2" aria-label="Muzicalist">
+            <img src={logo} alt="" className="h-9 w-9 object-contain" />
+            <span className="hidden font-bold text-lg text-foreground uppercase xl:inline" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
           </Link>
+          <Link
+            to="/"
+            aria-label={t('navigation.home')}
+            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#1f1f1f] transition-transform hover:scale-[1.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${location.pathname === '/' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <Home className="h-6 w-6" fill={location.pathname === '/' ? 'currentColor' : 'none'} />
+          </Link>
+          {/* Search: artists by name, type or place (opens the full list filtered) */}
+          <form
+            role="search"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const q = String(new FormData(e.currentTarget).get('q') || '').trim();
+              navigate(q ? `/artists?q=${encodeURIComponent(q)}` : '/artists');
+            }}
+            className="group relative w-full max-w-[460px]"
+          >
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground group-focus-within:text-foreground" />
+            <input
+              name="q"
+              type="search"
+              defaultValue={location.pathname === '/artists' ? new URLSearchParams(location.search).get('q') || '' : ''}
+              placeholder={t('navigation.searchArtists', 'Which artist are you looking for?')}
+              className="h-12 w-full rounded-full border-0 bg-[#1f1f1f] pl-12 pr-4 text-base text-foreground placeholder:text-muted-foreground transition-colors hover:bg-[#2a2a2a] focus:bg-[#2a2a2a] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+            />
+          </form>
         </div>
 
-        <div className="flex items-center gap-2" aria-label={t('navigation.authActions', 'Authentication')}>
+        <div className="ml-4 hidden shrink-0 items-center gap-5 lg:flex">
+          {[
+            { to: '/plans', label: t('navigation.plans', 'Plans') },
+            { to: '/help', label: t('navigation.help', 'Help') },
+            { to: '/about', label: t('navigation.about', 'About') },
+          ].map((l) => (
+            <Link key={l.to} to={l.to} className="text-base font-bold text-muted-foreground transition-all hover:scale-[1.04] hover:text-foreground">
+              {l.label}
+            </Link>
+          ))}
+          <span className="mx-2 h-7 w-px bg-foreground/80" aria-hidden="true" />
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2" aria-label={t('navigation.authActions', 'Authentication')}>
           <Link to="/register" className="rounded-full px-4 py-2.5 text-base font-bold text-muted-foreground transition-all hover:scale-[1.04] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
             {t('navigation.registerDesktop')}
           </Link>

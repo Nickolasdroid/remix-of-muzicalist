@@ -7,6 +7,15 @@
 // Generated 2026-07-14 from all JSX text + placeholder/title/aria-label literals.
 
 export const RO_TEXT: Record<string, string> = {
+  "Are you an artist?": "Ești artist?",
+  "Create your profile for free and get booking requests.": "Creează-ți profilul gratuit și primește cereri de rezervare.",
+  "Create artist profile": "Creează profil de artist",
+  "Planning an event?": "Organizezi un eveniment?",
+  "Find the right artist and book with a contract.": "Găsește artistul potrivit și rezervă-l cu contract.",
+  "Browse artists": "Vezi artiștii",
+  "Help": "Ajutor",
+  "Results for": "Rezultate pentru",
+  "No artists match your search.": "Niciun artist nu se potrivește căutării.",
   "None yet": "Încă niciunul",
   "Recommended artists": "Artiști recomandați",
   "Top rated": "Cei mai apreciați",
