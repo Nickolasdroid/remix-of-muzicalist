@@ -169,6 +169,13 @@
       "when": 1794171882672,
       "tag": "0023_booking_day_time_range",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1794172784706,
+      "tag": "0024_contract_phone_required",
+      "breakpoints": true
     }
   ]
 }
