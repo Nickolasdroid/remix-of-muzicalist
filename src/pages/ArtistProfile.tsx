@@ -1390,13 +1390,13 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
               {/* Stats: three quiet columns, value over label, no box */}
               <dl className="mx-4 md:mx-0 mt-4 md:mt-6 flex gap-8 md:gap-12">
-                {/* Hidden until the first confirmed event: a big 0 says nothing useful */}
-                {acceptedEventsCount > 0 && (
-                  <div className="min-w-0">
-                    <dd className="truncate text-lg md:text-xl font-bold text-foreground tabular-nums">{acceptedEventsCount}+</dd>
-                    <dt className="truncate text-xs md:text-sm text-muted-foreground">Events</dt>
-                  </div>
-                )}
+                <div className="min-w-0">
+                  {/* Before the first confirmed event: words instead of a bare 0 */}
+                  <dd className="truncate text-lg md:text-xl font-bold text-foreground tabular-nums">
+                    {acceptedEventsCount > 0 ? `${acceptedEventsCount}+` : <span>None yet</span>}
+                  </dd>
+                  <dt className="truncate text-xs md:text-sm text-muted-foreground">Events</dt>
+                </div>
                 <div className="min-w-0">
                   <dd className="truncate text-lg md:text-xl font-bold text-foreground">
                     {artist.created_at

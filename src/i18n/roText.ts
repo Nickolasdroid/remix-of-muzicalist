@@ -7,6 +7,7 @@
 // Generated 2026-07-14 from all JSX text + placeholder/title/aria-label literals.
 
 export const RO_TEXT: Record<string, string> = {
+  "None yet": "Încă niciunul",
   "Recommended artists": "Artiști recomandați",
   "Top rated": "Cei mai apreciați",
   "New on Muzicalist": "Noi pe Muzicalist",
