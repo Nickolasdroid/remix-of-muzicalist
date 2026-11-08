@@ -162,6 +162,13 @@
       "when": 1794171086888,
       "tag": "0022_protect_advance_and_contract_terms",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1794171882672,
+      "tag": "0023_booking_day_time_range",
+      "breakpoints": true
     }
   ]
 }
