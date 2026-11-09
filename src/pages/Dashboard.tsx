@@ -1809,7 +1809,7 @@ const Dashboard = () => {
                         </div>
 
                         {/* Avatar overlapping cover bottom + info below (Facebook-style) */}
-                        <div className="px-4 md:px-8 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
+                        <div className="px-4 md:px-[max(2rem,calc((100%-896px)/2))] -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
                           <div className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)} shadow-xl flex-shrink-0 group/avatar`}>
                             <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
                               <AvatarImage src={profile?.avatar_url} />
@@ -1849,7 +1849,7 @@ const Dashboard = () => {
 
 
                         {/* Stats: three quiet columns, same as the public profile */}
-                        <dl className="mx-4 md:mx-8 mt-4 md:mt-6 flex gap-8 md:gap-12">
+                        <dl className="mx-4 md:mx-[max(2rem,calc((100%-896px)/2))] mt-4 md:mt-6 flex gap-8 md:gap-12">
                           <div className="min-w-0">
                             <dd className="truncate text-lg md:text-xl font-bold text-foreground tabular-nums">
                               {acceptedEventsCount > 0 ? `${acceptedEventsCount}+` : <span>None yet</span>}
@@ -1934,7 +1934,7 @@ const Dashboard = () => {
 
 
                     {/* Tabs Section */}
-                    <Tabs value={profileSection} onValueChange={setProfileSection} className="w-full">
+                    <Tabs value={profileSection} onValueChange={setProfileSection} className="mx-auto w-full max-w-[896px]">
                       {!calendarOnly && <TabsList className="flex w-full justify-start mt-6 mb-5 md:mb-8 h-auto p-0 gap-2 bg-transparent border-0 rounded-none">
                         {!isAdmin && (
                           <TabsTrigger value="details" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
@@ -1962,7 +1962,7 @@ const Dashboard = () => {
 
                       {/* Details Tab */}
                       {!isAdmin && <TabsContent value="details">
-                        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-12">
+                        <div className="space-y-10">
                         <div className="min-w-0 space-y-10">
                         {/* Bio/Description */}
                         <div className="group">
@@ -2113,7 +2113,6 @@ const Dashboard = () => {
 
                               {canSetEstimatedPrice(currentPlan) && pricingCount > 0 && (
                                 <Button
-                                  size="sm"
                                   variant="ghost"
                                   className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent"
                                   onClick={() => setPricingDialogOpen(true)}
@@ -2163,7 +2162,7 @@ const Dashboard = () => {
 
                         {/* Side column: the short facts */}
                         <aside className="space-y-4">
-                          <div className="space-y-6 rounded-lg bg-foreground/[0.05] p-5">
+                          <div className="space-y-10">
                         {/* Instrument Section for Instrumentalists */}
                         {formData.specialization?.toLowerCase() === 'instrumentalist' &&
               <>
@@ -2184,7 +2183,6 @@ const Dashboard = () => {
                                     <SectionHeaderWithUsage
                                       icon={<Music2 className="h-5 w-5 text-accent" />}
                                       title="Instrument"
-                                      size="sm"
                                     />
 
                                     <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal cursor-pointer hover:bg-foreground/[0.12] transition-colors group" onClick={() => handleInstrumentsChange("")}>
@@ -2198,7 +2196,6 @@ const Dashboard = () => {
                                     <SectionHeaderWithUsage
                                       icon={<Music2 className="h-5 w-5 text-accent" />}
                                       title="Instrument"
-                                      size="sm"
                                     />
 
                                     <InstrumentSelector
@@ -2219,7 +2216,6 @@ const Dashboard = () => {
                                 <SectionHeaderWithUsage
                                   icon={<Users className="h-5 w-5 text-accent" />}
                                   title="Collaborations"
-                                  size="sm"
                                 />
                                 {editingField !== 'collabStatus' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('collabStatus')}>
                                     <Edit2 className="h-4 w-4" />
@@ -2268,7 +2264,6 @@ const Dashboard = () => {
                                 <SectionHeaderWithUsage
                                   icon={<Users className="h-5 w-5 text-accent" />}
                                   title="Members"
-                                  size="sm"
                                 />
 
                                 {editingField !== 'bandMembers' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bandMembers')}>
@@ -2295,7 +2290,7 @@ const Dashboard = () => {
 
 
                           <div>
-                            <SectionHeaderWithUsage title="Contact Information" size="sm" className="mb-2" />
+                            <SectionHeaderWithUsage title="Contact Information" className="mb-4" />
                             <dl className="space-y-2 text-sm">
                               <div className="flex items-center gap-3">
                                 <Mail className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
@@ -2393,7 +2388,6 @@ const Dashboard = () => {
                               <PostsViewSwitcher mode={postsViewMode} onChange={setPostsViewMode} />
                               {canCreatePosts ? (
                                 <Button
-                                  size="sm"
                                   onClick={() => setShowPostDialog(true)}
                                   className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
                                 >
@@ -2402,7 +2396,6 @@ const Dashboard = () => {
                                 </Button>
                               ) : (
                                 <Button
-                                  size="sm"
                                   variant="outline"
                                   onClick={() => navigate('/my-plan')}
                                   className="rounded-lg shrink-0"
@@ -2576,7 +2569,6 @@ const Dashboard = () => {
                             action={
                               !canCreateAnnouncements ? (
                                 <Button
-                                  size="sm"
                                   variant="outline"
                                   onClick={() => navigate('/my-plan')}
                                   className="rounded-lg shrink-0"
@@ -3086,7 +3078,6 @@ const Dashboard = () => {
                               {bookingRequests.length + sentBookingRequests.length > 0 && (
                                 <Button
                                   variant="ghost"
-                                  size="sm"
                                   className="rounded-lg text-accent hover:text-accent"
                                   onClick={() => navigate("/booking-requests")}
                                 >
