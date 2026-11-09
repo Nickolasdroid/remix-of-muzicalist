@@ -8,6 +8,7 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "Pick a free day to send a request.": "Alege o zi liberă ca să trimiți o cerere.",
   "Pick a day to manage it in your calendar.": "Alege o zi ca s-o gestionezi în calendar.",
   "No posts yet": "Încă nicio postare",
   "When this artist shares news, availability or videos, they'll show up here.": "Când artistul publică noutăți, disponibilități sau videoclipuri, le vei vedea aici.",

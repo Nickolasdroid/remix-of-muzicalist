@@ -73,6 +73,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import type { Area } from "react-easy-crop";
 const Cropper = lazy(() => import("react-easy-crop"));
 import { parseYMDToLocalDate } from "@/lib/utils";
+import { CompactCalendarLegend } from "@/components/ArtistAvailabilityCalendar";
 import { getThumbUrl } from "@/lib/imageUrl";
 import { Calendar } from "@/components/ui/calendar";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
@@ -1706,15 +1707,18 @@ const Dashboard = () => {
                               className="-mx-3 p-0"
                               classNames={{ day_today: "font-bold underline decoration-foreground/70 decoration-2 underline-offset-4" }}
                               modifiers={{
-                                busy: calendarEvents.filter((e) => e.status === 'busy' || e.status === 'booked').map((e) => parseYMDToLocalDate(e.event_date)),
+                                busy: calendarEvents.filter((e) => (e.status === 'busy' || e.status === 'booked') && isDayFullyBooked(parseSlotsFromNotes(e.notes))).map((e) => parseYMDToLocalDate(e.event_date)),
+                                partial: calendarEvents.filter((e) => (e.status === 'busy' || e.status === 'booked') && !isDayFullyBooked(parseSlotsFromNotes(e.notes))).map((e) => parseYMDToLocalDate(e.event_date)),
                                 blocked: calendarEvents.filter((e) => e.status === 'blocked' || e.status === 'unavailable').map((e) => parseYMDToLocalDate(e.event_date)),
                               }}
                               modifiersClassNames={{
                                 busy: "bg-destructive/70 text-destructive-foreground hover:bg-destructive/70",
+                                partial: "bg-orange-600/80 text-white hover:bg-orange-600/80",
                                 blocked: "bg-[#535353] text-foreground/80 hover:bg-[#535353]",
                               }}
                             />
-                            <p className="mt-2 text-xs text-muted-foreground">Pick a day to manage it in your calendar.</p>
+                            <CompactCalendarLegend />
+                            <p className="mt-1 text-xs text-muted-foreground/80">Pick a day to manage it in your calendar.</p>
                           </div>
 
                           {/* Reviews */}

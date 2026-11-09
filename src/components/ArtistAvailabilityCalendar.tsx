@@ -60,6 +60,23 @@ function CalendarLegend({ desktop = false }: { desktop?: boolean }) {
   );
 }
 
+/** Legend for the small calendars in the profile side panel: one compact row. */
+export function CompactCalendarLegend() {
+  return (
+    <div className="mt-3 space-y-2">
+      <div className="flex flex-wrap gap-x-4 gap-y-1.5">
+        {legendItems.map((item) => (
+          <div key={item.label} className="flex items-center gap-1.5">
+            <span aria-hidden="true" className={`h-3 w-3 shrink-0 rounded-full ${item.swatch}`} />
+            <span className="text-xs text-muted-foreground">{item.label}</span>
+          </div>
+        ))}
+      </div>
+      <p className="text-xs text-muted-foreground/80">Days without a color are free.</p>
+    </div>
+  );
+}
+
 export function ArtistAvailabilityCalendar({
   selected,
   onSelect,

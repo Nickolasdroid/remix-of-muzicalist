@@ -29,7 +29,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
-import { ArtistAvailabilityCalendar, AvailabilityCalendarLayout, calendarAvailabilityStyles } from "@/components/ArtistAvailabilityCalendar";
+import { ArtistAvailabilityCalendar, AvailabilityCalendarLayout, CompactCalendarLegend, calendarAvailabilityStyles } from "@/components/ArtistAvailabilityCalendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PROFILE_PANEL } from "@/lib/profileLayout";
 import GuestSidebar from "@/components/GuestSidebar";
@@ -1234,13 +1234,19 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                           disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
                           className="-mx-3 p-0"
                           classNames={{ day_today: "font-bold underline decoration-foreground/70 decoration-2 underline-offset-4" }}
-                          modifiers={{ busy: getBusyDates(), blocked: getBlockedDates() }}
+                          modifiers={{
+                            busy: getBusyDates().filter((d) => isDayFullyBooked(getEventsForDate(d).flatMap((ev) => extractAllTimeSlotsFromNotes(ev.notes)))),
+                            partial: getBusyDates().filter((d) => !isDayFullyBooked(getEventsForDate(d).flatMap((ev) => extractAllTimeSlotsFromNotes(ev.notes)))),
+                            blocked: getBlockedDates(),
+                          }}
                           modifiersClassNames={{
                             busy: "bg-destructive/70 text-destructive-foreground hover:bg-destructive/70",
+                            partial: "bg-orange-600/80 text-white hover:bg-orange-600/80",
                             blocked: "bg-[#535353] text-foreground/80 hover:bg-[#535353]",
                           }}
                         />
-                        <p className="mt-2 text-xs text-muted-foreground">Days without a color are free. Pick one to send a request.</p>
+                        <CompactCalendarLegend />
+                        <p className="mt-1 text-xs text-muted-foreground/80">Pick a free day to send a request.</p>
                       </div>
 
                       {/* Rating */}
