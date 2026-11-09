@@ -51,6 +51,8 @@ const Welcome = () => {
       setSaving(false);
       return;
     }
+    // Welcome email for the role just chosen (the server sends at most one)
+    supabase.functions.invoke("send-welcome-email", { body: {} }).catch(() => {});
     const {
       data: { session },
     } = await supabase.auth.getSession();

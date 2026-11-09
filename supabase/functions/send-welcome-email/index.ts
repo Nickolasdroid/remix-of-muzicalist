@@ -166,28 +166,56 @@ Deno.serve(async (req) => {
       });
     }
 
-    // ---- Authenticate the caller against the vault-backed shared secret ----
-    const providedSecret = req.headers.get("x-welcome-trigger-secret");
-    if (!providedSecret || providedSecret.length < 16) return unauthorized();
-
+    // ---- Authenticate the caller. Two ways in:
+    //      1. the database (new account trigger, retry sweeper) with the vault-backed secret;
+    //      2. a signed-in person asking for their own email, right after choosing
+    //         artist/user on the welcome screen (Google sign-ups).
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
+    let userId: string | undefined;
 
-    const { data: verified, error: verifyErr } = await admin.rpc(
-      "verify_welcome_trigger_secret",
-      { _secret: providedSecret }
-    );
-    if (verifyErr) {
-      console.error("Secret verify RPC failed:", verifyErr);
-      return unauthorized();
+    const providedSecret = req.headers.get("x-welcome-trigger-secret");
+    if (providedSecret) {
+      if (providedSecret.length < 16) return unauthorized();
+      const { data: verified, error: verifyErr } = await admin.rpc(
+        "verify_welcome_trigger_secret",
+        { _secret: providedSecret }
+      );
+      if (verifyErr) {
+        console.error("Secret verify RPC failed:", verifyErr);
+        return unauthorized();
+      }
+      if (verified !== true) return unauthorized();
+      // Trusted payload (only user_id, and only after auth)
+      const body = (await req.json().catch(() => ({}))) as { user_id?: string };
+      userId = body.user_id;
+    } else {
+      const token = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+      if (!token) return unauthorized();
+      const { data: authData, error: authErr } = await admin.auth.getUser(token);
+      if (authErr || !authData?.user) return unauthorized();
+      // Always the caller's own account, whatever the body says
+      userId = authData.user.id;
     }
-    if (verified !== true) return unauthorized();
 
-    // ---- Parse trusted payload (only user_id, and only after auth) ----
-    const body = (await req.json().catch(() => ({}))) as { user_id?: string };
-    const userId = body.user_id;
     if (!userId || typeof userId !== "string") {
       return new Response(JSON.stringify({ error: "user_id_required" }), {
         status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // ---- Google sign-ups choose artist/user after the account exists. Nothing is
+    //      sent until they have, so the email (and the admin note) match the choice.
+    //      The welcome screen asks again right after the choice; the retry sweeper
+    //      is the fallback.
+    const { data: choiceRow } = await admin
+      .from("profiles")
+      .select("account_type_chosen")
+      .eq("id", userId)
+      .maybeSingle();
+    if ((choiceRow as any)?.account_type_chosen === false) {
+      return new Response(JSON.stringify({ status: "waiting_for_choice" }), {
+        status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
