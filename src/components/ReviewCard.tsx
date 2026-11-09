@@ -17,7 +17,7 @@ const ReviewCard = ({ review, onDelete }: { review: ReviewCardData; onDelete?: (
   const { i18n } = useTranslation();
   const locale = (i18n.language || "ro").startsWith("ro") ? "ro-RO" : "en-GB";
   return (
-    <div className="relative flex h-full flex-col gap-3 rounded-lg border border-accent/20 bg-card/50 p-4">
+    <div className="relative flex h-full flex-col gap-3 rounded-lg bg-foreground/[0.05] p-4">
       {onDelete && (
         <button
           onClick={onDelete}
@@ -31,7 +31,7 @@ const ReviewCard = ({ review, onDelete }: { review: ReviewCardData; onDelete?: (
       <div className="flex items-center gap-3">
         <Avatar className="h-10 w-10 flex-shrink-0">
           {review.reviewer_avatar_url && <AvatarImage src={review.reviewer_avatar_url} alt={review.reviewer_name} />}
-          <AvatarFallback className="bg-accent/10 text-sm text-accent">{(review.reviewer_name || "?").charAt(0).toUpperCase()}</AvatarFallback>
+          <AvatarFallback className="bg-foreground/10 text-sm text-foreground">{(review.reviewer_name || "?").charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div className="min-w-0 flex-1">
           <span className="block text-sm font-medium text-foreground notranslate" data-user-content="true" translate="no">{review.reviewer_name}</span>
@@ -46,7 +46,7 @@ const ReviewCard = ({ review, onDelete }: { review: ReviewCardData; onDelete?: (
       </div>
       <div className="flex gap-0.5" aria-label={`${review.rating} / 5`}>
         {[1, 2, 3, 4, 5].map((star) => (
-          <Star key={star} className={`h-4 w-4 ${star <= review.rating ? "fill-accent text-accent" : "text-muted-foreground/30"}`} />
+          <Star key={star} className={`h-4 w-4 ${star <= review.rating ? "fill-foreground text-foreground" : "text-muted-foreground/30"}`} />
         ))}
       </div>
       {review.comment && (

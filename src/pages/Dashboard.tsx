@@ -2320,21 +2320,15 @@ const Dashboard = () => {
 
                       {/* Reviews Tab (was hidden at the bottom of Details) */}
                       {!isAdmin && <TabsContent value="reviews">
-                        <SectionHeaderWithUsage
-                          icon={<Star className="h-5 w-5 text-accent" />}
-                          title="Reviews"
-                          usage={reviews.length > 0 ? reviews.length : undefined}
-                          className="mb-4"
-                        />
+                        <SectionHeaderWithUsage title="Reviews" className="mb-4" />
                         {reviews.length > 0 ? <>
                           <ReviewsSummary ratings={reviews.map((r) => r.rating)} average={getAverageRating()} />
                           <div className="grid gap-3 md:grid-cols-2">
                             {reviews.map((r) => <ReviewCard key={r.id} review={r} />)}
                           </div>
-                        </> : <div className="py-12 text-center border border-dashed border-accent/30 rounded-lg">
-                          <Star className="mx-auto mb-2 h-8 w-8 text-muted-foreground/50" />
-                          <p className="text-sm font-medium text-foreground">No reviews yet</p>
-                          <p className="mx-auto mt-1 max-w-xs text-xs text-muted-foreground">Organizers can review you after a completed booking. Verified reviews help you rank higher.</p>
+                        </> : <div className="py-2">
+                          <p className="text-base font-bold text-foreground">No reviews yet</p>
+                          <p className="mt-1 text-sm text-muted-foreground">Organizers can review you after a completed booking. Verified reviews help you rank higher.</p>
                         </div>}
                       </TabsContent>}
 

@@ -941,12 +941,12 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         {[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-5 w-5 ${star <= rating ? 'text-accent fill-accent' : 'text-muted-foreground'} ${interactive ? 'cursor-pointer hover:scale-110 transition-transform' : ''}`} onClick={() => interactive && onRate?.(star)} />)}
       </div>;
   };
-    const renderReviewCard = (review: Review) => <div className="flex flex-col gap-3 p-4 rounded-lg border border-accent/20 bg-card/50 h-full relative">
+    const renderReviewCard = (review: Review) => <div className="flex flex-col gap-3 p-4 rounded-lg bg-foreground/[0.05] h-full relative">
       {canDeleteReview(review) && <button onClick={() => setDeleteReviewId(review.id)} className="absolute top-2 right-2 p-1.5 rounded-full hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors" title="Delete review"><Trash2 className="h-4 w-4" /></button>}
       <div className="flex items-center gap-3">
         <Avatar className="h-10 w-10 flex-shrink-0">
           {review.reviewer_avatar_url && <AvatarImage src={review.reviewer_avatar_url} alt={review.reviewer_name} />}
-          <AvatarFallback className="bg-accent/10 text-accent text-sm">{review.reviewer_name.charAt(0).toUpperCase()}</AvatarFallback>
+          <AvatarFallback className="bg-foreground/10 text-foreground text-sm">{review.reviewer_name.charAt(0).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div className="flex-1 min-w-0">
           <span className="font-medium text-sm text-foreground block notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.reviewer_name}</span>
@@ -954,7 +954,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
           {review.is_verified_booking && <span className="mt-1 flex w-fit items-center gap-1 text-xs font-medium text-emerald-500"><BadgeCheck className="h-3.5 w-3.5" />Verified booking</span>}
         </div>
       </div>
-      <div className="flex gap-0.5">{[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-accent fill-accent' : 'text-muted-foreground/30'}`} />)}</div>
+      <div className="flex gap-0.5">{[1, 2, 3, 4, 5].map((star) => <Star key={star} className={`h-4 w-4 ${star <= review.rating ? 'text-foreground fill-foreground' : 'text-muted-foreground/30'}`} />)}</div>
       {review.comment && <p className="text-sm text-muted-foreground flex-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.comment}</p>}
     </div>;
 
@@ -1215,7 +1215,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       setCheckingReviewEligibility(false);
     }
   };
-  const writeReviewButton = currentUserId !== id ? <Button onClick={openReviewDialog} disabled={checkingReviewEligibility} size="sm" className="ml-auto h-8 px-3 bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">Write a Review</Button> : null;
+  const writeReviewButton = currentUserId !== id ? <Button onClick={openReviewDialog} disabled={checkingReviewEligibility} variant="outline" size="sm" className="ml-auto h-9 rounded-full border-foreground/25 bg-transparent px-4 font-bold whitespace-nowrap hover:border-foreground hover:bg-transparent">Write a review</Button> : null;
 
   // What helps decide to book: its own right-hand panel on wide screens, inline otherwise
   const sideCards = (
@@ -1406,9 +1406,9 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
               <div className="grid gap-3 md:grid-cols-2">
                 {visibleReviews.map((review) => <div key={review.id}>{renderReviewCard(review)}</div>)}
               </div>
-            </> : <div className="text-center py-12 border border-dashed border-accent/30 rounded-lg">
-              <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
-              <p className="text-sm text-muted-foreground">No reviews yet</p>
+            </> : <div className="py-2">
+              <p className="text-base font-bold text-foreground">No reviews yet</p>
+              <p className="mt-1 text-sm text-muted-foreground">Organizers who book this artist through Muzicalist can leave a review after the event.</p>
             </div>}
           </div>
         </div>;
@@ -1659,11 +1659,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                 {/* Reviews Tab: what organizers decide on, no longer hidden under Details */}
                 <TabsContent value="reviews">
                   <div className="mb-4 flex items-center justify-between gap-3">
-                    <SectionHeaderWithUsage
-                      icon={<Star className="h-5 w-5 text-accent" />}
-                      title="Reviews"
-                      usage={reviews.length > 0 ? reviews.length : undefined}
-                    />
+                    <SectionHeaderWithUsage title="Reviews" />
                     {writeReviewButton}
                   </div>
                   {reviews.length > 0 ? <>
@@ -1671,9 +1667,9 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                     <div className="grid gap-3 md:grid-cols-2">
                       {(getReviewDisplayLimit(artist?.plan) ? reviews.slice(0, getReviewDisplayLimit(artist?.plan)!) : reviews).map((review) => <div key={review.id}>{renderReviewCard(review)}</div>)}
                     </div>
-                  </> : <div className="text-center py-12 border border-dashed border-accent/30 rounded-lg">
-                    <Star className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">No reviews yet</p>
+                  </> : <div className="py-2">
+                    <p className="text-base font-bold text-foreground">No reviews yet</p>
+                    <p className="mt-1 text-sm text-muted-foreground">Organizers who book this artist through Muzicalist can leave a review after the event.</p>
                   </div>}
                 </TabsContent>
 

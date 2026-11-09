@@ -12,7 +12,7 @@ const ReviewsSummary = ({ ratings, average, onViewAll }: ReviewsSummaryProps) =>
   const counts = [5, 4, 3, 2, 1].map((s) => ({ s, n: ratings.filter((r) => r === s).length }));
 
   return (
-    <div className="mb-4 border-y border-border py-4">
+    <div className="mb-6">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:gap-8">
         <div className="md:w-40 md:shrink-0">
           <div className="flex items-baseline gap-1">
@@ -21,7 +21,7 @@ const ReviewsSummary = ({ ratings, average, onViewAll }: ReviewsSummaryProps) =>
           </div>
           <div className="mt-1 flex gap-0.5" aria-hidden="true">
             {[1, 2, 3, 4, 5].map((s) => (
-              <Star key={s} className={`h-4 w-4 ${s <= Math.round(Number(average)) ? "fill-accent text-accent" : "text-muted-foreground/30"}`} />
+              <Star key={s} className={`h-4 w-4 ${s <= Math.round(Number(average)) ? "fill-foreground text-foreground" : "text-muted-foreground/30"}`} />
             ))}
           </div>
           <p className="mt-1 text-sm text-muted-foreground">{total} {total === 1 ? "review" : "reviews"}</p>
@@ -31,11 +31,11 @@ const ReviewsSummary = ({ ratings, average, onViewAll }: ReviewsSummaryProps) =>
             <li key={s} className="flex items-center gap-3 text-sm">
               <span className="flex shrink-0 gap-0.5 notranslate" translate="no" role="img" aria-label={`${s}/5`}>
                 {[1, 2, 3, 4, 5].map((i) => (
-                  <Star key={i} className={`h-3.5 w-3.5 ${i <= s ? "fill-accent text-accent" : "text-muted-foreground/30"}`} aria-hidden="true" />
+                  <Star key={i} className={`h-3.5 w-3.5 ${i <= s ? "fill-foreground text-foreground" : "text-muted-foreground/30"}`} aria-hidden="true" />
                 ))}
               </span>
-              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
-                <div className="h-full rounded-full bg-accent" style={{ width: total ? `${(n / total) * 100}%` : 0 }} />
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-foreground/10">
+                <div className="h-full rounded-full bg-foreground" style={{ width: total ? `${(n / total) * 100}%` : 0 }} />
               </div>
               <span className="w-6 shrink-0 text-right tabular-nums text-foreground">{n}</span>
             </li>
@@ -43,7 +43,7 @@ const ReviewsSummary = ({ ratings, average, onViewAll }: ReviewsSummaryProps) =>
         </ul>
       </div>
       {onViewAll && (
-        <button onClick={onViewAll} className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline">
+        <button onClick={onViewAll} className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-foreground hover:underline">
           All reviews <ChevronRight className="h-4 w-4" />
         </button>
       )}
