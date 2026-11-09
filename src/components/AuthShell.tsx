@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 
 /** Input style for the account pages: label above, grey outline that turns white on hover. */
 export const authInputClass =
-  "h-10 rounded-full border border-[#727272] bg-[#121212] px-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors hover:border-foreground focus-visible:border-foreground focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-0";
+  "h-10 rounded-full border border-[#727272] bg-[#121212] px-4 text-sm text-foreground placeholder:text-muted-foreground transition-colors hover:border-foreground focus-visible:border-foreground focus-visible:ring-1 focus-visible:ring-foreground focus-visible:ring-offset-0 autofill:shadow-[inset_0_0_0_1000px_#121212] autofill:[-webkit-text-fill-color:#fff]";
 
 /** Gold pill for the one main action of an account page. */
 export const authButtonClass =
@@ -15,16 +15,32 @@ export const authButtonClass =
  * then one rounded panel with the soft gold glow at the top; the form centered in it,
  * the footer at the bottom of the panel.
  */
-const AuthShell = ({ title, children, footer }: { title?: string; children: ReactNode; footer?: ReactNode }) => (
+const AuthShell = ({
+  title,
+  children,
+  footer,
+  signedIn = false,
+  wide = false,
+}: {
+  title?: string;
+  children: ReactNode;
+  footer?: ReactNode;
+  /** Signed-in pages sit beside the left sidebar instead of under the top bar */
+  signedIn?: boolean;
+  /** Longer forms get a wider column so fields can sit side by side */
+  wide?: boolean;
+}) => (
   <div className="min-h-screen bg-black">
     <Navigation />
-    <main className="px-0 pb-2 pt-14 md:px-2 md:pt-[72px]">
+    <main className={signedIn ? "px-0 pb-2 pt-14 md:ml-64 md:pl-0 md:pr-2 md:pt-2" : "px-0 pb-2 pt-14 md:px-2 md:pt-[72px]"}>
       <div className="overflow-hidden rounded-none bg-background md:rounded-lg">
         <div
-          className="flex min-h-[calc(100vh-56px)] items-start justify-center px-6 pb-16 pt-10 md:min-h-[calc(100vh-80px)] md:items-center md:pt-12"
+          className={`flex items-start justify-center px-6 pb-16 pt-10 md:pt-12 ${
+            signedIn ? "min-h-[calc(100vh-56px)] md:min-h-[calc(100vh-16px)]" : "min-h-[calc(100vh-56px)] md:min-h-[calc(100vh-80px)] md:items-center"
+          }`}
           style={{ background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" }}
         >
-          <div className="w-full max-w-[324px]">
+          <div className={wide ? "w-full max-w-[560px]" : "w-full max-w-[324px]"}>
             {title && <h1 className="mb-8 text-center text-[2rem] font-bold leading-tight tracking-[-0.02em] text-foreground">{title}</h1>}
             <div>{children}</div>
             {footer && (

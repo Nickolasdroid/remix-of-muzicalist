@@ -185,33 +185,32 @@ const CompleteProfile = () => {
   return (
     <>
       <SEO title="Complete your profile | Muzicalist" description="Finish your artist profile on Muzicalist." path="/complete-profile" noindex />
-      <AuthShell title="Complete your artist profile">
-        <p className="-mt-6 mb-8 text-center text-sm text-muted-foreground">
+      <AuthShell title="Complete your artist profile" signedIn wide>
+        <p className="-mt-6 mb-6 text-center text-sm text-muted-foreground">
           <span>Clients will find you once these are filled in.</span>
         </p>
 
         {/* Checklist */}
-        <div className="mb-6 rounded-lg bg-foreground/[0.06] p-4">
-          <div className="mb-3 flex items-center justify-between text-sm">
-            <span className="font-bold text-foreground">Your profile</span>
-            <span className="tabular-nums text-muted-foreground">
+        <div className="mb-8">
+          <div className="mb-3 flex items-center gap-3">
+            <div className="h-1 flex-1 overflow-hidden rounded-full bg-foreground/10">
+              <div className="h-full bg-accent transition-all" style={{ width: `${(doneCount / items.length) * 100}%` }} />
+            </div>
+            <span className="text-sm tabular-nums text-muted-foreground">
               {doneCount}/{items.length}
             </span>
           </div>
-          <div className="mb-4 h-1 overflow-hidden rounded-full bg-foreground/10">
-            <div className="h-full bg-accent transition-all" style={{ width: `${(doneCount / items.length) * 100}%` }} />
-          </div>
-          <ul className="space-y-2">
+          <ul className="grid grid-cols-2 gap-x-4 gap-y-2 md:flex md:flex-wrap md:justify-between">
             {items.map((i) => (
-              <li key={i.label} className="flex items-center gap-2.5 text-sm">
+              <li key={i.label} className="flex items-center gap-2 whitespace-nowrap text-sm">
                 <span
                   className={cn(
-                    "flex h-5 w-5 shrink-0 items-center justify-center rounded-full",
+                    "flex h-4 w-4 shrink-0 items-center justify-center rounded-full",
                     i.done ? "bg-accent text-black" : "border border-[#727272]",
                   )}
                   aria-hidden="true"
                 >
-                  {i.done && <Check className="h-3 w-3" strokeWidth={3} />}
+                  {i.done && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
                 </span>
                 <span className={i.done ? "text-muted-foreground" : "text-foreground"}>{i.label}</span>
               </li>
@@ -219,7 +218,7 @@ const CompleteProfile = () => {
           </ul>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-6">
           {/* Photo */}
           <div className="flex items-center gap-4">
             <button
@@ -245,6 +244,7 @@ const CompleteProfile = () => {
             <input ref={fileInput} type="file" accept="image/*" className="hidden" onChange={pickPhoto} />
           </div>
 
+          <div className="grid gap-x-4 gap-y-4 md:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="stageName" className="text-sm font-bold text-foreground">Stage name</Label>
             <Input id="stageName" value={stageName} onChange={(e) => setStageName(e.target.value)} maxLength={80} className={authInputClass} />
@@ -279,6 +279,24 @@ const CompleteProfile = () => {
           </div>
 
           <div className="space-y-1.5">
+            <Label htmlFor="phone" className="text-sm font-bold text-foreground">Phone</Label>
+                        <Input
+              id="phone"
+              type="tel"
+              autoComplete="tel"
+              value={phone}
+              onChange={(e) => {
+                const v = e.target.value;
+                const prefix = getPhonePrefix(country);
+                if (prefix && !v.startsWith(prefix)) return;
+                if (!/^\d*$/.test(v.slice(prefix.length))) return;
+                if (v.length <= getMaxPhoneLength(country)) setPhone(v);
+              }}
+              className={authInputClass}
+            />
+          </div>
+
+          <div className="space-y-1.5">
             <Label className="text-sm font-bold text-foreground">Country of residence</Label>
             <CountrySelector
               triggerClassName="h-10 rounded-full border-[#727272] bg-[#121212] pl-10 text-sm font-normal hover:border-foreground hover:bg-[#121212]"
@@ -309,26 +327,9 @@ const CompleteProfile = () => {
             </div>
           )}
 
-          <div className="space-y-1.5">
-            <Label htmlFor="phone" className="text-sm font-bold text-foreground">Phone</Label>
-            <p className="text-xs text-muted-foreground">Used for bookings and on contracts.</p>
-            <Input
-              id="phone"
-              type="tel"
-              autoComplete="tel"
-              value={phone}
-              onChange={(e) => {
-                const v = e.target.value;
-                const prefix = getPhonePrefix(country);
-                if (prefix && !v.startsWith(prefix)) return;
-                if (!/^\d*$/.test(v.slice(prefix.length))) return;
-                if (v.length <= getMaxPhoneLength(country)) setPhone(v);
-              }}
-              className={authInputClass}
-            />
           </div>
 
-          <Button type="button" onClick={save} disabled={!allDone || saving} className={`${authButtonClass} !mt-6`}>
+          <Button type="button" onClick={save} disabled={!allDone || saving} className={`${authButtonClass} !mt-8 md:mx-auto md:block md:max-w-[324px]`}>
             {saving ? "Saving…" : "Publish my profile"}
           </Button>
         </div>

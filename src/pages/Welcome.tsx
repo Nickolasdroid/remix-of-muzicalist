@@ -68,7 +68,7 @@ const Welcome = () => {
   return (
     <>
       <SEO title="Welcome | Muzicalist" description="Finish creating your Muzicalist account." path="/welcome" noindex />
-      <AuthShell title="What brings you here?">
+      <AuthShell title="What brings you here?" signedIn>
         <div className="space-y-4">
           <AccountTypeChoice value={accountType} onChange={setAccountType} />
           {accountType === "artist" && <ArtistPromoConsent checked={promoConsent} onChange={setPromoConsent} />}
