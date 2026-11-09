@@ -308,15 +308,15 @@ Deno.serve(async (req) => {
       const name = escapeHtml(
         (claimed.stage_name || claimed.first_name || "there").toString()
       );
-      subject = "Your artist profile is now live 🎵";
+      subject = "Welcome to Muzicalist 🎵";
       html = renderEmail({
-        preview: "Your Muzicalist artist profile is live.",
-        headline: "Your artist profile is now live",
+        preview: "Your Muzicalist artist account is ready.",
+        headline: "Your artist account is ready",
         greeting: `Hi ${name},`,
         bodyLines: [
           "Welcome to Muzicalist.",
-          "Your artist profile has been created and is now part of the Muzicalist artist network.",
-          "Complete your profile, add your best photos and videos, share your experience, and make it easier for people to discover and contact you.",
+          "Your artist account has been created. Add your stage name and type, location, photo and phone, and your profile will appear in the artist lists.",
+          "Then add your best photos and videos and share your experience, so people can discover and contact you more easily.",
           "Your career deserves to be discovered.",
         ],
         ctaLabel: "Complete Your Profile",
