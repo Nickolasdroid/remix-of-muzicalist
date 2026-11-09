@@ -12,6 +12,7 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import CountryFlagIcon from "@/components/CountryFlagIcon";
+import { cn } from "@/lib/utils";
 
 // Full list of countries with flags for reference
 const allCountries = [
@@ -221,9 +222,11 @@ interface CountrySelectorProps {
   showLabel?: boolean;
   variant?: "icon" | "list" | "navigation";
   userCountry?: string | null;
+  /** Extra classes for the default (icon) trigger, to match a form's inputs */
+  triggerClassName?: string;
 }
 
-const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon", userCountry }: CountrySelectorProps) => {
+const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon", userCountry, triggerClassName }: CountrySelectorProps) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -352,16 +355,16 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
               <button
                 type="button"
                 onClick={() => handleSelectCountry("all")}
-                className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent/10 ${
+                className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-foreground/[0.07] ${
                   value === "all"
-                    ? "bg-accent/20 text-accent"
+                    ? "bg-foreground/[0.12] text-foreground"
                     : "text-foreground"
                 }`}
               >
                 <Globe className="h-5 w-5 text-accent" />
                 <span className="flex-1 text-left font-medium">{t("countries.allCountries")}</span>
                 {value === "all" && (
-                  <Check className="h-4 w-4 text-accent" />
+                  <Check className="h-4 w-4 text-foreground" />
                 )}
               </button>
               
@@ -373,16 +376,16 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
                     key={country.code}
                     type="button"
                     onClick={() => handleSelectCountry(country.code)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent/10 ${
+                    className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-foreground/[0.07] ${
                       selectedCountry?.code === country.code
-                        ? "bg-accent/20 text-accent"
+                        ? "bg-foreground/[0.12] text-foreground"
                         : "text-foreground"
                     }`}
                   >
                     <CountryFlagIcon country={country.code} className="h-5 w-7 rounded-sm shadow-sm" />
                     <span className="flex-1 text-left">{country.name}</span>
                     {selectedCountry?.code === country.code && (
-                      <Check className="h-4 w-4 text-accent" />
+                      <Check className="h-4 w-4 text-foreground" />
                     )}
                   </button>
                 ))}
@@ -412,7 +415,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
             >
               <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               {selectedCountry ? (
-                <span className="truncate">{selectedCountry.name}</span>
+                <span key={selectedCountry.code} className="truncate">{selectedCountry.name}</span>
               ) : (
                 <span className="text-muted-foreground truncate">{t("artistRegistration.placeholders.selectCountry")}</span>
               )}
@@ -436,16 +439,16 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
                       key={country.code}
                       type="button"
                       onClick={() => handleSelectCountry(country.code)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent/10 ${
+                      className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-foreground/[0.07] ${
                         selectedCountry?.code === country.code
-                          ? "bg-accent/20 text-accent"
+                          ? "bg-foreground/[0.12] text-foreground"
                           : "text-foreground"
                       }`}
                     >
                       <CountryFlagIcon country={country.code} className="h-6 w-8 rounded-sm shadow-sm" />
                       <span className="flex-1 text-left">{country.name}</span>
                       {selectedCountry?.code === country.code && (
-                        <Check className="h-4 w-4 text-accent" />
+                        <Check className="h-4 w-4 text-foreground" />
                       )}
                     </button>
                   ))}
@@ -469,13 +472,13 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
         <Button 
           type="button"
           variant="outline" 
-          className="w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent pl-9 pr-3 h-9 overflow-hidden relative"
+          className={cn("w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent pl-9 pr-3 h-9 overflow-hidden relative", triggerClassName)}
         >
           <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           {selectedCountry ? (
             <span className="flex items-center gap-2 min-w-0 overflow-hidden">
               <CountryFlagIcon country={selectedCountry.code} className="h-4 w-6 rounded-sm shadow-sm" />
-              <span className="truncate">{selectedCountry.name}</span>
+              <span key={selectedCountry.code} className="truncate">{selectedCountry.name}</span>
             </span>
           ) : (
             <span className="text-muted-foreground truncate">{t("artistRegistration.placeholders.selectCountry")}</span>
@@ -500,16 +503,16 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
                   key={country.code}
                   type="button"
                   onClick={() => handleSelectCountry(country.code)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-accent/10 ${
+                  className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-foreground/[0.07] ${
                     selectedCountry?.code === country.code
-                      ? "bg-accent/20 text-accent"
+                      ? "bg-foreground/[0.12] text-foreground"
                       : "text-foreground"
                   }`}
                 >
                   <CountryFlagIcon country={country.code} className="h-6 w-8 rounded-sm shadow-sm" />
                   <span className="flex-1 text-left">{country.name}</span>
                   {selectedCountry?.code === country.code && (
-                    <Check className="h-4 w-4 text-accent" />
+                    <Check className="h-4 w-4 text-foreground" />
                   )}
                 </button>
               ))}

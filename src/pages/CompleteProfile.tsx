@@ -28,7 +28,7 @@ const SPECIALIZATIONS = [
 const THIS_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: THIS_YEAR - 1950 + 1 }, (_, i) => String(THIS_YEAR - i));
 
-const selectClass = "h-12 rounded-[4px] border-[#727272] bg-[#121212] px-3.5 text-base hover:border-foreground focus:ring-2 focus:ring-white/70";
+const selectClass = "h-12 rounded-md border-[#727272] bg-[#121212] px-3.5 text-base hover:border-foreground focus:ring-2 focus:ring-white/70";
 
 const cropToBlob = async (src: string, area: Area | null): Promise<Blob> => {
   const image = new Image();
@@ -111,7 +111,7 @@ const CompleteProfile = () => {
   const items = [
     { label: "Stage name and type", done: stageName.trim().length >= 2 && !!specialization && !!careerStart },
     { label: "Location", done: !!country && (regions.length === 0 || !!county) },
-    { label: "Photo", done: !!shownPhoto },
+    { label: "Profile photo", done: !!shownPhoto },
     { label: "Phone", done: phoneCheck.valid },
   ];
   const doneCount = items.filter((i) => i.done).length;
@@ -281,6 +281,7 @@ const CompleteProfile = () => {
           <div className="space-y-2">
             <Label className="text-sm font-bold text-foreground">Country of residence</Label>
             <CountrySelector
+              triggerClassName="h-12 rounded-md border-[#727272] bg-[#121212] pl-10 text-base font-normal hover:border-foreground hover:bg-[#121212]"
               value={country}
               onChange={(v) => {
                 setCountry(v);
