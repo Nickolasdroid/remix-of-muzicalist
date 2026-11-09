@@ -31,6 +31,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { ArtistAvailabilityCalendar, AvailabilityCalendarLayout, calendarAvailabilityStyles } from "@/components/ArtistAvailabilityCalendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PROFILE_PANEL } from "@/lib/profileLayout";
+import GuestSidebar from "@/components/GuestSidebar";
 import GuestSignupBar from "@/components/GuestSignupBar";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { User, Users, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays, ChevronRight, BadgeCheck } from "lucide-react";
@@ -984,7 +985,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   // Official / Brand account (Muzicalist admin) — content-producing brand profile
   if (id && adminIds.has(id)) {
     const officialAnnouncements = announcements.filter((a) => !isAdExpired(a));
-    return <div className={`min-h-screen bg-black ${currentUserId ? 'md:ml-64 md:py-2 md:pr-2' : 'md:px-2 md:pb-2 md:pt-[72px]'}`}>
+    return <div className={`min-h-screen bg-black ${currentUserId ? 'md:ml-64 md:py-2 md:pr-2' : 'md:flex md:items-start md:gap-2 md:px-2 md:pb-2 md:pt-[72px]'}`}>
       <SEO
         title={`${artist.stage_name || 'Muzicalist'} — Admin | Muzicalist`}
         description={`Muzicalist admin account — posts and announcements.`}
@@ -1213,7 +1214,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   };
   const writeReviewButton = currentUserId !== id ? <Button onClick={openReviewDialog} disabled={checkingReviewEligibility} size="sm" className="ml-auto h-8 px-3 bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">Write a Review</Button> : null;
 
-  return <div className={`min-h-screen bg-black ${currentUserId ? 'md:ml-64 md:py-2 md:pr-2' : 'md:px-2 md:pb-2 md:pt-[72px]'}`}>
+  return <div className={`min-h-screen bg-black ${currentUserId ? 'md:ml-64 md:py-2 md:pr-2' : 'md:flex md:items-start md:gap-2 md:px-2 md:pb-2 md:pt-[72px]'}`}>
       <SEO
         title={`${artist.stage_name} — ${artist.specialization || "Musical Artist"} | Muzicalist`}
         description={toMetaDescription(
@@ -1284,7 +1285,9 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
           </div>
         </div>;
       })()}
-      <div className={`${isReviewsView ? 'hidden' : ''} ${PROFILE_PANEL} pt-14 md:pt-0 pb-6 md:pb-20 px-0`}>
+      {/* Visitors keep the left panel from the home page (also narrows the page) */}
+      {!currentUserId && !isReviewsView && <GuestSidebar />}
+      <div className={`${isReviewsView ? 'hidden' : ''} ${PROFILE_PANEL} min-w-0 flex-1 pt-14 md:pt-0 pb-6 md:pb-20 px-0`}>
         <div ref={profileContentRef} className="container mx-auto max-w-none px-4 md:px-8">
           <Link to="/leaderboard">
             
