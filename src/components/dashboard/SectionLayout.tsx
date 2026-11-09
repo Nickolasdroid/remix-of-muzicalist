@@ -60,10 +60,13 @@ export function SectionHeaderWithUsage({
   info,
   action,
   className,
+  size = "md",
 }: {
   icon?: ReactNode;
   title: ReactNode;
   usage?: ReactNode;
+  /** "sm" for the narrow side column of the profile */
+  size?: "md" | "sm";
   /** Optional subtle info affordance rendered next to the usage badge */
   info?: ReactNode;
   action?: ReactNode;
@@ -85,12 +88,13 @@ export function SectionHeaderWithUsage({
   return (
     <div
       className={cn(
-        "flex items-start md:items-center justify-between gap-2 min-h-[36px]",
+        "flex items-start md:items-center justify-between gap-2",
+        size === "sm" ? "min-h-[32px]" : "min-h-[36px]",
         className,
       )}
     >
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
-        <h2 className="text-xl md:text-2xl font-display font-bold tracking-[-0.01em] truncate">
+        <h2 className={cn("font-display font-bold truncate", size === "sm" ? "text-base" : "text-xl md:text-2xl tracking-[-0.01em]")}>
           {title}
         </h2>
         {usageContent}

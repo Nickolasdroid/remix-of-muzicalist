@@ -25,8 +25,8 @@ const ProfileViewsCard = ({ plan }: { plan?: string | null }) => {
   // Free: the counter is a Standard / Premium feature
   if (free) {
     return (
-      <div className="mb-4 md:mb-8 rounded-lg bg-foreground/[0.05] p-4 md:p-5">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div className="rounded-lg bg-foreground/[0.05] p-5">
+        <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3 md:gap-4">
             <div className="p-2.5 md:p-3 rounded-full bg-foreground/[0.08]">
               <Lock className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground" aria-hidden="true" />
@@ -36,7 +36,7 @@ const ProfileViewsCard = ({ plan }: { plan?: string | null }) => {
               <p className="text-xs text-muted-foreground">See how many people visit your profile with Standard or Premium.</p>
             </div>
           </div>
-          <Button size="sm" onClick={() => navigate("/my-plan")} className="self-start md:self-auto bg-accent text-accent-foreground hover:bg-accent/90">
+          <Button size="sm" onClick={() => navigate("/my-plan")} className="self-start bg-accent text-accent-foreground hover:bg-accent/90">
             Upgrade
           </Button>
         </div>
@@ -50,8 +50,8 @@ const ProfileViewsCard = ({ plan }: { plan?: string | null }) => {
   const premium = isPremium(plan);
 
   return (
-    <div className="mb-4 md:mb-8 rounded-lg bg-foreground/[0.05] p-4 md:p-5">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+    <div className="rounded-lg bg-foreground/[0.05] p-5">
+      <div className="flex flex-col gap-4">
         <div className="flex items-center gap-3 md:gap-4">
           <div className="p-2.5 md:p-3 rounded-full bg-foreground/[0.08]">
             <Eye className="h-5 w-5 md:h-6 md:w-6 text-accent" aria-hidden="true" />
@@ -75,14 +75,14 @@ const ProfileViewsCard = ({ plan }: { plan?: string | null }) => {
         </div>
 
         {premium ? (
-          <Button variant="outline" size="sm" onClick={() => navigate("/analytics")} className="gap-1.5 self-start md:self-auto">
+          <Button variant="outline" size="sm" onClick={() => navigate("/analytics")} className="gap-1.5 self-start">
             <BarChart3 className="h-4 w-4" />
             Full statistics
           </Button>
         ) : (
           <div className="flex flex-col gap-2 md:items-end">
             <p className="text-xs text-muted-foreground md:text-right">See how views turn into booking requests with Premium.</p>
-            <Button size="sm" onClick={() => navigate("/plans")} className="self-start md:self-auto bg-accent text-accent-foreground hover:bg-accent/90">
+            <Button size="sm" onClick={() => navigate("/plans")} className="self-start bg-accent text-accent-foreground hover:bg-accent/90">
               Upgrade
             </Button>
           </div>

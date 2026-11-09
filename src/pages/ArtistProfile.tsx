@@ -1481,147 +1481,90 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
 
 
-                {/* Details Tab */}
-                <TabsContent value="details" className="space-y-4 md:space-y-8">
-                  {/* Description */}
-                  <div>
-                    <SectionHeaderWithUsage
-                      icon={<User className="h-5 w-5 text-accent" />}
-                      title="About"
-                      className="mb-4"
-                    />
-                    {artist.bio ? (
-                      <p className="text-muted-foreground leading-relaxed text-sm md:text-base text-left notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                        {artist.bio}
-                      </p>
-                    ) : (
-                      <p className="text-muted-foreground leading-relaxed text-sm md:text-base text-left">
-                        No bio available.
-                      </p>
-                    )}
-                  </div>
+                {/* Details Tab: content on the left, the short facts on the right */}
+                <TabsContent value="details">
+                  <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-12">
+                    <div className="min-w-0 space-y-10">
+                      {artist.bio && (
+                        <div>
+                          <SectionHeaderWithUsage title="About" className="mb-4" />
+                          <p className="text-muted-foreground leading-relaxed text-sm md:text-base text-left notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                            {artist.bio}
+                          </p>
+                        </div>
+                      )}
 
-                  {/* Instrument Section for Instrumentalists */}
-                  {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments &&
-              <>
-                      <Separator />
+                      {getGenresArray().length > 0 && (
+                        <div>
+                          <SectionHeaderWithUsage title="Music Genres" className="mb-4" />
+                          <div className="flex flex-wrap gap-2 justify-start">
+                            {getGenresArray().map((genre: string) => (
+                              <Badge key={genre} variant="secondary" className="rounded-full border-0 bg-foreground/[0.07] text-foreground font-normal px-3 py-1 text-sm hover:bg-foreground/[0.07]">
+                                {genre}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
                       <div>
-                        {(() => {
-                    const instrumentName = artist.instruments.split(',')[0].trim();
-                    const InstrumentIcon = getInstrumentIcon(instrumentName);
-                    return (
-                      <div className="flex items-center gap-2">
-                              <SectionHeaderWithUsage
-                                icon={<Music2 className="h-5 w-5 text-accent" />}
-                                title="Instrument:"
-                              />
+                        <SectionHeaderWithUsage title="Estimated Prices" className="mb-4" />
+                        <div className="space-y-1 md:space-y-2 text-left">
+                          {canSetEstimatedPrice(artist.plan) ? (
+                            <PricingEntriesDisplay profileId={artist.id} />
+                          ) : (
+                            <p className="text-muted-foreground text-sm">Contact for pricing</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Side column */}
+                    <aside>
+                      <div className="space-y-6 rounded-lg bg-foreground/[0.05] p-5">
+                        {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && (() => {
+                          const instrumentName = artist.instruments.split(',')[0].trim();
+                          const InstrumentIcon = getInstrumentIcon(instrumentName);
+                          return (
+                            <div>
+                              <SectionHeaderWithUsage title="Instrument" size="sm" className="mb-2" />
                               <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal hover:bg-foreground/[0.07]">
                                 <InstrumentIcon className="h-4 w-4 mr-1.5" />
                                 {instrumentName}
                               </Badge>
-                            </div>);
+                            </div>
+                          );
+                        })()}
 
-                  })()}
-                      </div>
-                    </>
-              }
-
-                  {/* Members count for Bands */}
-                  {artist.specialization?.toLowerCase() === 'band' && artist.band_members && (
-                    <>
-                      <Separator />
-                      <div className="flex items-center gap-2">
-                        <SectionHeaderWithUsage
-                          icon={<Users className="h-5 w-5 text-accent" />}
-                          title="Members"
-                        />
-                        <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal hover:bg-foreground/[0.07]">
-                          <span className="notranslate" translate="no">{bandMembersLabel(artist.band_members, i18n.language || "ro")}</span>
-                        </Badge>
-                      </div>
-                    </>
-                  )}
-
-
-                  <Separator />
-
-                  {/* Details Grid */}
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-8">
-                    {/* Music Genres */}
-                    <div className="p-3 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
-                      <SectionHeaderWithUsage
-                        icon={<Music className="h-5 w-5 text-accent" />}
-                        title="Music Genres"
-                        className="mb-4"
-                      />
-                      <div className="flex flex-wrap gap-1.5 md:gap-2 justify-start">
-                        {getGenresArray().length > 0 ? getGenresArray().map((genre: string) => <Badge key={genre} variant="secondary" className="rounded-full border-0 bg-foreground/[0.07] text-foreground font-normal px-3 py-1 text-sm hover:bg-foreground/[0.07]">
-                              {genre}
-                            </Badge>) : <p className="text-muted-foreground text-sm text-left">No genres specified</p>}
-                      </div>
-                    </div>
-
-
-                    {/* Estimated Prices */}
-                    <div className="p-3 md:p-0 rounded-lg bg-secondary/30 md:bg-transparent">
-                      <SectionHeaderWithUsage
-                        icon={<DollarSign className="h-5 w-5 text-accent" />}
-                        title="Estimated Prices"
-                        className="mb-4"
-                      />
-                      <div className="space-y-1 md:space-y-2 text-left">
-                        {canSetEstimatedPrice(artist.plan) ? (
-                          <PricingEntriesDisplay profileId={artist.id} />
-                        ) : (
-                          <p className="text-muted-foreground text-sm">Contact for pricing</p>
+                        {artist.specialization?.toLowerCase() === 'band' && artist.band_members && (
+                          <div>
+                            <SectionHeaderWithUsage title="Members" size="sm" className="mb-2" />
+                            <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal hover:bg-foreground/[0.07]">
+                              <span className="notranslate" translate="no">{bandMembersLabel(artist.band_members, i18n.language || "ro")}</span>
+                            </Badge>
+                          </div>
                         )}
-                      </div>
-                    </div>
-                  </div>
 
-                  <Separator />
-
-                  {/* Contact Information */}
-                  <div>
-                    <SectionHeaderWithUsage
-                      title="Contact Information"
-                      className="mb-4"
-                    />
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-left">
-                      <div className="flex items-center justify-between gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <Mail className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                          <div className="min-w-0">
-                            <p className="text-xs md:text-sm text-muted-foreground">
-                              Email
-                            </p>
-                            <p className="text-sm md:text-base text-foreground font-medium mt-1 tracking-wider truncate select-none">
-                              ••••••••@••••.com
-                            </p>
-                          </div>
+                        <div>
+                          <SectionHeaderWithUsage title="Contact Information" size="sm" className="mb-2" />
+                          <dl className="space-y-2 text-sm">
+                            <div className="flex items-center gap-3">
+                              <Mail className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                              <dt className="sr-only">Email</dt>
+                              <dd className="min-w-0 flex-1 truncate tracking-wider text-foreground select-none">••••••••@••••.com</dd>
+                              <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <Phone className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                              <dt className="sr-only">Phone</dt>
+                              <dd className="min-w-0 flex-1 truncate tracking-wider text-foreground select-none">+•• ••• ••• •••</dd>
+                              <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                            </div>
+                          </dl>
                         </div>
-                        <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                       </div>
-
-                      <div className="flex items-center justify-between gap-3 p-3 md:p-4 rounded-lg bg-secondary/50">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <Phone className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                          <div className="min-w-0">
-                            <p className="text-xs md:text-sm text-muted-foreground">
-                              Phone
-                            </p>
-                            <p className="text-sm md:text-base text-foreground font-medium mt-1 tracking-wider truncate select-none">
-                              +•• ••• ••• •••
-                            </p>
-                          </div>
-                        </div>
-                        <Lock className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                      </div>
-                    </div>
-
-
+                    </aside>
                   </div>
-
                 </TabsContent>
 
                 {/* Reviews Tab: what organizers decide on, no longer hidden under Details */}

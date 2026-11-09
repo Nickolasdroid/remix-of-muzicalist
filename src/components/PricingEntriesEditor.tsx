@@ -176,7 +176,7 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
           <button
             type="button"
             onClick={onAdd}
-            className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-accent/50 px-3 py-1.5 text-[13px] font-semibold leading-none text-accent transition-colors hover:bg-accent/10"
+            className="inline-flex h-9 items-center gap-1.5 rounded-full border border-foreground/25 px-4 text-sm font-medium text-foreground transition-colors hover:border-foreground"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>{entries.length ? "Add" : "Add your first price"}</span>
