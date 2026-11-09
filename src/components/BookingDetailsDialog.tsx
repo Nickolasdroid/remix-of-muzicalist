@@ -208,7 +208,7 @@ const BookingDetailsDialog = ({
       <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogContent className="max-w-[440px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-lg overflow-hidden max-h-[90vh] flex flex-col">
           {/* Header: same order as the list card — date tile, event, time, status */}
-          <div className="flex items-start gap-3.5 px-5 pt-5 pb-4 pr-12">
+          <div className="flex items-start gap-3.5 px-5 pt-5 pb-5 pr-12">
             <BookingDateTile ymd={booking.event_date} closed={isClosedBooking(statusKey)} large />
             <div className="min-w-0 flex-1">
               <DialogTitle className="text-lg font-bold leading-tight">

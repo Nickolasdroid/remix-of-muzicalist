@@ -251,7 +251,7 @@ const BookingOfferPanel = ({
           const received = booking.advance_received_at || advanceReceivedLocal;
           const iban = contract?.artist_party?.iban;
           return (
-            <div className="mt-3 text-sm">
+            <div className="mt-2 text-sm">
               <p className="flex flex-wrap items-baseline gap-x-1.5">
                 <span className="text-muted-foreground">Advance</span>
                 <b className="text-foreground notranslate tabular-nums" translate="no">{amount}</b>
@@ -261,11 +261,15 @@ const BookingOfferPanel = ({
                     <span className="text-foreground notranslate" translate="no">{due}</span>
                   </>
                 )}
+                {status === "accepted" && received && (
+                  <>
+                    <span className="text-muted-foreground" aria-hidden="true">·</span>
+                    <span className="font-semibold text-green-500">✓ <span>Paid</span></span>
+                  </>
+                )}
               </p>
-              {status === "accepted" && (
-                received ? (
-                  <p className="mt-1 text-xs font-semibold text-green-500">✓ <span>Advance received</span></p>
-                ) : viewer === "requester" ? (
+              {status === "accepted" && !received && (
+                viewer === "requester" ? (
                   <p className="mt-1 text-xs text-muted-foreground">
                     <span>Pay it by bank transfer</span>
                     {iban ? (
@@ -336,7 +340,7 @@ const BookingOfferPanel = ({
         )}
 
         {status === "accepted" && contractLoaded && (
-          <Button variant="outline" className={`${outlineBtn} mt-4 w-full`} onClick={openContract}>
+          <Button variant="outline" className={`${outlineBtn} mt-5 w-full`} onClick={openContract}>
             {contract ? <FileSignature className="h-4 w-4 mr-2" /> : <Printer className="h-4 w-4 mr-2" />}
             {contract ? (
               <>
