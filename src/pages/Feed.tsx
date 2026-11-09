@@ -562,7 +562,7 @@ const Feed = () => {
 
   if (loading) {
     // Same frame as the loaded feed, so nothing jumps when the posts arrive.
-    return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background mx-0`}>
+    return <div className={`min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''} bg-background mx-0`}>
         <Navigation />
         <div className={`container mx-auto sm:px-4 pt-[60px] ${currentUserId ? 'md:pt-2' : 'md:pt-20'} pb-0 px-0`}>
           <div className="max-w-[500px] mx-auto space-y-2 sm:space-y-3" aria-busy="true">
@@ -583,7 +583,7 @@ const Feed = () => {
       </div>;
   }
 
-  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background mx-0`}>
+  return <div className={`min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''} bg-background mx-0`}>
       <SEO
         title="Musical Community Feed | Muzicalist"
         description="Discover the latest posts, announcements and promotions from musical artists worldwide on Muzicalist."

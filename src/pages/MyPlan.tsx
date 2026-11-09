@@ -126,7 +126,7 @@ const MyPlan = () => {
     return (
       <>
         <Navigation mobileTitle={t('myPlan.title')} mobileBackPath={-1} />
-        <div className={`${isMobile ? 'pt-14 pb-4 px-4' : 'md:ml-64 pt-8 px-8'}`}>
+        <div className={`${isMobile ? 'pt-14 pb-4 px-4' : 'md:ml-[316px] lg:ml-[356px] pt-8 px-8'}`}>
           <div className="flex items-center justify-center min-h-[50vh]">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent" />
           </div>
@@ -138,7 +138,7 @@ const MyPlan = () => {
   return (
     <>
       <Navigation mobileTitle={t('myPlan.title')} mobileBackPath={-1} />
-      <div className="min-h-screen bg-black md:ml-64 md:py-2 md:pr-2">
+      <div className="min-h-screen bg-black md:ml-[316px] lg:ml-[356px] md:py-2 md:pr-2">
         <div
           className="min-h-screen px-4 pb-24 pt-16 md:min-h-[calc(100vh-16px)] md:rounded-lg md:px-8 md:pb-12 md:pt-10"
           style={{ background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" }}

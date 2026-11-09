@@ -101,7 +101,7 @@ const CountyArtists = () => {
   ];
 
   return (
-    <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+    <div className={`min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''} bg-background`}>
       <SEO title={`${county} — Musical Artists for Hire | Muzicalist`} description={`Find and book singers, bands, DJs and instrumentalists in ${county}. Compare profiles, reviews, prices and availability on Muzicalist.`} path={`/counties/${encodeURIComponent(county ?? "")}`} />
       <Navigation mobileTitle={county} mobileBackPath="/counties" hideMobileNotifications />
       

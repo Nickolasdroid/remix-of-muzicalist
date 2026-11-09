@@ -310,7 +310,7 @@ const CountryArtists = () => {
   const filterProps = { filterCategory, setFilterCategory, filterCounty, setFilterCounty, sortOrder, setSortOrder, counties };
 
   return (
-    <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+    <div className={`min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''} bg-background`}>
       <SEO title={`${country} — Book Musical Artists | Muzicalist`} description={`Discover singers, bands, DJs and instrumentalists in ${country}. Compare profiles and book the perfect artist for your event on Muzicalist.`} path={`/countries/${encodeURIComponent(country ?? "")}`} />
       <Navigation mobileTitle={displayName} mobileBackPath="/countries" mobileExtraAction={currentUserId ? <FilterButton placement="header" mobileInHeader {...filterProps} /> : undefined} hideMobileNotifications />
       

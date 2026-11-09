@@ -81,7 +81,7 @@ const PlansPricing = () => {
   }, []);
 
   return (
-    <div className={`min-h-screen bg-black ${isAuthenticated ? 'md:ml-64 md:py-2 md:pr-2' : 'md:px-2 md:pb-2 md:pt-[72px]'}`}>
+    <div className={`min-h-screen bg-black ${isAuthenticated ? 'md:ml-[316px] lg:ml-[356px] md:py-2 md:pr-2' : 'md:px-2 md:pb-2 md:pt-[72px]'}`}>
       <SEO title="Plans & Pricing — Free, Standard & Premium | Muzicalist" description="Compare Muzicalist subscription plans for artists: Free, Standard and Premium. More visibility, more bookings, more features — choose what fits you." path="/plans" />
       <Navigation />
 

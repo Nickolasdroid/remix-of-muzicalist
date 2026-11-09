@@ -355,7 +355,7 @@ const UserDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen md:ml-64 bg-card flex items-center justify-center">
+      <div className="min-h-screen md:ml-[316px] lg:ml-[356px] bg-card flex items-center justify-center">
         <Navigation />
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
       </div>
@@ -363,7 +363,7 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className={`min-h-screen md:ml-64 bg-black md:py-2 md:pr-2`}>
+    <div className={`min-h-screen md:ml-[316px] lg:ml-[356px] bg-black md:py-2 md:pr-2`}>
       <Navigation
         onMobileBack={activeTab === 'settings' && settingsSection !== 'main' ? () => setSettingsSection('main') : undefined}
       />

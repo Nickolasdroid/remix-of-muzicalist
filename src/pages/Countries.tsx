@@ -93,7 +93,7 @@ const Countries = () => {
   );
 
   return (
-    <div className={`min-h-screen ${currentUserId ? "md:ml-64" : ""} bg-background relative`}>
+    <div className={`min-h-screen ${currentUserId ? "md:ml-[316px] lg:ml-[356px]" : ""} bg-background relative`}>
       <SEO title="Browse Artists by Country | Muzicalist" description="Discover talented musicians from countries around the globe. Browse by country and book singers, bands, DJs and instrumentalists on Muzicalist." path="/countries" />
       <Navigation />
 

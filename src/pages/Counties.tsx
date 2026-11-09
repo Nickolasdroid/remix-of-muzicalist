@@ -80,7 +80,7 @@ const Counties = () => {
   );
 
   return (
-    <div className="min-h-screen md:ml-64 bg-background relative">
+    <div className="min-h-screen md:ml-[316px] lg:ml-[356px] bg-background relative">
       <SEO title="Browse Artists by County | Muzicalist" description="Find musical artists in every county. Browse local singers, bands, DJs and instrumentalists and book the right one for your event on Muzicalist." path="/counties" />
       <Navigation />
       

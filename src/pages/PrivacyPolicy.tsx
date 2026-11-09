@@ -13,7 +13,7 @@ const PrivacyPolicy = () => {
   }, []);
 
   return (
-    <div className={`min-h-screen ${user ? 'md:ml-64' : ''}`}>
+    <div className={`min-h-screen ${user ? 'md:ml-[316px] lg:ml-[356px]' : ''}`}>
       <Navigation />
       
       <div className={`pt-16 ${user ? 'md:pt-8' : 'md:pt-24'} pb-12 px-4 md:px-8`}>

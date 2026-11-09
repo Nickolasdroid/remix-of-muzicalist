@@ -709,7 +709,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
 
       {/* Desktop: Left Sidebar - Only when logged in */}
       {!user ? null : (
-      <aside data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 h-screen w-64 bg-black z-40 hidden md:flex md:flex-col gap-2 p-2">
+      <aside data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 h-screen w-[316px] lg:w-[356px] bg-black z-40 hidden md:flex md:flex-col gap-2 p-2">
         {/* Panel 1: logo and browsing (like Spotify's Home / Search box) */}
         <div className="rounded-lg bg-background px-3 pb-2 pt-3">
           <Link to="/feed" className="mb-2 flex h-10 items-center gap-2 px-2">
@@ -787,7 +787,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 <span className="font-medium">{t('navigation.more')}</span>
               </button>
             </PopoverTrigger>
-            <PopoverContent side="top" align="start" className="w-[calc(16rem-2rem)] bg-card border-border p-2 z-50">
+            <PopoverContent side="top" align="start" className="w-[calc(316px-2rem)] lg:w-[calc(356px-2rem)] bg-card border-border p-2 z-50">
               <div className="space-y-1">
                 {user && (
                   <Link

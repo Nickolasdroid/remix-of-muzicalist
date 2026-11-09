@@ -676,12 +676,12 @@ const Messages = () => {
     setPendingArtist(null);
   });
   if (loading && !user) {
-    return <div className="min-h-screen md:ml-64 bg-background">
+    return <div className="min-h-screen md:ml-[316px] lg:ml-[356px] bg-background">
         <Navigation mobileTitle="Messages" onMobileBack={handleMobileBack} />
         <div className="pt-20 md:pt-8 text-center text-muted-foreground">Loading...</div>
       </div>;
   }
-  return <div className="min-h-screen md:ml-64 bg-background">
+  return <div className="min-h-screen md:ml-[316px] lg:ml-[356px] bg-background">
       <Navigation mobileTitle="Messages" onMobileBack={handleMobileBack} hideMobileHeader={conversationActive} />
       
       <div className="px-0 pt-14 md:pt-0 pb-16 md:pb-0 h-screen">

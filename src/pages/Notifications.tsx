@@ -583,7 +583,7 @@ const Notifications = () => {
         mobileTitle="Notifications"
         onMobileBack={() => goBack(navigate, "/feed")}
       />
-      <main className="md:ml-64 pt-16 md:pt-2 pb-6 md:pb-8">
+      <main className="md:ml-[316px] lg:ml-[356px] pt-16 md:pt-2 pb-6 md:pb-8">
         <div className="max-w-3xl mx-auto md:p-6 md:px-4">
           <div className="hidden md:flex items-center gap-3 mb-4 px-4">
             <Bell className="h-6 w-6 text-accent" />

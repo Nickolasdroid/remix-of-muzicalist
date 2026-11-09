@@ -32,7 +32,7 @@ const AuthShell = ({
 }) => (
   <div className="min-h-screen bg-black">
     <Navigation />
-    <main className={signedIn ? "px-0 pb-2 pt-14 md:ml-64 md:pl-0 md:pr-2 md:pt-2" : "px-0 pb-2 pt-14 md:px-2 md:pt-[72px]"}>
+    <main className={signedIn ? "px-0 pb-2 pt-14 md:ml-[316px] lg:ml-[356px] md:pl-0 md:pr-2 md:pt-2" : "px-0 pb-2 pt-14 md:px-2 md:pt-[72px]"}>
       <div className="overflow-hidden rounded-none bg-background md:rounded-lg">
         <div
           className={`flex items-start justify-center px-6 pb-16 pt-10 md:pt-12 ${

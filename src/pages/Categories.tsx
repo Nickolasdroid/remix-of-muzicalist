@@ -90,7 +90,7 @@ const Categories = () => {
     return null;
   }
 
-  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background relative`}>
+  return <div className={`min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''} bg-background relative`}>
       <SEO title="Artist Categories — Singers, Bands, DJs & Instrumentalists | Muzicalist" description="Explore musical artists by category: professional singers, complete bands, expert DJs and skilled instrumentalists, ready to book for your event." path="/categories" />
       <Navigation />
       

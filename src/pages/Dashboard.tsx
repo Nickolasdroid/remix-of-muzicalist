@@ -73,6 +73,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import type { Area } from "react-easy-crop";
 const Cropper = lazy(() => import("react-easy-crop"));
 import { parseYMDToLocalDate } from "@/lib/utils";
+import { getThumbUrl } from "@/lib/imageUrl";
+import { Calendar } from "@/components/ui/calendar";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
 import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility, canPublishPosts } from "@/lib/planLimits";
 import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
@@ -1683,7 +1685,7 @@ const Dashboard = () => {
     }
   };
   if (isLoading) {
-    return <div className="min-h-screen md:ml-64 bg-card flex items-center justify-center">
+    return <div className="min-h-screen md:ml-[316px] lg:ml-[356px] bg-card flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
           <p className="text-muted-foreground">Loading profile...</p>
@@ -1691,8 +1693,82 @@ const Dashboard = () => {
       </div>;
   }
   // Short facts and profile views: a right-hand panel on wide screens, inline otherwise
+  const ownImages = galleryItems.filter((g: any) => g.type === 'image');
   const ownSideCards = (
     <>
+                          {/* Availability: same card visitors see; a day opens the calendar */}
+                          <div className="rounded-lg bg-foreground/[0.05] p-5">
+                            <SectionHeaderWithUsage title="Availability" size="sm" className="mb-2" />
+                            <Calendar
+                              mode="single"
+                              selected={undefined}
+                              onSelect={() => navigate('/calendar')}
+                              className="-mx-3 p-0"
+                              classNames={{ day_today: "font-bold underline decoration-foreground/70 decoration-2 underline-offset-4" }}
+                              modifiers={{
+                                busy: calendarEvents.filter((e) => e.status === 'busy' || e.status === 'booked').map((e) => parseYMDToLocalDate(e.event_date)),
+                                blocked: calendarEvents.filter((e) => e.status === 'blocked' || e.status === 'unavailable').map((e) => parseYMDToLocalDate(e.event_date)),
+                              }}
+                              modifiersClassNames={{
+                                busy: "bg-destructive/70 text-destructive-foreground hover:bg-destructive/70",
+                                blocked: "bg-[#535353] text-foreground/80 hover:bg-[#535353]",
+                              }}
+                            />
+                            <p className="mt-2 text-xs text-muted-foreground">Pick a day to manage it in your calendar.</p>
+                          </div>
+
+                          {/* Reviews */}
+                          <div className="rounded-lg bg-foreground/[0.05] p-5">
+                            <SectionHeaderWithUsage title="Reviews" size="sm" className="mb-2" />
+                            {reviews.length > 0 ? (
+                              <>
+                                <div className="flex items-baseline gap-2">
+                                  <span className="text-3xl font-bold tabular-nums text-foreground">{getAverageRating()}</span>
+                                  <span className="flex items-center gap-0.5" aria-hidden="true">
+                                    {[1, 2, 3, 4, 5].map((n) => (
+                                      <Star key={n} className={`h-4 w-4 ${n <= Math.round(Number(getAverageRating())) ? "fill-foreground text-foreground" : "text-foreground/30"}`} />
+                                    ))}
+                                  </span>
+                                  <span className="text-sm text-muted-foreground tabular-nums">({reviews.length})</span>
+                                </div>
+                                {reviews[0]?.comment && (
+                                  <blockquote className="mt-3 text-sm text-muted-foreground">
+                                    <p className="line-clamp-3 notranslate" translate="no" data-user-content="true">“{reviews[0].comment}”</p>
+                                    <footer className="mt-1 text-xs text-foreground/80 notranslate" translate="no">{reviews[0].reviewer_name}</footer>
+                                  </blockquote>
+                                )}
+                                <button type="button" onClick={() => setProfileSection('reviews')} className="mt-3 text-sm font-bold text-foreground hover:underline">
+                                  See all reviews
+                                </button>
+                              </>
+                            ) : (
+                              <p className="text-sm text-muted-foreground">No reviews yet</p>
+                            )}
+                          </div>
+
+                          {/* Gallery preview */}
+                          {ownImages.length > 0 && (
+                            <div className="rounded-lg bg-foreground/[0.05] p-5">
+                              <SectionHeaderWithUsage title="Gallery" size="sm" className="mb-3" />
+                              <div className="grid grid-cols-2 gap-2">
+                                {ownImages.slice(0, 4).map((img: any) => (
+                                  <button
+                                    key={img.id}
+                                    type="button"
+                                    onClick={() => setProfileSection('gallery')}
+                                    className="aspect-square overflow-hidden rounded-md bg-foreground/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                                    aria-label="Open the gallery"
+                                  >
+                                    <img src={getThumbUrl(img.thumbnail_url || img.url, 300)} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                                  </button>
+                                ))}
+                              </div>
+                              <button type="button" onClick={() => setProfileSection('gallery')} className="mt-3 text-sm font-bold text-foreground hover:underline">
+                                See the whole gallery
+                              </button>
+                            </div>
+                          )}
+
                           <div className="space-y-6 rounded-lg bg-foreground/[0.05] p-5">
                         {/* Instrument Section for Instrumentalists */}
                         {formData.specialization?.toLowerCase() === 'instrumentalist' &&
@@ -1845,7 +1921,7 @@ const Dashboard = () => {
   );
   const showSidePanel = activeTab === "profile" && !calendarOnly && !isAdmin;
 
-  return <div className={`min-h-screen md:ml-64 bg-black md:py-2 md:pr-2 ${showSidePanel ? "md:flex md:items-start md:gap-2" : ""}`}>
+  return <div className={`min-h-screen md:ml-[316px] lg:ml-[356px] bg-black md:py-2 md:pr-2 ${showSidePanel ? "md:flex md:items-start md:gap-2" : ""}`}>
       <Navigation 
         mobileTitle={calendarOnly ? undefined : getMobileTitle()} 
         mobileBackPath={calendarOnly ? undefined : getMobileBackPath()}

@@ -166,7 +166,7 @@ const Announcements = ({ embeddedKind }: { embeddedKind?: "gig" | "collab" } = {
 
   const { loadMoreRef, isLoadingMore } = useInfiniteScroll(loadMoreAnnouncements, hasMore);
 
-  return <div className={embeddedKind ? "" : `min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+  return <div className={embeddedKind ? "" : `min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''} bg-background`}>
       {!embeddedKind && (
         <SEO
           title="Announcements | Muzicalist"

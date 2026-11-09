@@ -212,7 +212,7 @@ const BookArtist = () => {
 
   if (loading || !artist) {
     return (
-      <div className="min-h-screen bg-background md:ml-64">
+      <div className="min-h-screen bg-background md:ml-[316px] lg:ml-[356px]">
         <Navigation />
         <div className="container mx-auto px-4 py-8">
           <div className="h-64 animate-pulse bg-muted rounded-lg" />
@@ -227,7 +227,7 @@ const BookArtist = () => {
   const selectedFullyBooked = !!selectedDate && isBusyDate(selectedDate) && isDayFullyBooked(selectedSlots);
 
   return (
-    <div className="min-h-screen bg-background md:ml-64">
+    <div className="min-h-screen bg-background md:ml-[316px] lg:ml-[356px]">
       <Navigation mobileTitle="Availability" mobileBackPath={`/artist/${id}`} hideMobileNotifications />
       <div className="container mx-auto px-4 pt-20 md:pt-6 py-6 pb-32 md:pb-12 max-w-3xl">
         <Button variant="ghost" size="sm" onClick={() => goBack(navigate, `/artist/${id}`)} className="mb-4 -ml-2 hidden md:inline-flex">

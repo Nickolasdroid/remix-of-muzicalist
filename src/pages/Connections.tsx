@@ -226,7 +226,7 @@ const Connections = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background md:ml-64">
+    <div className="min-h-screen bg-background md:ml-[316px] lg:ml-[356px]">
       <Navigation mobileTitle={owner ? displayName(owner) : " "} onMobileBack={() => goBack(navigate, "/feed")} hideMobileNotifications />
       <main className="mx-auto max-w-xl pt-14 md:pt-6 pb-24 md:pb-10">
         <h1 className="hidden md:block px-4 pb-4 text-2xl font-display font-bold text-foreground notranslate" translate="no">

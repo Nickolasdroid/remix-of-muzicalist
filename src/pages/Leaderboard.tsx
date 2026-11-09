@@ -797,7 +797,7 @@ const Leaderboard = () => {
   // Show loading while checking auth
   if (!isAuthChecked) {
     return (
-      <div className="min-h-screen md:ml-64 bg-background flex items-center justify-center">
+      <div className="min-h-screen md:ml-[316px] lg:ml-[356px] bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-accent" />
       </div>
     );
@@ -820,7 +820,7 @@ const Leaderboard = () => {
     </button>
   );
 
-  return <div className="min-h-screen md:ml-64 bg-background relative">
+  return <div className="min-h-screen md:ml-[316px] lg:ml-[356px] bg-background relative">
       <SEO title="Top Rated Artists — Leaderboard | Muzicalist" description="See the highest-rated musical artists on Muzicalist, ranked by client reviews and engagement. Find proven performers for your next event." path="/leaderboard" />
       <Navigation hideMobileNotifications />
 

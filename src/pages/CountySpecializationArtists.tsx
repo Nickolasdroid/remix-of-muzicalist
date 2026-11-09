@@ -86,7 +86,7 @@ const CountySpecializationArtists = () => {
   const title = specialization ? specializationTitles[specialization.toLowerCase()] || specialization : '';
 
   return (
-    <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+    <div className={`min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''} bg-background`}>
       <SEO title={`${specialization} in ${county} — Book Now | Muzicalist`} description={`Browse and book the best ${specialization?.toLowerCase()} in ${county}. See reviews, prices and availability, then send a booking request on Muzicalist.`} path={`/counties/${encodeURIComponent(county ?? "")}/${encodeURIComponent(specialization ?? "")}`} />
       <Navigation mobileTitle={county} mobileBackPath={`/counties/${county}`} hideMobileNotifications />
       

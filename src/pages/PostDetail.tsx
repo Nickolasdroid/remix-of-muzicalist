@@ -150,7 +150,7 @@ const PostDetail = () => {
   const promoted = isPromo || (!!item?.promotedUntil && new Date(item.promotedUntil).getTime() > Date.now());
 
   return (
-    <div className={`min-h-screen ${userId ? "md:ml-64" : ""} bg-background`}>
+    <div className={`min-h-screen ${userId ? "md:ml-[316px] lg:ml-[356px]" : ""} bg-background`}>
       <div className="hidden md:block"><Navigation /></div>
       <div className="sticky top-0 z-30 border-b border-border/60 bg-background/95 backdrop-blur-sm">
         <div className="mx-auto flex h-12 max-w-2xl items-center gap-2 px-2">

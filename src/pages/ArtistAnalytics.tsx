@@ -126,7 +126,7 @@ const ArtistAnalytics = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background md:ml-64">
+      <div className="min-h-screen bg-background md:ml-[316px] lg:ml-[356px]">
         <Navigation mobileTitle="Statistics" mobileBackPath={-1} />
         <div className="container mx-auto px-4 pt-24 pb-8">
           <div className="flex items-center justify-center h-64">
@@ -145,7 +145,7 @@ const ArtistAnalytics = () => {
   const funnelRates = [stats.requestRate, stats.bookingRate];
 
   return (
-    <div className="min-h-screen bg-background md:ml-64">
+    <div className="min-h-screen bg-background md:ml-[316px] lg:ml-[356px]">
       <Navigation mobileTitle="Statistics" mobileBackPath={-1} />
       <div className="container mx-auto px-4 pt-20 md:pt-8 pb-24 md:pb-8 max-w-4xl space-y-4 md:space-y-6">
         <div className="flex items-center justify-between gap-3">

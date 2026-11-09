@@ -109,7 +109,7 @@ const Rules = () => {
   }, []);
 
   return (
-    <div className={`min-h-screen bg-background ${isAuthenticated ? "md:ml-64" : ""}`}>
+    <div className={`min-h-screen bg-background ${isAuthenticated ? "md:ml-[316px] lg:ml-[356px]" : ""}`}>
       <SEO
         title={t("rules.seoTitle")}
         description={t("rules.seoDescription")}

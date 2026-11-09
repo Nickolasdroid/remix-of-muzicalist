@@ -376,7 +376,7 @@ const AboutUs = () => {
   if (isAuthenticated === null) return null;
 
   return (
-    <div className={`min-h-screen bg-[#050505] ${isAuthenticated ? 'md:ml-64' : ''}`}>
+    <div className={`min-h-screen bg-[#050505] ${isAuthenticated ? 'md:ml-[316px] lg:ml-[356px]' : ''}`}>
       <SEO title="About Muzicalist — The Global Stage for Musical Artists" description="Muzicalist connects talented musicians with clients worldwide. Learn how our platform helps artists get discovered and helps clients book with confidence." path="/about" />
       <Navigation />
       {isAuthenticated ? <AuthenticatedView /> : <PublicAboutPage />}

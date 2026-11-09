@@ -959,7 +959,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
     </div>;
 
   if (loading) {
-    return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''}`}>
+    return <div className={`min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''}`}>
         <Navigation />
         <div className={`pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20 px-4`}>
           <div className="container mx-auto text-center">
@@ -969,7 +969,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       </div>;
   }
   if (!artist) {
-    return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''}`}>
+    return <div className={`min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''}`}>
         <Navigation />
         <div className={`pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20 px-4`}>
           <div className="container mx-auto text-center">
@@ -988,7 +988,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   // Official / Brand account (Muzicalist admin) — content-producing brand profile
   if (id && adminIds.has(id)) {
     const officialAnnouncements = announcements.filter((a) => !isAdExpired(a));
-    return <div className={`min-h-screen bg-black ${currentUserId ? 'md:ml-64 md:py-2 md:pr-2' : 'md:flex md:items-start md:gap-2 md:px-2 md:pb-2 md:pt-[72px]'}`}>
+    return <div className={`min-h-screen bg-black ${currentUserId ? 'md:ml-[316px] lg:ml-[356px] md:py-2 md:pr-2' : 'md:flex md:items-start md:gap-2 md:px-2 md:pb-2 md:pt-[72px]'}`}>
       <SEO
         title={`${artist.stage_name || 'Muzicalist'} — Admin | Muzicalist`}
         description={`Muzicalist admin account — posts and announcements.`}
@@ -1062,7 +1062,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       ? new Date(artist.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
       : null;
 
-    return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background notranslate`} data-no-translate="true" translate="no">
+    return <div className={`min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''} bg-background notranslate`} data-no-translate="true" translate="no">
       <Navigation />
       <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20 px-0 md:px-4`}>
         <div className="container mx-auto max-w-4xl px-4 md:px-0">
@@ -1342,7 +1342,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
     </>
   );
 
-  return <div className={`min-h-screen bg-black ${currentUserId ? 'md:ml-64 md:flex md:items-start md:gap-2 md:py-2 md:pr-2' : 'md:flex md:items-start md:gap-2 md:px-2 md:pb-2 md:pt-[72px]'}`}>
+  return <div className={`min-h-screen bg-black ${currentUserId ? 'md:ml-[316px] lg:ml-[356px] md:flex md:items-start md:gap-2 md:py-2 md:pr-2' : 'md:flex md:items-start md:gap-2 md:px-2 md:pb-2 md:pt-[72px]'}`}>
       <SEO
         title={`${artist.stage_name} — ${artist.specialization || "Musical Artist"} | Muzicalist`}
         description={toMetaDescription(
