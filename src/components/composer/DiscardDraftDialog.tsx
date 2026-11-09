@@ -28,9 +28,9 @@ const DiscardDraftDialog = ({
         <AlertDialogDescription>What you've written so far will be lost.</AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
-        <AlertDialogCancel className="rounded-lg">Keep editing</AlertDialogCancel>
+        <AlertDialogCancel className="">Keep editing</AlertDialogCancel>
         <AlertDialogAction
-          className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           onClick={onDiscard}
         >
           Discard

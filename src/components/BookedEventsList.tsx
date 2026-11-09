@@ -150,7 +150,7 @@ const BookedEventsList = ({ notes, onUpdateNotes, isSaving }: BookedEventsListPr
           {events.map((event, index) => (
             <Card 
               key={index}
-              className="p-3 cursor-pointer hover:border-accent/50 transition-colors"
+              className="p-3 cursor-pointer border-0 bg-foreground/[0.05] shadow-none transition-colors hover:bg-foreground/[0.09]"
               onClick={() => handleEventClick(event, index)}
             >
               <div className="flex items-start justify-between gap-2">
@@ -195,7 +195,7 @@ const BookedEventsList = ({ notes, onUpdateNotes, isSaving }: BookedEventsListPr
                 <Clock className="h-4 w-4" />
                 Time Slot
               </Label>
-              <p className="mt-1 px-3 py-2 text-sm bg-muted/50 rounded-md border border-border">
+              <p className="mt-1 text-sm text-foreground">
                 {editForm.timeSlot || 'Not specified'}
               </p>
             </div>
@@ -205,7 +205,7 @@ const BookedEventsList = ({ notes, onUpdateNotes, isSaving }: BookedEventsListPr
                 <User className="h-4 w-4" />
                 Booked By
               </Label>
-              <p className="mt-1 px-3 py-2 text-sm bg-muted/50 rounded-md border border-border">
+              <p className="mt-1 text-sm text-foreground">
                 {editForm.bookedBy || 'Unknown'}
               </p>
             </div>
@@ -215,7 +215,7 @@ const BookedEventsList = ({ notes, onUpdateNotes, isSaving }: BookedEventsListPr
                 <Calendar className="h-4 w-4" />
                 Event Type
               </Label>
-              <p className="mt-1 px-3 py-2 text-sm bg-muted/50 rounded-md border border-border">
+              <p className="mt-1 text-sm text-foreground">
                 {editForm.eventType || 'Not specified'}
               </p>
             </div>
@@ -225,7 +225,7 @@ const BookedEventsList = ({ notes, onUpdateNotes, isSaving }: BookedEventsListPr
                 <Mail className="h-4 w-4" />
                 Contact Email
               </Label>
-              <p className="mt-1 px-3 py-2 text-sm bg-muted/50 rounded-md border border-border">
+              <p className="mt-1 text-sm text-foreground">
                 {editForm.contact || 'Not provided'}
               </p>
             </div>
@@ -235,7 +235,7 @@ const BookedEventsList = ({ notes, onUpdateNotes, isSaving }: BookedEventsListPr
                 <Phone className="h-4 w-4" />
                 Phone
               </Label>
-              <p className="mt-1 px-3 py-2 text-sm bg-muted/50 rounded-md border border-border">
+              <p className="mt-1 text-sm text-foreground">
                 {editForm.phone || 'Not provided'}
               </p>
             </div>
@@ -277,7 +277,7 @@ const BookedEventsList = ({ notes, onUpdateNotes, isSaving }: BookedEventsListPr
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
-            <Button onClick={handleSaveEdit} disabled={isSaving} className="bg-accent text-accent-foreground">
+            <Button onClick={handleSaveEdit} disabled={isSaving} className="rounded-full bg-accent font-bold text-accent-foreground hover:bg-accent/90">
               <Save className="h-4 w-4 mr-1" />
               {isSaving ? "Saving..." : "Save Changes"}
             </Button>

@@ -103,7 +103,7 @@ const ReportProblemForm = ({ onSubmitted, compact }: Props) => {
         onChange={(e) => setMessage(e.target.value)}
         maxLength={4000}
         placeholder="Describe your issue or feedback..."
-        className="min-h-[150px] rounded-lg bg-background/50 border-accent/20 resize-none"
+        className="min-h-[150px] rounded-lg resize-none"
       />
 
       {file && <p className="text-sm text-muted-foreground">Attached: {file.name}</p>}
@@ -122,7 +122,7 @@ const ReportProblemForm = ({ onSubmitted, compact }: Props) => {
           type="button"
           variant="outline"
           onClick={() => fileInputRef.current?.click()}
-          className="border-accent/20 hover:bg-accent/10"
+          className="border-foreground/25 bg-transparent font-bold hover:border-foreground hover:bg-transparent"
         >
           <Paperclip className="h-4 w-4 mr-2" />
           Attach file

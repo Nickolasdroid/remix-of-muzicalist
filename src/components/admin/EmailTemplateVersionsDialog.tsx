@@ -412,9 +412,9 @@ export const EmailTemplateVersionsDialog = ({ template, open, onOpenChange }: Pr
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-lg">Keep</AlertDialogCancel>
+            <AlertDialogCancel className="">Keep</AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-lg"
+              className=""
               onClick={() => pendingPublish && handlePublish(pendingPublish)}
             >
               Publish
@@ -434,9 +434,9 @@ export const EmailTemplateVersionsDialog = ({ template, open, onOpenChange }: Pr
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="">Cancel</AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-lg"
+              className=""
               onClick={() => pendingRestore && handleRestore(pendingRestore)}
             >
               Restore
@@ -456,9 +456,9 @@ export const EmailTemplateVersionsDialog = ({ template, open, onOpenChange }: Pr
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-lg">Keep</AlertDialogCancel>
+            <AlertDialogCancel className="">Keep</AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => pendingDelete && handleDelete(pendingDelete)}
             >
               Delete

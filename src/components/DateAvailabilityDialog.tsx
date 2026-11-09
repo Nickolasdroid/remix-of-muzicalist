@@ -69,7 +69,7 @@ const DateAvailabilityDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[420px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-2xl overflow-hidden">
+      <DialogContent className="max-w-[420px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-lg overflow-hidden">
         <div className="flex items-center gap-3 px-5 pt-5 pb-4 pr-12">
           <Avatar className="h-11 w-11">
             {artistAvatarUrl && <AvatarImage src={artistAvatarUrl} alt={artistName} />}

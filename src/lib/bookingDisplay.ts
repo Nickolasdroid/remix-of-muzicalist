@@ -61,6 +61,14 @@ export const bookingStatusTone = (k: BookingStatusKey): BookingTone =>
   k === "pending" ? "amber" : k === "offered" ? "blue" : k === "confirmed" ? "green" : "muted";
 
 /** Status pill colors, shared by the booking cards and the booking details dialog. */
+/** Status as plain coloured text (booking popup header). */
+export const BOOKING_TONE_TEXT: Record<BookingTone, string> = {
+  amber: "text-amber-400",
+  green: "text-emerald-400",
+  blue: "text-sky-400",
+  muted: "text-muted-foreground",
+};
+
 export const BOOKING_TONE_CLASS: Record<BookingTone, string> = {
   amber: "bg-amber-500/15 text-amber-400",
   green: "bg-emerald-500/15 text-emerald-400",

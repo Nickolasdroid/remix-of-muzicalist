@@ -14,7 +14,7 @@ interface ReportDialogProps {
 const ReportDialog = ({ open, onOpenChange }: ReportDialogProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-card border-accent/20 rounded-lg">
+      <DialogContent className="sm:max-w-md rounded-lg">
         <DialogHeader>
           <DialogTitle className="text-foreground">Report</DialogTitle>
         </DialogHeader>

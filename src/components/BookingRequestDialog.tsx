@@ -403,7 +403,7 @@ const BookingRequestDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[460px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-2xl overflow-hidden max-h-[90vh] flex flex-col">
+      <DialogContent className="max-w-[460px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-lg overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 px-5 pt-5 pb-4 pr-12">
           <Avatar className="h-11 w-11">

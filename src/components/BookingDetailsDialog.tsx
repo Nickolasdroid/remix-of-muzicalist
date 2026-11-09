@@ -30,6 +30,7 @@ import {
   bookingStatusLabel,
   bookingStatusTone,
   BOOKING_TONE_CLASS,
+  BOOKING_TONE_TEXT,
   formatBookingWhen,
   isClosedBooking,
   messageWithoutTime,
@@ -205,12 +206,12 @@ const BookingDetailsDialog = ({
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="max-w-[440px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-2xl overflow-hidden max-h-[90vh] flex flex-col">
+        <DialogContent className="max-w-[440px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-lg overflow-hidden max-h-[90vh] flex flex-col">
           {/* Header: same order as the list card — date tile, event, time, status */}
           <div className="flex items-start gap-3.5 px-5 pt-5 pb-4 pr-12">
             <BookingDateTile ymd={booking.event_date} closed={isClosedBooking(statusKey)} large />
             <div className="min-w-0 flex-1">
-              <DialogTitle className="text-[17px] font-semibold leading-tight">
+              <DialogTitle className="text-lg font-bold leading-tight">
                 {booking.event_type ? (
                   isKnownEventType(booking.event_type) ? (
                     <span className="block truncate">{booking.event_type}</span>
@@ -236,7 +237,7 @@ const BookingDetailsDialog = ({
                 </p>
               )}
               <span
-                className={`mt-2 inline-flex w-fit rounded-full px-2.5 py-0.5 text-xs font-semibold ${BOOKING_TONE_CLASS[bookingStatusTone(statusKey)]}`}
+                className={`mt-1.5 inline-flex w-fit text-sm font-semibold ${BOOKING_TONE_TEXT[bookingStatusTone(statusKey)]}`}
               >
                 {bookingStatusLabel(statusKey, viewer, booking ?? undefined)}
               </span>
@@ -245,12 +246,12 @@ const BookingDetailsDialog = ({
           </div>
 
           {/* Body */}
-          <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-4">
+          <div className="flex-1 overflow-y-auto px-5 pb-5 space-y-5">
             {/* Who: the same photo and name as on the card */}
-            <div className="flex items-center gap-3 rounded-xl bg-card px-3.5 py-3">
+            <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10">
                 {counterpartAvatarUrl && <AvatarImage src={counterpartAvatarUrl} alt={counterpartName} />}
-                <AvatarFallback className="bg-accent/10 text-accent font-semibold">
+                <AvatarFallback className="bg-foreground/10 text-foreground font-semibold">
                   {(counterpartName || "?").charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -283,25 +284,25 @@ const BookingDetailsDialog = ({
                 </p>
                 <div className="space-y-1.5">
                   {contact.email && (
-                    <div className="flex items-center gap-3 rounded-lg bg-card px-3 py-2.5 text-sm">
+                    <div className="flex items-center gap-3 py-1 text-sm">
                       <Mail className="h-4 w-4 text-muted-foreground shrink-0" />
                       <span className="flex-1 min-w-0 truncate notranslate" translate="no">{contact.email}</span>
                       <button
                         type="button"
                         onClick={() => copyEmail(contact.email!)}
-                        className="text-xs font-semibold text-muted-foreground hover:text-foreground"
+                        className="text-sm font-bold text-foreground hover:underline"
                       >
                         Copy
                       </button>
                     </div>
                   )}
                   {contact.phone && (
-                    <div className="flex items-center gap-3 rounded-lg bg-card px-3 py-2.5 text-sm">
+                    <div className="flex items-center gap-3 py-1 text-sm">
                       <Phone className="h-4 w-4 text-muted-foreground shrink-0" />
                       <span className="flex-1 min-w-0 truncate notranslate" translate="no">{contact.phone}</span>
                       <a
                         href={`tel:${contact.phone.replace(/\s+/g, "")}`}
-                        className="text-xs font-semibold text-muted-foreground hover:text-foreground"
+                        className="text-sm font-bold text-foreground hover:underline"
                       >
                         Call
                       </a>
@@ -317,7 +318,7 @@ const BookingDetailsDialog = ({
                   {viewer === "artist" ? "Organizer's message" : "Your message"}
                 </p>
                 <p
-                  className="rounded-lg bg-card px-3 py-2.5 text-sm text-foreground/90 whitespace-pre-wrap notranslate"
+                  className="text-sm text-foreground/90 whitespace-pre-wrap notranslate"
                   translate="no"
                   data-user-content="true"
                 >
@@ -327,7 +328,7 @@ const BookingDetailsDialog = ({
             )}
 
             {(status === "pending" || status === "offered") && (
-              <div className="flex items-start gap-2.5 rounded-lg bg-card px-3 py-2.5 text-sm text-muted-foreground">
+              <div className="flex items-start gap-2.5 text-sm text-muted-foreground">
                 <Lock className="h-4 w-4 mt-0.5 shrink-0" />
                 <span>Contact details become visible once the booking is confirmed.</span>
               </div>
@@ -348,7 +349,7 @@ const BookingDetailsDialog = ({
               <button
                 type="button"
                 onClick={() => setConfirmAction(secondaryAction.key)}
-                className="shrink-0 rounded-md px-2 py-1 text-xs font-medium text-destructive transition-colors hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/50"
+                className="shrink-0 rounded-full px-2 py-1 text-xs font-bold text-destructive transition-colors hover:bg-destructive/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-destructive/50"
               >
                 {secondaryAction.label}
               </button>
@@ -365,11 +366,11 @@ const BookingDetailsDialog = ({
               <AlertDialogDescription>{confirmCopy[confirmAction].body}</AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="rounded-lg" disabled={working}>
+              <AlertDialogCancel disabled={working}>
                 Back
               </AlertDialogCancel>
               <AlertDialogAction
-                className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 disabled={working}
                 onClick={(e) => {
                   e.preventDefault();

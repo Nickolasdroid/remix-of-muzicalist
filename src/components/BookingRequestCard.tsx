@@ -42,7 +42,7 @@ export const BookingDateTile = ({ ymd, closed, large }: { ymd: string; closed?: 
   return (
     <div
       className={`flex shrink-0 flex-col items-center justify-center rounded-lg ${large ? "w-16 py-2" : "w-14 py-1.5"} ${
-        closed ? "bg-muted/60 text-muted-foreground" : "bg-accent/10 text-accent"
+        closed ? "bg-foreground/[0.04] text-muted-foreground" : "bg-foreground/[0.08] text-foreground"
       }`}
       aria-hidden="true"
     >

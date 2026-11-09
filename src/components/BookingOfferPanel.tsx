@@ -43,8 +43,9 @@ interface BookingOfferPanelProps {
   onChanged?: () => void;
 }
 
-const goldBtn = "w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold";
-const ghostBtn = "flex-1 rounded-lg border-border bg-transparent hover:bg-secondary";
+const goldBtn = "h-11 rounded-full bg-accent text-accent-foreground hover:bg-accent/90 font-bold";
+const outlineBtn = "h-11 rounded-full border-foreground/25 bg-transparent font-bold hover:border-foreground hover:bg-transparent";
+const ghostBtn = `flex-1 ${outlineBtn}`;
 
 /**
  * The price card in the booking dialog: the offer and the one or two actions that fit
@@ -162,18 +163,18 @@ const BookingOfferPanel = ({
   if (status === "pending") {
     if (viewer === "requester") {
       return (
-        <div className="rounded-xl border border-border bg-card/60 px-4 py-3.5 text-sm text-muted-foreground">
+        <div className="text-sm text-muted-foreground">
           The artist hasn't sent an offer yet. You'll get a notification when they do.
         </div>
       );
     }
     return (
-      <div className="rounded-xl border border-accent/35 bg-gradient-to-b from-accent/[0.08] to-accent/[0.02] p-4">
-        <p className="text-sm text-foreground/90">
+      <div>
+        <p className="text-sm text-muted-foreground">
           Send a price offer. The booking is confirmed when the organizer accepts it.
         </p>
         <div className="mt-3 flex gap-2">
-          <Button className="flex-1 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold" onClick={onOffer}>
+          <Button className={`flex-1 ${goldBtn}`} onClick={onOffer}>
             Send offer
           </Button>
           <Button variant="outline" className={ghostBtn} onClick={onArtistDecline}>
@@ -218,13 +219,7 @@ const BookingOfferPanel = ({
 
   return (
     <>
-      <div
-        className={
-          cancelled
-            ? "rounded-xl border border-border bg-card/60 p-4"
-            : "rounded-xl border border-accent/35 bg-gradient-to-b from-accent/[0.08] to-accent/[0.02] p-4"
-        }
-      >
+      <div>
         <p className="text-xs text-muted-foreground">
           <span>{caption}</span>
           {status === "offered" && viewer === "artist" && (
@@ -235,7 +230,7 @@ const BookingOfferPanel = ({
           )}
         </p>
         <p
-          className={`mt-0.5 text-[26px] font-bold leading-tight tracking-tight notranslate ${cancelled ? "text-muted-foreground line-through decoration-1" : "text-foreground"}`}
+          className={`mt-0.5 text-3xl font-bold leading-tight tracking-tight tabular-nums notranslate ${cancelled ? "text-muted-foreground" : "text-foreground"}`}
           translate="no"
         >
           {price}
@@ -256,7 +251,7 @@ const BookingOfferPanel = ({
           const received = booking.advance_received_at || advanceReceivedLocal;
           const iban = contract?.artist_party?.iban;
           return (
-            <div className="mt-3 rounded-lg border border-border/70 bg-background/40 px-3 py-2.5 text-sm">
+            <div className="mt-3 text-sm">
               <p className="flex flex-wrap items-baseline gap-x-1.5">
                 <span className="text-muted-foreground">Advance</span>
                 <b className="text-foreground notranslate tabular-nums" translate="no">{amount}</b>
@@ -286,7 +281,7 @@ const BookingOfferPanel = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="mt-2 rounded-lg"
+                    className="mt-2 h-9 rounded-full border-foreground/25 bg-transparent font-bold hover:border-foreground hover:bg-transparent"
                     disabled={busy !== null}
                     onClick={async () => {
                       setBusy("advance");
@@ -313,7 +308,7 @@ const BookingOfferPanel = ({
         {status === "offered" && viewer === "requester" && (
           <div className="mt-3 flex gap-2">
             <Button
-              className="flex-1 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
+              className={`flex-1 ${goldBtn}`}
               onClick={() => {
                 setAgree(false);
                 setLocation("");
@@ -341,12 +336,12 @@ const BookingOfferPanel = ({
         )}
 
         {status === "accepted" && contractLoaded && (
-          <Button className={`${goldBtn} mt-3`} onClick={openContract}>
+          <Button variant="outline" className={`${outlineBtn} mt-4 w-full`} onClick={openContract}>
             {contract ? <FileSignature className="h-4 w-4 mr-2" /> : <Printer className="h-4 w-4 mr-2" />}
             {contract ? (
               <>
                 <span>View contract</span>
-                <span className="ml-2 font-medium opacity-70 notranslate" translate="no">
+                <span className="ml-2 font-normal text-muted-foreground notranslate" translate="no">
                   {contract.contract_number}
                 </span>
               </>
@@ -389,7 +384,7 @@ const BookingOfferPanel = ({
 
             <Separator />
 
-            <Button variant="outline" size="sm" className="rounded-lg" type="button" onClick={previewContract}>
+            <Button variant="outline" size="sm" className="h-9 rounded-full border-foreground/25 bg-transparent font-bold hover:border-foreground hover:bg-transparent" type="button" onClick={previewContract}>
               <FileSignature className="h-3.5 w-3.5 mr-1.5" />
               Read the contract
             </Button>
@@ -407,7 +402,7 @@ const BookingOfferPanel = ({
             </p>
 
             <Button
-              className="w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
+              className={`w-full ${goldBtn}`}
               onClick={() => respond(true)}
               disabled={!agree || !location.trim() || busy !== null}
             >

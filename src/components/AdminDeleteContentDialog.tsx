@@ -89,10 +89,10 @@ const AdminDeleteContentDialog = ({
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogCancel className="rounded-lg">Cancel</AlertDialogCancel>
+          <AlertDialogCancel className="">Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
-            className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
           >
             Delete content
           </AlertDialogAction>

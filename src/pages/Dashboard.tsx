@@ -2379,7 +2379,7 @@ const Dashboard = () => {
                                     if (!open) setPricingRefreshKey((k) => k + 1);
                                   }}
                                 >
-                                  <DialogContent className="max-w-md rounded-2xl">
+                                  <DialogContent className="max-w-md rounded-lg">
                                     <DialogTitle className="sr-only">Estimated Prices</DialogTitle>
                                     <PricingEntriesEditor
                                       key={`pricing-edit-${pricingDialogOpen}`}
@@ -2971,7 +2971,7 @@ const Dashboard = () => {
                                 if (isPastDate) {
                                   // Read-only view for past dates
                                   return <div>
-                                    <h4 className="font-semibold text-foreground mb-3">
+                                    <h4 className="text-lg font-bold text-foreground mb-3">
                                       {capitalizeFirst(selectedDate.toLocaleDateString(i18n.language || 'ro', {
                                         weekday: 'long',
                                         year: 'numeric',
@@ -2983,12 +2983,12 @@ const Dashboard = () => {
                                       <div className="space-y-3">
                                         <div>
                                           <Label>Status</Label>
-                                          <div className={`mt-1 px-3 py-2 rounded-md border text-sm ${
+                                          <div className={`mt-1 text-sm font-semibold ${
                                             pastEvent.status === 'busy' || pastEvent.status === 'booked'
-                                              ? 'bg-destructive/10 text-destructive border-destructive/30'
+                                              ? 'text-destructive'
                                               : pastEvent.status === 'blocked'
-                                              ? 'bg-muted text-muted-foreground border-border'
-                                              : calendarAvailabilityStyles.availableSurface
+                                              ? 'text-muted-foreground'
+                                              : 'text-foreground'
                                           }`}>
                                             {pastEvent.status === 'busy' || pastEvent.status === 'booked' ? 'Booked' : pastEvent.status === 'blocked' ? 'Unavailable' : 'Available'}
                                           </div>
@@ -2996,7 +2996,7 @@ const Dashboard = () => {
                                         {pastEvent.notes && (
                                           <div>
                                             <Label>Details</Label>
-                                            <div className="mt-1 px-3 py-2 rounded-md border bg-secondary/50 text-sm text-muted-foreground whitespace-pre-wrap">
+                                            <div className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">
                                               {pastEvent.notes}
                                             </div>
                                           </div>
@@ -3010,7 +3010,7 @@ const Dashboard = () => {
                                 
                                 // Editable view for today and future dates
                                 return <div>
-                                  <h4 className="font-semibold text-foreground mb-3">
+                                  <h4 className="text-lg font-bold text-foreground mb-3">
                                     {capitalizeFirst(selectedDate.toLocaleDateString(i18n.language || 'ro', {
                           weekday: 'long',
                           year: 'numeric',
@@ -3099,10 +3099,10 @@ const Dashboard = () => {
                                         </div>;
                         })()}
                                     <div className="flex gap-2">
-                                      <Button onClick={handleSaveCalendarEvent} disabled={isSaving} className="flex-1 bg-accent text-accent-foreground">
+                                      <Button onClick={handleSaveCalendarEvent} disabled={isSaving} className="h-11 flex-1 rounded-full bg-accent font-bold text-accent-foreground hover:bg-accent/90">
                                         {isSaving ? "Saving..." : "Save"}
                                       </Button>
-                                      {getEventForDate(selectedDate) && <Button variant="outline" onClick={handleDeleteCalendarEvent} disabled={isSaving}>
+                                      {getEventForDate(selectedDate) && <Button variant="outline" onClick={handleDeleteCalendarEvent} disabled={isSaving} aria-label="Delete" className="h-11 w-11 rounded-full border-foreground/25 bg-transparent p-0 hover:border-foreground hover:bg-transparent">
                                         <Trash2 className="h-4 w-4" />
                                       </Button>}
                                     </div>

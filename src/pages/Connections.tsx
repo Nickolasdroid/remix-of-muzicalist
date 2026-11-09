@@ -289,8 +289,8 @@ const Connections = () => {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="rounded-lg">Back</AlertDialogCancel>
-              <AlertDialogAction className="rounded-lg" onClick={runConfirm}>
+              <AlertDialogCancel className="">Back</AlertDialogCancel>
+              <AlertDialogAction className="" onClick={runConfirm}>
                 {confirm.kind === "remove" ? "Remove" : "Unfollow"}
               </AlertDialogAction>
             </AlertDialogFooter>

@@ -445,9 +445,9 @@ const AdminEmailTemplates = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-lg">Keep</AlertDialogCancel>
+            <AlertDialogCancel className="">Keep</AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-lg"
+              className=""
               onClick={() => pendingArchive && handleArchive(pendingArchive)}
             >
               Archive
@@ -469,9 +469,9 @@ const AdminEmailTemplates = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-lg">Keep</AlertDialogCancel>
+            <AlertDialogCancel className="">Keep</AlertDialogCancel>
             <AlertDialogAction
-              className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={() => pendingDelete && handleDelete(pendingDelete)}
             >
               Delete

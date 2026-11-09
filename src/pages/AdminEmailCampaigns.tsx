@@ -672,7 +672,7 @@ const AdminEmailCampaigns = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-lg">Keep Running</AlertDialogCancel>
+            <AlertDialogCancel className="">Keep Running</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => pendingCancel && handleCancel(pendingCancel)}
               className="rounded-lg"
@@ -698,7 +698,7 @@ const AdminEmailCampaigns = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-lg" disabled={retryLoading}>
+            <AlertDialogCancel className="" disabled={retryLoading}>
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
@@ -732,7 +732,7 @@ const AdminEmailCampaigns = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="rounded-lg">Keep</AlertDialogCancel>
+            <AlertDialogCancel className="">Keep</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => pendingDelete && handleDelete(pendingDelete)}
               className="rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90"

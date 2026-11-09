@@ -430,7 +430,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
       )}
 
       <AlertDialog open={!!chooseTarget} onOpenChange={(o) => !o && !choosing && setChooseTarget(null)}>
-        <AlertDialogContent className="rounded-2xl">
+        <AlertDialogContent className="rounded-lg">
           <AlertDialogHeader>
             <AlertDialogTitle>Accept this artist?</AlertDialogTitle>
             <p className="text-sm font-semibold text-foreground notranslate" translate="no">{chooseTarget?.name}</p>
@@ -452,7 +452,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
       </AlertDialog>
 
       <AlertDialog open={!!rejectTarget} onOpenChange={(o) => !o && !choosing && setRejectTarget(null)}>
-        <AlertDialogContent className="rounded-2xl">
+        <AlertDialogContent className="rounded-lg">
           <AlertDialogHeader>
             <AlertDialogTitle>Reject this artist?</AlertDialogTitle>
             <p className="text-sm font-semibold text-foreground notranslate" translate="no">{rejectTarget?.name}</p>

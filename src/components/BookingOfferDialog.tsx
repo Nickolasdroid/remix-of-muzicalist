@@ -259,7 +259,7 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
               />
             </div>
 
-            <div className="space-y-2 rounded-lg border border-border p-3">
+            <div className="space-y-2">
               <label className="flex cursor-pointer items-center justify-between gap-3">
                 <span className="text-sm font-medium text-foreground">Ask for an advance</span>
                 <Checkbox
@@ -345,7 +345,7 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
             </label>
 
             <Button
-              className="w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
+              className="h-11 w-full rounded-full bg-accent font-bold text-accent-foreground hover:bg-accent/90"
               onClick={handleSend}
               disabled={!priceValid || !acceptTerms || !advanceValid || !phoneValid || saving}
             >
