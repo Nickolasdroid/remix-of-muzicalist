@@ -1351,7 +1351,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
               </div>
 
               {/* Avatar overlapping cover bottom + info below (Facebook-style) */}
-              <div className="px-4 md:px-[max(2rem,calc((100%-896px)/2))] -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
+              <div className="px-4 md:px-8 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
                 <button
                   type="button"
                   onClick={() => artist.avatar_url && setLightboxSrc(artist.avatar_url)}
@@ -1394,7 +1394,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
 
               {/* Stats: three quiet columns, value over label, no box */}
-              <dl className="mx-4 md:mx-[max(2rem,calc((100%-896px)/2))] mt-4 md:mt-6 flex gap-8 md:gap-12">
+              <dl className="mx-4 md:mx-8 mt-4 md:mt-6 flex gap-8 md:gap-12">
                 <div className="min-w-0">
                   {/* Before the first confirmed event: words instead of a bare 0 */}
                   <dd className="truncate text-lg md:text-xl font-bold text-foreground tabular-nums">
@@ -1429,7 +1429,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
               {/* Action buttons */}
               {!isOwnProfile && (
-                <div className="mx-4 md:mx-[max(2rem,calc((100%-896px)/2))] mt-6 md:mt-7 grid grid-cols-1 gap-2 md:flex md:gap-3">
+                <div className="mx-4 md:mx-8 mt-6 md:mt-7 grid grid-cols-1 gap-2 md:flex md:gap-3">
                   <Button
                     onClick={() => {
                       if (!currentUserId) { navigate('/login'); return; }
@@ -1459,7 +1459,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
 
               {/* Tabs Section */}
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="mx-auto w-full max-w-[896px]">
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="flex w-full justify-start mb-5 md:mb-8 h-auto p-0 gap-2 bg-transparent border-0 rounded-none">
                   <TabsTrigger value="details" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
                     <User strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
@@ -1483,7 +1483,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
                 {/* Details Tab: content on the left, the short facts on the right */}
                 <TabsContent value="details">
-                  <div className="space-y-10">
+                  <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-12">
                     <div className="min-w-0 space-y-10">
                       {artist.bio && (
                         <div>
@@ -1521,13 +1521,13 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
                     {/* Side column */}
                     <aside>
-                      <div className="space-y-10">
+                      <div className="space-y-6 rounded-lg bg-foreground/[0.05] p-5">
                         {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && (() => {
                           const instrumentName = artist.instruments.split(',')[0].trim();
                           const InstrumentIcon = getInstrumentIcon(instrumentName);
                           return (
                             <div>
-                              <SectionHeaderWithUsage title="Instrument" className="mb-4" />
+                              <SectionHeaderWithUsage title="Instrument" size="sm" className="mb-2" />
                               <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal hover:bg-foreground/[0.07]">
                                 <InstrumentIcon className="h-4 w-4 mr-1.5" />
                                 {instrumentName}
@@ -1538,7 +1538,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
                         {artist.specialization?.toLowerCase() === 'band' && artist.band_members && (
                           <div>
-                            <SectionHeaderWithUsage title="Members" className="mb-4" />
+                            <SectionHeaderWithUsage title="Members" size="sm" className="mb-2" />
                             <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal hover:bg-foreground/[0.07]">
                               <span className="notranslate" translate="no">{bandMembersLabel(artist.band_members, i18n.language || "ro")}</span>
                             </Badge>
@@ -1546,18 +1546,18 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                         )}
 
                         <div>
-                          <SectionHeaderWithUsage title="Contact Information" className="mb-4" />
+                          <SectionHeaderWithUsage title="Contact Information" size="sm" className="mb-2" />
                           <dl className="space-y-2 text-sm">
                             <div className="flex items-center gap-3">
                               <Mail className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                               <dt className="sr-only">Email</dt>
-                              <dd className="min-w-0 truncate tracking-wider text-foreground select-none">••••••••@••••.com</dd>
+                              <dd className="min-w-0 flex-1 truncate tracking-wider text-foreground select-none">••••••••@••••.com</dd>
                               <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
                             </div>
                             <div className="flex items-center gap-3">
                               <Phone className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                               <dt className="sr-only">Phone</dt>
-                              <dd className="min-w-0 truncate tracking-wider text-foreground select-none">+•• ••• ••• •••</dd>
+                              <dd className="min-w-0 flex-1 truncate tracking-wider text-foreground select-none">+•• ••• ••• •••</dd>
                               <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
                             </div>
                           </dl>

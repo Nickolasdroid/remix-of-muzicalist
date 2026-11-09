@@ -445,7 +445,7 @@ const UserDashboard = () => {
                     <div className="absolute inset-0 bg-gradient-cinematic opacity-70 pointer-events-none" />
                   </div>
 
-                  <div className="px-4 md:px-[max(2rem,calc((100%-896px)/2))] -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
+                  <div className="px-4 md:px-8 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
                     <div className="relative p-1 rounded-full shadow-xl flex-shrink-0 group/avatar">
                       <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
                         <AvatarImage src={profile?.avatar_url} alt="" />
@@ -479,7 +479,7 @@ const UserDashboard = () => {
                   </div>
 
                   {/* Stats card row, same as the artist's */}
-                  <dl className="mx-4 md:mx-[max(2rem,calc((100%-896px)/2))] mt-4 md:mt-6 flex gap-8 md:gap-12">
+                  <dl className="mx-4 md:mx-8 mt-4 md:mt-6 flex gap-8 md:gap-12">
                     {[
                       { icon: Send, value: String(sentRequests), label: "Requests sent" },
                       { icon: CalendarCheck, value: String(confirmedBookings), label: "Artists booked" },
@@ -494,7 +494,7 @@ const UserDashboard = () => {
                 </div>
 
               {/* ===== Bookings, then my events (one column, like the artist dashboard) ===== */}
-              <div className="mx-auto flex w-full max-w-[896px] flex-col gap-8">
+              <div className="flex flex-col gap-8">
                 {/* My Announcements */}
                 <div>
                   <SectionHeaderWithUsage
