@@ -176,6 +176,13 @@
       "when": 1794172784706,
       "tag": "0024_contract_phone_required",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1794217773268,
+      "tag": "0025_unified_signup",
+      "breakpoints": true
     }
   ]
 }
