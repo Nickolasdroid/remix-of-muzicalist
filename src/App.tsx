@@ -13,6 +13,7 @@ import MetaPixel from "./components/MetaPixel";
 import ChunkErrorBoundary from "./components/ChunkErrorBoundary";
 import { Capacitor } from "@capacitor/core";
 import { lazyWithPreload } from "@/lib/lazyWithPreload";
+import OnboardingGate from "@/components/OnboardingGate";
 import { registerPreload, preloadPopularRoutes } from "@/lib/routePreload";
 
 // Lazy-loaded routes — keep first-load bundle small so pages load fast on
@@ -22,8 +23,8 @@ const Feed = lazyWithPreload(() => import("./pages/Feed"));
 const PostDetail = lazyWithPreload(() => import("./pages/PostDetail"));
 const Leaderboard = lazyWithPreload(() => import("./pages/Leaderboard"));
 const Register = lazyWithPreload(() => import("./pages/Register"));
-const RegisterArtist = lazyWithPreload(() => import("./pages/RegisterArtist"));
-const RegisterUser = lazyWithPreload(() => import("./pages/RegisterUser"));
+const Welcome = lazyWithPreload(() => import("./pages/Welcome"));
+const CompleteProfile = lazyWithPreload(() => import("./pages/CompleteProfile"));
 const Categories = lazyWithPreload(() => import("./pages/Categories"));
 const CategoryArtists = lazyWithPreload(() => import("./pages/CategoryArtists"));
 const Counties = lazyWithPreload(() => import("./pages/Counties"));
@@ -77,8 +78,6 @@ registerPreload("/about", AboutUs.preload);
 registerPreload("/login", Login.preload);
 registerPreload("/reset-password", ResetPassword.preload);
 registerPreload("/register", Register.preload);
-registerPreload("/register/artist", RegisterArtist.preload);
-registerPreload("/register/user", RegisterUser.preload);
 registerPreload("/dashboard", Dashboard.preload);
 registerPreload("/calendar", Dashboard.preload);
 registerPreload("/dashboard/posts/new", CreatePost.preload);
@@ -129,6 +128,7 @@ const App = () => (
         <ScrollToTop />
         <MetaPixel />
         <GuestThemeGuard />
+        <OnboardingGate />
         <AutoTranslatePageText />
         <RoutePrefetcher />
         <ChunkErrorBoundary>
@@ -154,8 +154,11 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/register" element={<Register />} />
-            <Route path="/register/artist" element={<RegisterArtist />} />
-            <Route path="/register/user" element={<RegisterUser />} />
+            {/* One sign-up for everyone now; old links preselect the role */}
+            <Route path="/register/artist" element={<Navigate to="/register?type=artist" replace />} />
+            <Route path="/register/user" element={<Navigate to="/register?type=user" replace />} />
+            <Route path="/welcome" element={<Welcome />} />
+            <Route path="/complete-profile" element={<CompleteProfile />} />
             <Route path="/dashboard" element={<Dashboard />} />
             {/* The artist's calendar, reached from the bottom bar */}
             <Route path="/calendar" element={<Dashboard />} />

@@ -21,7 +21,7 @@ const PlansPricing = () => {
   const handleClick = async (planId: 'Free' | 'Standard' | 'Premium', isDowngrade: boolean) => {
     // Not authenticated -> send to register artist
     if (!isAuthenticated) {
-      navigate('/register/artist');
+      navigate('/register?type=artist');
       return;
     }
     // Not an artist account -> can't subscribe to artist plans

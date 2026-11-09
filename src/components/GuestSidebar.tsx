@@ -7,7 +7,7 @@ const CARDS = [
     title: "Are you an artist?",
     text: "Create your profile for free and get booking requests.",
     cta: "Create artist profile",
-    to: "/register/artist",
+    to: "/register?type=artist",
   },
   {
     title: "Planning an event?",

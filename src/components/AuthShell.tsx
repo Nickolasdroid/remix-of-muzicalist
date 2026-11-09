@@ -15,7 +15,7 @@ export const authButtonClass =
  * then one rounded panel with the soft gold glow at the top; the form centered in it,
  * the footer at the bottom of the panel.
  */
-const AuthShell = ({ title, children, footer }: { title: string; children: ReactNode; footer?: ReactNode }) => (
+const AuthShell = ({ title, children, footer }: { title?: string; children: ReactNode; footer?: ReactNode }) => (
   <div className="min-h-screen bg-black">
     <Navigation />
     <main className="px-0 pb-2 pt-14 md:px-2 md:pt-[72px]">
@@ -25,8 +25,8 @@ const AuthShell = ({ title, children, footer }: { title: string; children: React
           style={{ background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" }}
         >
           <div className="w-full max-w-[324px]">
-            <h1 className="text-center text-[2rem] font-bold leading-tight tracking-[-0.02em] text-foreground">{title}</h1>
-            <div className="mt-10">{children}</div>
+            {title && <h1 className="mb-10 text-center text-[2rem] font-bold leading-tight tracking-[-0.02em] text-foreground">{title}</h1>}
+            <div>{children}</div>
             {footer && (
               <div className="mt-10 border-t border-[#292929] pt-8 text-center text-base text-muted-foreground">{footer}</div>
             )}

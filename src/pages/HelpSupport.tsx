@@ -37,7 +37,7 @@ const faqSections = [
     items: [
       {
         q: "How do I create an account?",
-        a: "Go to the Register page and choose between an Artist account or a User account. You can sign up with email and password or continue with Google. Creating an account is free.",
+        a: "Tap Sign up, enter your email (or continue with Google), choose a password and your name, then say whether you're looking for artists or you are an artist. Every account starts free. Artists then fill in their profile (stage name and type, location, photo and phone) and appear in the lists once it's complete.",
       },
       {
         q: "What's the difference between an Artist and a User account?",

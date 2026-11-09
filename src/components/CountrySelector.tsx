@@ -532,3 +532,9 @@ export const getCountryNameByCode = (code: string): string => {
 };
 
 export default CountrySelector;
+
+export const getCountryCodeByName = (name: string | null | undefined): string => {
+  if (!name) return "";
+  const country = allCountries.find((c) => c.name.toLowerCase() === name.toLowerCase() || c.code === name);
+  return country?.code || "";
+};

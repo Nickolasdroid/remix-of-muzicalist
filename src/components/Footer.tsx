@@ -34,7 +34,7 @@ const Footer = ({ embedded = false }: { embedded?: boolean }) => {
   }];
   const artistLinks = [{
     title: t("footer.registerAsArtist", "Register as Artist"),
-    href: "/register"
+    href: "/register?type=artist"
   }, {
     title: t("navigation.login"),
     href: "/login"
