@@ -3197,10 +3197,10 @@ const Dashboard = () => {
                                     }}
                                     actions={request.status === 'pending' ? (
                                       <>
-                                        <Button size="sm" onClick={() => handleAcceptBooking(request)} disabled={isSaving} className="flex-1 bg-accent text-accent-foreground hover:bg-accent/90">
+                                        <Button size="sm" onClick={() => handleAcceptBooking(request)} disabled={isSaving} className="h-9 rounded-full bg-accent px-4 font-bold text-accent-foreground hover:bg-accent/90">
                                           Send offer
                                         </Button>
-                                        <Button size="sm" variant="outline" onClick={() => handleDeclineBooking(request.id)} disabled={isSaving} className="flex-1">
+                                        <Button size="sm" variant="outline" onClick={() => handleDeclineBooking(request.id)} disabled={isSaving} className="h-9 rounded-full border-foreground/25 bg-transparent px-4 font-bold hover:border-foreground hover:bg-transparent">
                                           Decline
                                         </Button>
                                       </>

@@ -5,7 +5,7 @@ import {
   bookingStatusKey,
   bookingStatusLabel,
   bookingStatusTone,
-  BOOKING_TONE_CLASS,
+  BOOKING_TONE_TEXT,
   isClosedBooking,
   formatBookingWhen,
 } from "@/lib/bookingDisplay";
@@ -96,56 +96,40 @@ const BookingRequestCard = ({
           onClick();
         }
       }}
-      className="group rounded-lg bg-foreground/[0.05] p-3 md:p-4 cursor-pointer transition-colors hover:bg-foreground/[0.09] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+      className={`group -mx-2 cursor-pointer rounded-md px-2 py-2.5 transition-colors hover:bg-foreground/[0.07] focus-visible:bg-foreground/[0.07] focus-visible:outline-none ${closed ? "opacity-60 hover:opacity-100" : ""}`}
     >
       <div className="flex items-center gap-3 md:gap-4">
         <BookingDateTile ymd={booking.event_date} closed={closed} />
 
-        <div className={`min-w-0 flex-1 ${closed ? "opacity-70" : ""}`}>
-          <div className="flex items-start justify-between gap-2">
-            <p className="truncate font-semibold text-foreground">{booking.event_type || "Event"}</p>
-            <span className={`md:hidden shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${BOOKING_TONE_CLASS[bookingStatusTone(statusKey)]}`}>
-              {bookingStatusLabel(statusKey, viewer, booking)}
-            </span>
-          </div>
-          <div className="mt-0.5 flex min-w-0 items-center gap-1.5">
-            <Avatar className="h-5 w-5 shrink-0">
-              {counterpartAvatarUrl && <AvatarImage src={counterpartAvatarUrl} alt="" />}
-              <AvatarFallback className="bg-foreground/10 text-[10px] font-semibold text-foreground">
-                {(counterpartName || "?").charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            <p className="truncate text-sm text-muted-foreground notranslate" translate="no">{counterpartName}</p>
-          </div>
-          {(when.time || hasPrice) && (
-            <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
-              {when.time && (
-                <span className="inline-flex items-center gap-1 tabular-nums">
-                  <Clock className="h-3.5 w-3.5" aria-hidden="true" />
-                  {when.time}
-                  {when.endsOn && <span className="text-muted-foreground/70">({when.endsOn})</span>}
-                </span>
-              )}
-              {hasPrice && (
-                <span className={statusKey === "cancelled" ? "tabular-nums text-muted-foreground" : "font-semibold text-foreground tabular-nums"}>
-                  {formatMoney(booking.offer_price, booking.offer_currency, lang)}
-                </span>
-              )}
-            </div>
-          )}
+        <div className="min-w-0 flex-1">
+          <p className="truncate font-semibold text-foreground">{booking.event_type || "Event"}</p>
+          <p className="mt-0.5 truncate text-sm text-muted-foreground">
+            <span className="notranslate" translate="no">{counterpartName}</span>
+            {when.time && (
+              <>
+                <span aria-hidden="true"> · </span>
+                <span className="tabular-nums">{when.time}</span>
+                {when.endsOn && <span className="text-muted-foreground/70"> ({when.endsOn})</span>}
+              </>
+            )}
+          </p>
         </div>
 
-        {/* Desktop: status sits on the right, next to the chevron, so the row reads left-to-right */}
-        <div className="hidden md:flex shrink-0 items-center gap-3">
-          <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${BOOKING_TONE_CLASS[bookingStatusTone(statusKey)]}`}>
+        {/* Price over status, right-aligned */}
+        <div className="shrink-0 text-right">
+          {hasPrice && (
+            <p className="text-sm font-semibold tabular-nums text-foreground notranslate" translate="no">
+              {formatMoney(booking.offer_price, booking.offer_currency, lang)}
+            </p>
+          )}
+          <p className={`text-xs font-semibold ${BOOKING_TONE_TEXT[bookingStatusTone(statusKey)]}`}>
             {bookingStatusLabel(statusKey, viewer, booking)}
-          </span>
-          <ChevronRight className="h-4 w-4 text-muted-foreground/60 transition-colors group-hover:text-accent" aria-hidden="true" />
+          </p>
         </div>
       </div>
 
       {actions && (
-        <div className="mt-3 flex gap-2 border-t border-border/50 pt-3" onClick={(e) => e.stopPropagation()}>
+        <div className="mt-3 flex gap-2 pl-[3.75rem] md:pl-[4.5rem]" onClick={(e) => e.stopPropagation()}>
           {actions}
         </div>
       )}
