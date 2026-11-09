@@ -59,7 +59,7 @@ const SocialStats = ({
           onClick={onFollowToggle}
           variant={isFollowing ? "outline" : "secondary"}
           size="sm"
-          className={`ml-auto rounded-full px-4 md:px-5 transition-all ${
+          className={`ml-auto md:ml-2 rounded-full px-4 md:px-5 transition-all ${
             isFollowing
               ? "border-border bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               : "bg-secondary text-foreground hover:bg-secondary/80 hover:scale-[1.03]"

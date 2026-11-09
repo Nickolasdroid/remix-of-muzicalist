@@ -1217,7 +1217,132 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   };
   const writeReviewButton = currentUserId !== id ? <Button onClick={openReviewDialog} disabled={checkingReviewEligibility} size="sm" className="ml-auto h-8 px-3 bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">Write a Review</Button> : null;
 
-  return <div className={`min-h-screen bg-black ${currentUserId ? 'md:ml-64 md:py-2 md:pr-2' : 'md:flex md:items-start md:gap-2 md:px-2 md:pb-2 md:pt-[72px]'}`}>
+  // What helps decide to book: its own right-hand panel on wide screens, inline otherwise
+  const sideCards = (
+    <>
+                      {/* Availability */}
+                      <div className="rounded-lg bg-foreground/[0.05] p-5">
+                        <SectionHeaderWithUsage title="Availability" size="sm" className="mb-2" />
+                        <Calendar
+                          mode="single"
+                          selected={undefined}
+                          onSelect={(d) => {
+                            if (!d) return;
+                            if (!currentUserId) { navigate('/login'); return; }
+                            navigate(`/book/${artist.id}?date=${format(d, 'yyyy-MM-dd')}`);
+                          }}
+                          disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+                          className="-mx-3 p-0"
+                          classNames={{ day_today: "font-bold underline decoration-foreground/70 decoration-2 underline-offset-4" }}
+                          modifiers={{ busy: getBusyDates(), blocked: getBlockedDates() }}
+                          modifiersClassNames={{
+                            busy: "bg-destructive/70 text-destructive-foreground hover:bg-destructive/70",
+                            blocked: "bg-[#535353] text-foreground/80 hover:bg-[#535353]",
+                          }}
+                        />
+                        <p className="mt-2 text-xs text-muted-foreground">Days without a color are free. Pick one to send a request.</p>
+                      </div>
+
+                      {/* Rating */}
+                      <div className="rounded-lg bg-foreground/[0.05] p-5">
+                        <SectionHeaderWithUsage title="Reviews" size="sm" className="mb-2" />
+                        {reviews.length > 0 ? (
+                          <>
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-3xl font-bold tabular-nums text-foreground">{getAverageRating()}</span>
+                              <span className="flex items-center gap-0.5" aria-hidden="true">
+                                {[1, 2, 3, 4, 5].map((n) => (
+                                  <Star key={n} className={`h-4 w-4 ${n <= Math.round(Number(getAverageRating())) ? "fill-foreground text-foreground" : "text-foreground/30"}`} />
+                                ))}
+                              </span>
+                              <span className="text-sm text-muted-foreground tabular-nums">({reviews.length})</span>
+                            </div>
+                            {reviews[0]?.comment && (
+                              <blockquote className="mt-3 text-sm text-muted-foreground">
+                                <p className="line-clamp-3 notranslate" translate="no" data-user-content="true">“{reviews[0].comment}”</p>
+                                <footer className="mt-1 text-xs text-foreground/80 notranslate" translate="no">{reviews[0].reviewer_name}</footer>
+                              </blockquote>
+                            )}
+                            <button type="button" onClick={() => setActiveTab('reviews')} className="mt-3 text-sm font-bold text-foreground hover:underline">
+                              See all reviews
+                            </button>
+                          </>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">No reviews yet</p>
+                        )}
+                      </div>
+
+                      {/* Gallery preview */}
+                      {getImages().length > 0 && (
+                        <div className="rounded-lg bg-foreground/[0.05] p-5">
+                          <SectionHeaderWithUsage title="Gallery" size="sm" className="mb-3" />
+                          <div className="grid grid-cols-2 gap-2">
+                            {getImages().slice(0, 4).map((img) => (
+                              <button
+                                key={img.id}
+                                type="button"
+                                onClick={() => setActiveTab('gallery')}
+                                className="aspect-square overflow-hidden rounded-md bg-foreground/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                                aria-label="Open the gallery"
+                              >
+                                <img src={getThumbUrl(img.thumbnail_url || img.url, 300)} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform hover:scale-105" />
+                              </button>
+                            ))}
+                          </div>
+                          <button type="button" onClick={() => setActiveTab('gallery')} className="mt-3 text-sm font-bold text-foreground hover:underline">
+                            See the whole gallery
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Artist details: the stats from under the name, plus instrument / members */}
+                      <div className="space-y-5 rounded-lg bg-foreground/[0.05] p-5">
+                        {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && (() => {
+                          const instrumentName = artist.instruments.split(',')[0].trim();
+                          const InstrumentIcon = getInstrumentIcon(instrumentName);
+                          return (
+                            <div>
+                              <SectionHeaderWithUsage title="Instrument" size="sm" className="mb-2" />
+                              <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal hover:bg-foreground/[0.07]">
+                                <InstrumentIcon className="h-4 w-4 mr-1.5" />
+                                {instrumentName}
+                              </Badge>
+                            </div>
+                          );
+                        })()}
+
+                        {artist.specialization?.toLowerCase() === 'band' && artist.band_members && (
+                          <div>
+                            <SectionHeaderWithUsage title="Members" size="sm" className="mb-2" />
+                            <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal hover:bg-foreground/[0.07]">
+                              <span className="notranslate" translate="no">{bandMembersLabel(artist.band_members, i18n.language || "ro")}</span>
+                            </Badge>
+                          </div>
+                        )}
+
+                        <div>
+                          <SectionHeaderWithUsage title="Contact Information" size="sm" className="mb-2" />
+                          <dl className="space-y-2 text-sm">
+                            <div className="flex items-center gap-3">
+                              <Mail className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                              <dt className="sr-only">Email</dt>
+                              <dd className="min-w-0 flex-1 truncate tracking-wider text-foreground select-none">••••••••@••••.com</dd>
+                              <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <Phone className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                              <dt className="sr-only">Phone</dt>
+                              <dd className="min-w-0 flex-1 truncate tracking-wider text-foreground select-none">+•• ••• ••• •••</dd>
+                              <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                            </div>
+                          </dl>
+                        </div>
+                      
+                      </div>
+    </>
+  );
+
+  return <div className={`min-h-screen bg-black ${currentUserId ? 'md:ml-64 md:flex md:items-start md:gap-2 md:py-2 md:pr-2' : 'md:flex md:items-start md:gap-2 md:px-2 md:pb-2 md:pt-[72px]'}`}>
       <SEO
         title={`${artist.stage_name} — ${artist.specialization || "Musical Artist"} | Muzicalist`}
         description={toMetaDescription(
@@ -1400,7 +1525,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
 
               {/* Stats: three quiet columns, value over label, no box */}
-              <dl className="mx-4 md:mx-8 mt-4 md:mt-6 flex gap-8 md:gap-12 lg:hidden">
+              <dl className="mx-4 md:mx-8 mt-4 md:mt-6 flex gap-8 md:gap-12">
                 <div className="min-w-0">
                   {/* Before the first confirmed event: words instead of a bare 0 */}
                   <dd className="truncate text-lg md:text-xl font-bold text-foreground tabular-nums">
@@ -1487,10 +1612,10 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
 
 
-                {/* Details Tab: content on the left, the short facts on the right */}
+                {/* Details Tab */}
                 <TabsContent value="details">
-                  <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-12">
-                    <div className="min-w-0 space-y-10">
+                  <div className="space-y-10">
+
                       {artist.bio && (
                         <div>
                           <SectionHeaderWithUsage title="About" className="mb-4" />
@@ -1500,9 +1625,9 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                         </div>
                       )}
 
-                      {getGenresArray().length > 0 && (
-                        <div>
-                          <SectionHeaderWithUsage title="Music Genres" className="mb-4" />
+                      <div>
+                        <SectionHeaderWithUsage title="Music Genres" className="mb-4" />
+                        {getGenresArray().length > 0 ? (
                           <div className="flex flex-wrap gap-2 justify-start">
                             {getGenresArray().map((genre: string) => (
                               <Badge key={genre} variant="secondary" className="rounded-full border-0 bg-foreground/[0.07] text-foreground font-normal px-3 py-1 text-sm hover:bg-foreground/[0.07]">
@@ -1510,8 +1635,10 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                               </Badge>
                             ))}
                           </div>
-                        </div>
-                      )}
+                        ) : (
+                          <p className="text-sm text-muted-foreground">No genres specified</p>
+                        )}
+                      </div>
 
                       <div>
                         <SectionHeaderWithUsage title="Estimated Prices" className="mb-4" />
@@ -1523,161 +1650,9 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                           )}
                         </div>
                       </div>
-                      <SimilarArtists artistId={artist.id} specialization={artist.specialization} county={artist.county} />
-                    </div>
-
-                    {/* Side column: what helps decide to book */}
-                    <aside className="space-y-4">
-                      {/* Availability */}
-                      <div className="rounded-lg bg-foreground/[0.05] p-5">
-                        <SectionHeaderWithUsage title="Availability" size="sm" className="mb-2" />
-                        <Calendar
-                          mode="single"
-                          selected={undefined}
-                          onSelect={(d) => {
-                            if (!d) return;
-                            if (!currentUserId) { navigate('/login'); return; }
-                            navigate(`/book/${artist.id}?date=${format(d, 'yyyy-MM-dd')}`);
-                          }}
-                          disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
-                          className="-mx-3 p-0"
-                          classNames={{ day_today: "font-bold underline decoration-foreground/70 decoration-2 underline-offset-4" }}
-                          modifiers={{ busy: getBusyDates(), blocked: getBlockedDates() }}
-                          modifiersClassNames={{
-                            busy: "bg-destructive/70 text-destructive-foreground hover:bg-destructive/70",
-                            blocked: "bg-[#535353] text-foreground/80 hover:bg-[#535353]",
-                          }}
-                        />
-                        <p className="mt-2 text-xs text-muted-foreground">Days without a color are free. Pick one to send a request.</p>
-                      </div>
-
-                      {/* Rating */}
-                      <div className="rounded-lg bg-foreground/[0.05] p-5">
-                        <SectionHeaderWithUsage title="Reviews" size="sm" className="mb-2" />
-                        {reviews.length > 0 ? (
-                          <>
-                            <div className="flex items-baseline gap-2">
-                              <span className="text-3xl font-bold tabular-nums text-foreground">{getAverageRating()}</span>
-                              <span className="flex items-center gap-0.5" aria-hidden="true">
-                                {[1, 2, 3, 4, 5].map((n) => (
-                                  <Star key={n} className={`h-4 w-4 ${n <= Math.round(Number(getAverageRating())) ? "fill-foreground text-foreground" : "text-foreground/30"}`} />
-                                ))}
-                              </span>
-                              <span className="text-sm text-muted-foreground tabular-nums">({reviews.length})</span>
-                            </div>
-                            {reviews[0]?.comment && (
-                              <blockquote className="mt-3 text-sm text-muted-foreground">
-                                <p className="line-clamp-3 notranslate" translate="no" data-user-content="true">“{reviews[0].comment}”</p>
-                                <footer className="mt-1 text-xs text-foreground/80 notranslate" translate="no">{reviews[0].reviewer_name}</footer>
-                              </blockquote>
-                            )}
-                            <button type="button" onClick={() => setActiveTab('reviews')} className="mt-3 text-sm font-bold text-foreground hover:underline">
-                              See all reviews
-                            </button>
-                          </>
-                        ) : (
-                          <p className="text-sm text-muted-foreground">No reviews yet</p>
-                        )}
-                      </div>
-
-                      {/* Gallery preview */}
-                      {getImages().length > 0 && (
-                        <div className="rounded-lg bg-foreground/[0.05] p-5">
-                          <SectionHeaderWithUsage title="Gallery" size="sm" className="mb-3" />
-                          <div className="grid grid-cols-2 gap-2">
-                            {getImages().slice(0, 4).map((img) => (
-                              <button
-                                key={img.id}
-                                type="button"
-                                onClick={() => setActiveTab('gallery')}
-                                className="aspect-square overflow-hidden rounded-md bg-foreground/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
-                                aria-label="Open the gallery"
-                              >
-                                <img src={getThumbUrl(img.thumbnail_url || img.url, 300)} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform hover:scale-105" />
-                              </button>
-                            ))}
-                          </div>
-                          <button type="button" onClick={() => setActiveTab('gallery')} className="mt-3 text-sm font-bold text-foreground hover:underline">
-                            See the whole gallery
-                          </button>
-                        </div>
-                      )}
-
-                      {/* Artist details: the stats from under the name, plus instrument / members */}
-                      <div className="space-y-5 rounded-lg bg-foreground/[0.05] p-5">
-                        <div className="hidden lg:block">
-                          <SectionHeaderWithUsage title="Details" size="sm" className="mb-2" />
-                          <dl className="space-y-2 text-sm">
-                            <div className="flex justify-between gap-3">
-                              <dt className="text-muted-foreground">Events</dt>
-                              <dd className="font-medium text-foreground tabular-nums">{acceptedEventsCount > 0 ? `${acceptedEventsCount}+` : <span>None yet</span>}</dd>
-                            </div>
-                            <div className="flex justify-between gap-3">
-                              <dt className="text-muted-foreground">Member since</dt>
-                              <dd className="font-medium text-foreground">
-                                {artist.created_at
-                                  ? new Date(artist.created_at).toLocaleDateString(i18n.language || 'en', { month: 'short', year: 'numeric' }).replace('.', '')
-                                  : '—'}
-                              </dd>
-                            </div>
-                            {artist.career_start_year ? (
-                              <div className="flex justify-between gap-3">
-                                <dt className="text-muted-foreground">Experience</dt>
-                                <dd className="font-medium text-foreground">
-                                  {(() => {
-                                    const yrs = Math.max(1, new Date().getFullYear() - artist.career_start_year!);
-                                    const isRo = (i18n.language || 'en').split('-')[0] === 'ro';
-                                    const unit = isRo ? (yrs === 1 ? 'an' : yrs < 20 ? 'ani' : 'de ani') : (yrs === 1 ? 'year' : 'years');
-                                    return `${yrs} ${unit}`;
-                                  })()}
-                                </dd>
-                              </div>
-                            ) : null}
-                          </dl>
-                        </div>
-                        {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && (() => {
-                          const instrumentName = artist.instruments.split(',')[0].trim();
-                          const InstrumentIcon = getInstrumentIcon(instrumentName);
-                          return (
-                            <div>
-                              <SectionHeaderWithUsage title="Instrument" size="sm" className="mb-2" />
-                              <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal hover:bg-foreground/[0.07]">
-                                <InstrumentIcon className="h-4 w-4 mr-1.5" />
-                                {instrumentName}
-                              </Badge>
-                            </div>
-                          );
-                        })()}
-
-                        {artist.specialization?.toLowerCase() === 'band' && artist.band_members && (
-                          <div>
-                            <SectionHeaderWithUsage title="Members" size="sm" className="mb-2" />
-                            <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal hover:bg-foreground/[0.07]">
-                              <span className="notranslate" translate="no">{bandMembersLabel(artist.band_members, i18n.language || "ro")}</span>
-                            </Badge>
-                          </div>
-                        )}
-
-                        <div>
-                          <SectionHeaderWithUsage title="Contact Information" size="sm" className="mb-2" />
-                          <dl className="space-y-2 text-sm">
-                            <div className="flex items-center gap-3">
-                              <Mail className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                              <dt className="sr-only">Email</dt>
-                              <dd className="min-w-0 flex-1 truncate tracking-wider text-foreground select-none">••••••••@••••.com</dd>
-                              <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
-                            </div>
-                            <div className="flex items-center gap-3">
-                              <Phone className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                              <dt className="sr-only">Phone</dt>
-                              <dd className="min-w-0 flex-1 truncate tracking-wider text-foreground select-none">+•• ••• ••• •••</dd>
-                              <Lock className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
-                            </div>
-                          </dl>
-                        </div>
-                      
-                      </div>
-                    </aside>
+                    {/* Below xl the side panel's cards sit here, before similar artists */}
+                    <div className="space-y-4 xl:hidden">{sideCards}</div>
+                    <SimilarArtists artistId={artist.id} specialization={artist.specialization} county={artist.county} />
                   </div>
                 </TabsContent>
 
@@ -2085,6 +2060,13 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
           </div>
         </div>
       </div>
+
+      {/* Right panel, like the guest panel on the left */}
+      {!isReviewsView && (
+        <aside className={`sticky hidden w-[300px] shrink-0 flex-col gap-2 overflow-y-auto rounded-lg bg-background p-2 [scrollbar-width:thin] xl:flex 2xl:w-[340px] ${currentUserId ? 'top-2 h-[calc(100vh-16px)]' : 'top-[72px] h-[calc(100vh-80px)]'}`}>
+          {sideCards}
+        </aside>
+      )}
 
       {/* Media Preview Dialog */}
       <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />

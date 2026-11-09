@@ -1690,7 +1690,162 @@ const Dashboard = () => {
                             </div>
       </div>;
   }
-  return <div className={`min-h-screen md:ml-64 bg-black md:py-2 md:pr-2`}>
+  // Short facts and profile views: a right-hand panel on wide screens, inline otherwise
+  const ownSideCards = (
+    <>
+                          <div className="space-y-6 rounded-lg bg-foreground/[0.05] p-5">
+                        {/* Instrument Section for Instrumentalists */}
+                        {formData.specialization?.toLowerCase() === 'instrumentalist' &&
+              <>
+                            <div className="group">
+                              {(() => {
+                    const instrumentName = formData.instruments ? formData.instruments.split(',')[0].trim() : "";
+                    const InstrumentIcon = instrumentName ? getInstrumentIcon(instrumentName) : Music2;
+                    const handleInstrumentsChange = (instruments: string) => {
+                      setFormData({ ...formData, instruments });
+                      supabase.from('profiles').update({ instruments }).eq('id', user?.id).then(({ error }) => {
+                        if (!error) {
+                          toast({ title: "Saved", description: "Instrument updated!" });
+                        }
+                      });
+                    };
+                    return instrumentName ?
+                    <div className="flex flex-col items-start gap-2">
+                                    <SectionHeaderWithUsage
+                                      icon={<Music2 className="h-5 w-5 text-accent" />}
+                                      title="Instrument"
+                                      size="sm"
+                                    />
+
+                                    <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal cursor-pointer hover:bg-foreground/[0.12] transition-colors group" onClick={() => handleInstrumentsChange("")}>
+                                      <InstrumentIcon className="h-4 w-4 mr-1.5" />
+                                      {instrumentName}
+                                      <X className="h-3 w-3 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </Badge>
+                                  </div> :
+
+                    <div className="flex flex-col items-start gap-2">
+                                    <SectionHeaderWithUsage
+                                      icon={<Music2 className="h-5 w-5 text-accent" />}
+                                      title="Instrument"
+                                      size="sm"
+                                    />
+
+                                    <InstrumentSelector
+                        instruments={formData.instruments}
+                        onInstrumentsChange={handleInstrumentsChange} />
+
+                                  </div>;
+
+                  })()}
+                            </div>
+                          </>
+              }
+
+                        {/* Collaboration status — singers and instrumentalists only */}
+                        {hasCollabStatus(formData.specialization) && <>
+                            <div className="group">
+                              <div className="flex items-center justify-between mb-3">
+                                <SectionHeaderWithUsage
+                                  icon={<Users className="h-5 w-5 text-accent" />}
+                                  title="Collaborations"
+                                  size="sm"
+                                />
+                                {editingField !== 'collabStatus' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('collabStatus')}>
+                                    <Edit2 className="h-4 w-4" />
+                                  </Button>}
+                              </div>
+                              {editingField === 'collabStatus' ? <div className="space-y-3">
+                                  <div className="flex flex-col gap-2" role="radiogroup" aria-label="Collaborations">
+                                    {COLLAB_STATUSES.map((st) => (
+                                      <button
+                                        key={st}
+                                        type="button"
+                                        role="radio"
+                                        aria-checked={formData.collabStatus === st}
+                                        onClick={() => setFormData({ ...formData, collabStatus: formData.collabStatus === st ? "" : st })}
+                                        className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 text-left text-sm transition-colors ${formData.collabStatus === st ? "border-accent bg-accent/10 text-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}
+                                      >
+                                        <span className={`grid h-4 w-4 shrink-0 place-items-center rounded-full border ${formData.collabStatus === st ? "border-accent" : "border-muted-foreground/50"}`}>
+                                          {formData.collabStatus === st && <span className="h-2 w-2 rounded-full bg-accent" />}
+                                        </span>
+                                        <span>{COLLAB_STATUS_LABEL[st]}</span>
+                                      </button>
+                                    ))}
+                                  </div>
+                                  <p className="text-xs text-muted-foreground">Shown on your profile, under your specialization.</p>
+                                  <div className="flex gap-2">
+                                    <Button size="sm" onClick={() => saveField('collabStatus')} disabled={isSaving}>
+                                      <Save className="h-3 w-3 mr-1" />
+                                      Save
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                      <X className="h-3 w-3 mr-1" />
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div> : isCollabStatus(formData.collabStatus) ? <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium ${isOpenToCollabs(formData.collabStatus) ? "bg-green-500/15 text-green-500" : "bg-muted text-muted-foreground"}`}>
+                                    <span className="h-2 w-2 rounded-full bg-current" />
+                                    {COLLAB_STATUS_LABEL[formData.collabStatus]}
+                                  </span> : <p className="text-sm text-muted-foreground">Not specified</p>}
+                            </div>
+                          </>}
+
+                        {/* Number of members — Bands only */}
+                        {formData.specialization?.toLowerCase() === 'band' && <>
+                            <div className="group">
+                              <div className="flex items-center justify-between mb-3">
+                                <SectionHeaderWithUsage
+                                  icon={<Users className="h-5 w-5 text-accent" />}
+                                  title="Members"
+                                  size="sm"
+                                />
+
+                                {editingField !== 'bandMembers' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bandMembers')}>
+                                    <Edit2 className="h-4 w-4" />
+                                  </Button>}
+                              </div>
+                              {editingField === 'bandMembers' ? <div className="space-y-2">
+                                  <Input type="number" min={2} placeholder="e.g. 5" value={formData.bandMembers} onChange={e => setFormData({ ...formData, bandMembers: e.target.value })} className="max-w-[160px]" />
+                                  <div className="flex gap-2">
+                                    <Button size="sm" onClick={() => saveField('bandMembers')} disabled={isSaving}>
+                                      <Save className="h-3 w-3 mr-1" />
+                                      Save
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={cancelEditing}>
+                                      <X className="h-3 w-3 mr-1" />
+                                      Cancel
+                                    </Button>
+                                  </div>
+                                </div> : formData.bandMembers ? <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal hover:bg-foreground/[0.07]">
+                                    <span className="notranslate" translate="no">{bandMembersLabel(formData.bandMembers, i18n.language || "ro")}</span>
+                                  </Badge> : <p className="text-sm text-muted-foreground">Not specified</p>}
+                            </div>
+                          </>}
+
+
+                          <div>
+                            <SectionHeaderWithUsage title="Contact Information" size="sm" className="mb-2" />
+                            <dl className="space-y-2 text-sm">
+                              <div className="flex items-center gap-3">
+                                <Mail className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                                <dt className="sr-only">Email</dt>
+                                <dd className="min-w-0 truncate text-foreground">{formData.email}</dd>
+                              </div>
+                              <div className="flex items-center gap-3">
+                                <Phone className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                                <dt className="sr-only">Phone</dt>
+                                <dd className="min-w-0 truncate text-foreground">{formData.phone || 'Not set'}</dd>
+                              </div>
+                            </dl>
+                          </div>
+                          </div>
+                          {!calendarOnly && <ProfileViewsCard plan={currentPlan} />}
+                            </>
+  );
+  const showSidePanel = activeTab === "profile" && !calendarOnly && !isAdmin;
+
+  return <div className={`min-h-screen md:ml-64 bg-black md:py-2 md:pr-2 ${showSidePanel ? "md:flex md:items-start md:gap-2" : ""}`}>
       <Navigation 
         mobileTitle={calendarOnly ? undefined : getMobileTitle()} 
         mobileBackPath={calendarOnly ? undefined : getMobileBackPath()}
@@ -1706,7 +1861,7 @@ const Dashboard = () => {
         } : undefined}
       />
       
-      <div className={`${PROFILE_PANEL} pt-14 ${activeTab === "profile" && !calendarOnly && !isAdmin ? "md:pt-0" : "md:pt-8"} ${activeTab === "settings" ? "pb-[env(safe-area-inset-bottom)] md:pb-8" : "pb-6 md:pb-20"} px-0`}>
+      <div className={`${PROFILE_PANEL} min-w-0 flex-1 pt-14 ${activeTab === "profile" && !calendarOnly && !isAdmin ? "md:pt-0" : "md:pt-8"} ${activeTab === "settings" ? "pb-[env(safe-area-inset-bottom)] md:pb-8" : "pb-6 md:pb-20"} px-0`}>
         <div className={`container mx-auto ${activeTab === "profile" && !calendarOnly ? "max-w-none md:px-8" : "max-w-4xl md:px-0"} ${activeTab === "settings" ? "px-0" : "px-4"}`}>
           {activeTab !== "profile"}
               {/* Profile Tab */}
@@ -1962,8 +2117,7 @@ const Dashboard = () => {
 
                       {/* Details Tab */}
                       {!isAdmin && <TabsContent value="details">
-                        <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-12">
-                        <div className="min-w-0 space-y-10">
+                        <div className="space-y-10">
                         {/* Bio/Description */}
                         <div className="group">
                           <div className="flex items-center justify-between mb-4">
@@ -2159,159 +2313,7 @@ const Dashboard = () => {
                               </>
                             )}
                           </div>
-                        </div>
-
-                        {/* Side column: the short facts */}
-                        <aside className="space-y-4">
-                          <div className="space-y-6 rounded-lg bg-foreground/[0.05] p-5">
-                        {/* Instrument Section for Instrumentalists */}
-                        {formData.specialization?.toLowerCase() === 'instrumentalist' &&
-              <>
-                            <div className="group">
-                              {(() => {
-                    const instrumentName = formData.instruments ? formData.instruments.split(',')[0].trim() : "";
-                    const InstrumentIcon = instrumentName ? getInstrumentIcon(instrumentName) : Music2;
-                    const handleInstrumentsChange = (instruments: string) => {
-                      setFormData({ ...formData, instruments });
-                      supabase.from('profiles').update({ instruments }).eq('id', user?.id).then(({ error }) => {
-                        if (!error) {
-                          toast({ title: "Saved", description: "Instrument updated!" });
-                        }
-                      });
-                    };
-                    return instrumentName ?
-                    <div className="flex flex-col items-start gap-2">
-                                    <SectionHeaderWithUsage
-                                      icon={<Music2 className="h-5 w-5 text-accent" />}
-                                      title="Instrument"
-                                      size="sm"
-                                    />
-
-                                    <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal cursor-pointer hover:bg-foreground/[0.12] transition-colors group" onClick={() => handleInstrumentsChange("")}>
-                                      <InstrumentIcon className="h-4 w-4 mr-1.5" />
-                                      {instrumentName}
-                                      <X className="h-3 w-3 ml-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    </Badge>
-                                  </div> :
-
-                    <div className="flex flex-col items-start gap-2">
-                                    <SectionHeaderWithUsage
-                                      icon={<Music2 className="h-5 w-5 text-accent" />}
-                                      title="Instrument"
-                                      size="sm"
-                                    />
-
-                                    <InstrumentSelector
-                        instruments={formData.instruments}
-                        onInstrumentsChange={handleInstrumentsChange} />
-
-                                  </div>;
-
-                  })()}
-                            </div>
-                          </>
-              }
-
-                        {/* Collaboration status — singers and instrumentalists only */}
-                        {hasCollabStatus(formData.specialization) && <>
-                            <div className="group">
-                              <div className="flex items-center justify-between mb-3">
-                                <SectionHeaderWithUsage
-                                  icon={<Users className="h-5 w-5 text-accent" />}
-                                  title="Collaborations"
-                                  size="sm"
-                                />
-                                {editingField !== 'collabStatus' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('collabStatus')}>
-                                    <Edit2 className="h-4 w-4" />
-                                  </Button>}
-                              </div>
-                              {editingField === 'collabStatus' ? <div className="space-y-3">
-                                  <div className="flex flex-col gap-2" role="radiogroup" aria-label="Collaborations">
-                                    {COLLAB_STATUSES.map((st) => (
-                                      <button
-                                        key={st}
-                                        type="button"
-                                        role="radio"
-                                        aria-checked={formData.collabStatus === st}
-                                        onClick={() => setFormData({ ...formData, collabStatus: formData.collabStatus === st ? "" : st })}
-                                        className={`flex items-center gap-3 rounded-lg border px-3 py-2.5 text-left text-sm transition-colors ${formData.collabStatus === st ? "border-accent bg-accent/10 text-foreground" : "border-border text-muted-foreground hover:text-foreground"}`}
-                                      >
-                                        <span className={`grid h-4 w-4 shrink-0 place-items-center rounded-full border ${formData.collabStatus === st ? "border-accent" : "border-muted-foreground/50"}`}>
-                                          {formData.collabStatus === st && <span className="h-2 w-2 rounded-full bg-accent" />}
-                                        </span>
-                                        <span>{COLLAB_STATUS_LABEL[st]}</span>
-                                      </button>
-                                    ))}
-                                  </div>
-                                  <p className="text-xs text-muted-foreground">Shown on your profile, under your specialization.</p>
-                                  <div className="flex gap-2">
-                                    <Button size="sm" onClick={() => saveField('collabStatus')} disabled={isSaving}>
-                                      <Save className="h-3 w-3 mr-1" />
-                                      Save
-                                    </Button>
-                                    <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                      <X className="h-3 w-3 mr-1" />
-                                      Cancel
-                                    </Button>
-                                  </div>
-                                </div> : isCollabStatus(formData.collabStatus) ? <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium ${isOpenToCollabs(formData.collabStatus) ? "bg-green-500/15 text-green-500" : "bg-muted text-muted-foreground"}`}>
-                                    <span className="h-2 w-2 rounded-full bg-current" />
-                                    {COLLAB_STATUS_LABEL[formData.collabStatus]}
-                                  </span> : <p className="text-sm text-muted-foreground">Not specified</p>}
-                            </div>
-                          </>}
-
-                        {/* Number of members — Bands only */}
-                        {formData.specialization?.toLowerCase() === 'band' && <>
-                            <div className="group">
-                              <div className="flex items-center justify-between mb-3">
-                                <SectionHeaderWithUsage
-                                  icon={<Users className="h-5 w-5 text-accent" />}
-                                  title="Members"
-                                  size="sm"
-                                />
-
-                                {editingField !== 'bandMembers' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bandMembers')}>
-                                    <Edit2 className="h-4 w-4" />
-                                  </Button>}
-                              </div>
-                              {editingField === 'bandMembers' ? <div className="space-y-2">
-                                  <Input type="number" min={2} placeholder="e.g. 5" value={formData.bandMembers} onChange={e => setFormData({ ...formData, bandMembers: e.target.value })} className="max-w-[160px]" />
-                                  <div className="flex gap-2">
-                                    <Button size="sm" onClick={() => saveField('bandMembers')} disabled={isSaving}>
-                                      <Save className="h-3 w-3 mr-1" />
-                                      Save
-                                    </Button>
-                                    <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                      <X className="h-3 w-3 mr-1" />
-                                      Cancel
-                                    </Button>
-                                  </div>
-                                </div> : formData.bandMembers ? <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal hover:bg-foreground/[0.07]">
-                                    <span className="notranslate" translate="no">{bandMembersLabel(formData.bandMembers, i18n.language || "ro")}</span>
-                                  </Badge> : <p className="text-sm text-muted-foreground">Not specified</p>}
-                            </div>
-                          </>}
-
-
-                          <div>
-                            <SectionHeaderWithUsage title="Contact Information" size="sm" className="mb-2" />
-                            <dl className="space-y-2 text-sm">
-                              <div className="flex items-center gap-3">
-                                <Mail className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                                <dt className="sr-only">Email</dt>
-                                <dd className="min-w-0 truncate text-foreground">{formData.email}</dd>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <Phone className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                                <dt className="sr-only">Phone</dt>
-                                <dd className="min-w-0 truncate text-foreground">{formData.phone || 'Not set'}</dd>
-                              </div>
-                            </dl>
-                          </div>
-                          </div>
-                          {!calendarOnly && <ProfileViewsCard plan={currentPlan} />}
-                        </aside>
+                        <div className="space-y-4 xl:hidden">{ownSideCards}</div>
                         </div>
 
                       </TabsContent>}
@@ -3185,6 +3187,13 @@ const Dashboard = () => {
               {activeTab === "settings" && <SettingsTab formData={{ email: formData.email }} handleLogout={handleLogout} handleDeleteAccount={handleDeleteAccount} isSaving={isSaving} activeSection={settingsSection} onSectionChange={setSettingsSection} />}
         </div>
       </div>
+
+      {/* Right panel, same as on the public profile */}
+      {showSidePanel && (
+        <aside className="sticky top-2 hidden h-[calc(100vh-16px)] w-[300px] shrink-0 flex-col gap-2 overflow-y-auto rounded-lg bg-background p-2 [scrollbar-width:thin] xl:flex 2xl:w-[340px]">
+          {ownSideCards}
+        </aside>
+      )}
 
       {/* Image Cropper Modal */}
       {showCropper && imageSrc && <div className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4">
