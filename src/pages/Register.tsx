@@ -248,9 +248,9 @@ const Register = () => {
               e.preventDefault();
               if (emailValid) setStep(1);
             }}
-            className="space-y-5"
+            className="space-y-4"
           >
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="email" className="text-sm font-bold text-foreground">Email</Label>
               <Input
                 id="email"
@@ -270,7 +270,7 @@ const Register = () => {
                 </p>
               )}
             </div>
-            <Button type="submit" disabled={!emailValid} className={`${authButtonClass} !mt-8`}>
+            <Button type="submit" disabled={!emailValid} className={`${authButtonClass} !mt-6`}>
               Next
             </Button>
 
@@ -284,7 +284,7 @@ const Register = () => {
               type="button"
               onClick={google}
               disabled={googleLoading}
-              className="flex h-12 w-full items-center justify-center gap-3 rounded-full border border-[#727272] text-base font-bold text-foreground transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 disabled:opacity-60"
+              className="flex h-11 w-full items-center justify-center gap-3 rounded-full border border-[#727272] text-base font-bold text-foreground transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 disabled:opacity-60"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z" />
@@ -303,9 +303,9 @@ const Register = () => {
               e.preventDefault();
               if (passwordValid) setStep(2);
             }}
-            className="space-y-5"
+            className="space-y-4"
           >
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="password" className="text-sm font-bold text-foreground">Password</Label>
               <div className="relative">
                 <Input
@@ -314,21 +314,21 @@ const Register = () => {
                   autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`${authInputClass} pr-12`}
+                  className={`${authInputClass} pr-11`}
                   autoFocus
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label={showPassword ? "Hide password" : "Show password"}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
                 >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
               <PasswordStrengthIndicator password={password} />
             </div>
-            <Button type="submit" disabled={!passwordValid} className={`${authButtonClass} !mt-8`}>
+            <Button type="submit" disabled={!passwordValid} className={`${authButtonClass} !mt-6`}>
               Next
             </Button>
           </form>
@@ -340,9 +340,9 @@ const Register = () => {
               e.preventDefault();
               if (nameValid) setStep(3);
             }}
-            className="space-y-5"
+            className="space-y-4"
           >
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="name" className="text-sm font-bold text-foreground">Name</Label>
               <p className="text-sm text-muted-foreground">Your full name. Artists can add a stage name later.</p>
               <Input
@@ -355,14 +355,14 @@ const Register = () => {
                 autoFocus
               />
             </div>
-            <Button type="submit" disabled={!nameValid} className={`${authButtonClass} !mt-8`}>
+            <Button type="submit" disabled={!nameValid} className={`${authButtonClass} !mt-6`}>
               Next
             </Button>
           </form>
         )}
 
         {step === 3 && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             <AccountTypeChoice value={accountType} onChange={setAccountType} />
             {accountType === "artist" && <ArtistPromoConsent checked={promoConsent} onChange={setPromoConsent} />}
             <p className="text-xs leading-relaxed text-muted-foreground">

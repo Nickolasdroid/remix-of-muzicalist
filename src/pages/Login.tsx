@@ -173,8 +173,8 @@ const Login = () => {
           </>
         }
       >
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-2">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
             <Label htmlFor="email" className="text-sm font-bold text-foreground">Email</Label>
             <Input
               id="email"
@@ -186,7 +186,7 @@ const Login = () => {
             />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="password" className="text-sm font-bold text-foreground">Password</Label>
             <div className="relative">
               <Input
@@ -195,20 +195,20 @@ const Login = () => {
                 autoComplete="current-password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className={`${authInputClass} pr-12`}
+                className={`${authInputClass} pr-11`}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                className="absolute right-4 top-1/2 -translate-y-1/2 rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
 
-          <Button type="submit" disabled={isLoading} className={`${authButtonClass} !mt-8`}>
+          <Button type="submit" disabled={isLoading} className={`${authButtonClass} !mt-6`}>
             {isLoading ? "Logging in..." : "Log in"}
           </Button>
 

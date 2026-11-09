@@ -28,7 +28,7 @@ const SPECIALIZATIONS = [
 const THIS_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: THIS_YEAR - 1950 + 1 }, (_, i) => String(THIS_YEAR - i));
 
-const selectClass = "h-12 rounded-md border-[#727272] bg-[#121212] px-3.5 text-base hover:border-foreground focus:ring-2 focus:ring-white/70";
+const selectClass = "h-10 rounded-full border-[#727272] bg-[#121212] px-4 text-sm hover:border-foreground focus:ring-2 focus:ring-white/70";
 
 const cropToBlob = async (src: string, area: Area | null): Promise<Blob> => {
   const image = new Image();
@@ -191,7 +191,7 @@ const CompleteProfile = () => {
         </p>
 
         {/* Checklist */}
-        <div className="mb-8 rounded-lg bg-foreground/[0.06] p-4">
+        <div className="mb-6 rounded-lg bg-foreground/[0.06] p-4">
           <div className="mb-3 flex items-center justify-between text-sm">
             <span className="font-bold text-foreground">Your profile</span>
             <span className="tabular-nums text-muted-foreground">
@@ -219,7 +219,7 @@ const CompleteProfile = () => {
           </ul>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Photo */}
           <div className="flex items-center gap-4">
             <button
@@ -245,12 +245,12 @@ const CompleteProfile = () => {
             <input ref={fileInput} type="file" accept="image/*" className="hidden" onChange={pickPhoto} />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="stageName" className="text-sm font-bold text-foreground">Stage name</Label>
             <Input id="stageName" value={stageName} onChange={(e) => setStageName(e.target.value)} maxLength={80} className={authInputClass} />
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label className="text-sm font-bold text-foreground">You are</Label>
             <Select value={specialization} onValueChange={setSpecialization}>
               <SelectTrigger className={selectClass} aria-label="Artist type">
@@ -264,7 +264,7 @@ const CompleteProfile = () => {
             </Select>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label className="text-sm font-bold text-foreground">Performing since</Label>
             <Select value={careerStart} onValueChange={setCareerStart}>
               <SelectTrigger className={selectClass} aria-label="Performing since">
@@ -278,10 +278,10 @@ const CompleteProfile = () => {
             </Select>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label className="text-sm font-bold text-foreground">Country of residence</Label>
             <CountrySelector
-              triggerClassName="h-12 rounded-md border-[#727272] bg-[#121212] pl-10 text-base font-normal hover:border-foreground hover:bg-[#121212]"
+              triggerClassName="h-10 rounded-full border-[#727272] bg-[#121212] pl-10 text-sm font-normal hover:border-foreground hover:bg-[#121212]"
               value={country}
               onChange={(v) => {
                 setCountry(v);
@@ -292,7 +292,7 @@ const CompleteProfile = () => {
           </div>
 
           {regions.length > 0 && (
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label className="text-sm font-bold text-foreground">{divisionLabel}</Label>
               <Select value={county} onValueChange={setCounty}>
                 <SelectTrigger className={selectClass} aria-label={divisionLabel}>
@@ -309,7 +309,7 @@ const CompleteProfile = () => {
             </div>
           )}
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="phone" className="text-sm font-bold text-foreground">Phone</Label>
             <p className="text-xs text-muted-foreground">Used for bookings and on contracts.</p>
             <Input
@@ -328,7 +328,7 @@ const CompleteProfile = () => {
             />
           </div>
 
-          <Button type="button" onClick={save} disabled={!allDone || saving} className={`${authButtonClass} !mt-8`}>
+          <Button type="button" onClick={save} disabled={!allDone || saving} className={`${authButtonClass} !mt-6`}>
             {saving ? "Saving…" : "Publish my profile"}
           </Button>
         </div>
