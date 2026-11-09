@@ -63,8 +63,8 @@ All colors MUST be HSL.
     --calendar-available-foreground: 240 10% 6%;
 
     /* Quiet amber surface used for unread social notifications */
-    --notification-unread: 42 32% 13%;
-    --notification-unread-hover: 42 34% 16%;
+    --notification-unread: 0 0% 14%;
+    --notification-unread-hover: 0 0% 17%;
 
     /* Ambient cinematic burgundy — used only for glow/accents */
     --burgundy: 0 75% 19%;            /* #5A0B0B */

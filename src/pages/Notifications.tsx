@@ -126,6 +126,12 @@ const stripActorName = (message: string, actorName?: string | null): string => {
 // Resolves the localized body text for a notification. Prefers a canonical
 // phrase built from the type (so it always translates cleanly); falls back to
 // the DB message for types that carry custom detail (bookings, etc.).
+// Dates stored as 2026-11-19 in messages read as "19 noiembrie 2026"
+const humanizeDates = (text: string, lang: string): string =>
+  text.replace(/\b(\d{4})-(\d{2})-(\d{2})\b/g, (_m, y, mo, d) =>
+    new Date(Number(y), Number(mo) - 1, Number(d)).toLocaleDateString(lang.startsWith("ro") ? "ro-RO" : "en-GB", { day: "numeric", month: "long", year: "numeric" }),
+  );
+
 const notificationBody = (n: Notification): string => {
   const lang = i18n.language || "en";
   const canonical = messageForType(n.type);
@@ -133,6 +139,13 @@ const notificationBody = (n: Notification): string => {
     return translateTextsSync(lang, [canonical])[canonical] || canonical;
   }
   const raw = stripActorName(n.message || n.title || "", n.actor_name);
+  // "sent you a booking request for 2026-11-19": translate the words, then the date
+  const dated = raw.match(/^(.*?)\s*(\d{4}-\d{2}-\d{2})(.*)$/);
+  if (dated) {
+    const [, before, date, after] = dated;
+    const tr = translateTextsSync(lang, [before, after].filter(Boolean));
+    return `${tr[before] || before} ${humanizeDates(date, lang)}${after ? tr[after] || after : ""}`;
+  }
   return translateTextsSync(lang, [raw])[raw] || raw;
 };
 
@@ -386,7 +399,7 @@ const Notifications = () => {
     const canOpenProfile = !!n.actor_id && actorProfileIds.has(n.actor_id);
 
     return (
-      <div key={n.id} className="relative overflow-hidden">
+      <div key={n.id} className="relative overflow-hidden rounded-md">
         {/* Swipe reveal delete */}
         <div className="absolute inset-y-0 right-0 flex items-center justify-end pr-6 bg-destructive/90 w-full">
           <Trash2 className="h-5 w-5 text-destructive-foreground" />
@@ -444,7 +457,7 @@ const Notifications = () => {
                 </button>
               );
             })()}
-            <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-background border border-border flex items-center justify-center">
+            <div className="absolute -bottom-0.5 -right-0.5 h-5 w-5 rounded-full bg-[#1f1f1f] ring-2 ring-background flex items-center justify-center">
               {iconFor(n.type, "h-3 w-3")}
             </div>
           </div>
@@ -479,7 +492,7 @@ const Notifications = () => {
           </div>
           <div className="flex items-center gap-2 flex-shrink-0 mt-1">
             {freshIds.has(n.id) && (
-              <div className="h-2.5 w-2.5 rounded-full bg-accent" aria-label="unread" />
+              <div className="h-2.5 w-2.5 rounded-full bg-sky-500" aria-label="unread" />
             )}
             {isMobile ? (
               <Drawer>
@@ -569,26 +582,24 @@ const Notifications = () => {
     if (!items.length) return null;
     return (
       <div>
-        <h2 className="px-4 pt-5 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <h2 className="px-4 pb-2 pt-8 text-base font-bold text-foreground first:pt-4">
           {label}
         </h2>
-        <div className="divide-y divide-border/40">{items.map(renderCard)}</div>
+        <div className="space-y-0.5">{items.map(renderCard)}</div>
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       <Navigation
         mobileTitle="Notifications"
         onMobileBack={() => goBack(navigate, "/feed")}
       />
-      <main className="md:ml-[316px] lg:ml-[356px] pt-16 md:pt-2 pb-6 md:pb-8">
-        <div className="max-w-3xl mx-auto md:p-6 md:px-4">
-          <div className="hidden md:flex items-center gap-3 mb-4 px-4">
-            <Bell className="h-6 w-6 text-accent" />
-            <h1 className="text-2xl font-bold">Notifications</h1>
-          </div>
+      <main className="md:ml-[316px] md:py-2 md:pr-2 lg:ml-[356px]">
+        <div className="min-h-screen bg-background pb-6 pt-14 md:min-h-[calc(100vh-16px)] md:rounded-lg md:px-4 md:pb-10 md:pt-10">
+        <div className="max-w-3xl mx-auto">
+          <h1 className="mb-2 hidden px-4 text-5xl font-bold leading-tight tracking-[-0.02em] text-foreground md:block">Notifications</h1>
 
           {loading || (!dictReady && (i18n.language || "en").startsWith("ro")) ? (
             <div className="space-y-1">
@@ -603,12 +614,9 @@ const Notifications = () => {
               ))}
             </div>
           ) : sorted.length === 0 ? (
-            <div className="flex flex-col items-center justify-center text-center px-6 py-24">
-              <div className="h-16 w-16 rounded-full bg-secondary/40 flex items-center justify-center mb-4">
-                <Bell className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-semibold mb-1">No notifications yet</h3>
-              <p className="text-sm text-muted-foreground max-w-xs">
+            <div className="px-4 py-6">
+              <p className="text-base font-bold text-foreground">No notifications yet</p>
+              <p className="mt-1 text-sm text-muted-foreground">
                 When people interact with you on Muzicalist, you'll see it here.
               </p>
             </div>
@@ -619,6 +627,7 @@ const Notifications = () => {
               ))}
             </div>
           )}
+        </div>
         </div>
       </main>
     </div>
