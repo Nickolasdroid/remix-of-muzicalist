@@ -1946,6 +1946,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          account_type_chosen: boolean
           active_suspension_id: string | null
           admin_registration_notified_at: string | null
           allow_promotion: boolean
@@ -2005,6 +2006,7 @@ export type Database = {
           youtube_url: string | null
         }
         Insert: {
+          account_type_chosen?: boolean
           active_suspension_id?: string | null
           admin_registration_notified_at?: string | null
           allow_promotion?: boolean
@@ -2064,6 +2066,7 @@ export type Database = {
           youtube_url?: string | null
         }
         Update: {
+          account_type_chosen?: boolean
           active_suspension_id?: string | null
           admin_registration_notified_at?: string | null
           allow_promotion?: boolean
@@ -3126,6 +3129,7 @@ export type Database = {
       get_my_full_profile: {
         Args: never
         Returns: {
+          account_type_chosen: boolean
           active_suspension_id: string | null
           admin_registration_notified_at: string | null
           allow_promotion: boolean
@@ -3455,6 +3459,7 @@ export type Database = {
         }
         Returns: undefined
       }
+      set_my_account_type: { Args: { _type: string }; Returns: string }
       set_offer_advance: {
         Args: {
           _amount?: number
