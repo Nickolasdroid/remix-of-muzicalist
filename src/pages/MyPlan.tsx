@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import PlanCard, { BillingToggle, planButtonClass } from "@/components/plans/PlanCard";
 import Navigation from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Crown, Check, X, Info, Star } from "lucide-react";
@@ -137,175 +138,85 @@ const MyPlan = () => {
   return (
     <>
       <Navigation mobileTitle={t('myPlan.title')} mobileBackPath={-1} />
-      <div className={`${isMobile ? 'pt-14 pb-4 px-4' : 'md:ml-64 pt-8 px-8'}`}>
-        <div className="max-w-5xl mx-auto">
-          <div className="space-y-6">
-            <div className={isMobile ? 'hidden' : ''}>
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-semibold text-foreground">{t('myPlan.title')}</h1>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                      aria-label={t('myPlan.howPlanChangesWork')}
-                    >
-                      <Info className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-96 text-sm" align="start">
-                    <p className="font-medium mb-2 text-foreground">{t('myPlan.howPlanChangesWork')}</p>
-                    <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
-                      <li><span className="text-foreground">{t('myPlan.upgradesLabel', 'Upgrades')}</span> {t('myPlan.upgradesImmediate')}</li>
-                      <li><span className="text-foreground">{t('myPlan.downgradesLabel', 'Downgrades')}</span> {t('myPlan.downgradesKeepContent')}</li>
-                      <li>{t('myPlan.exceedsLimit')}</li>
-                    </ul>
-                  </PopoverContent>
-                </Popover>
-              </div>
-              <p className="text-sm text-muted-foreground mt-1">
-                {t('myPlan.choosePlan')}
-              </p>
+      <div className="min-h-screen bg-black md:ml-64 md:py-2 md:pr-2">
+        <div
+          className="min-h-screen px-4 pb-24 pt-16 md:min-h-[calc(100vh-16px)] md:rounded-lg md:px-8 md:pb-12 md:pt-10"
+          style={{ background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" }}
+        >
+          <div className="mx-auto max-w-6xl">
+            <div className="flex items-center gap-1">
+              <h1 className="text-[2rem] font-bold leading-tight tracking-[-0.02em] text-foreground md:text-5xl">{t('myPlan.title')}</h1>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    aria-label={t('myPlan.howPlanChangesWork')}
+                  >
+                    <Info className="h-5 w-5" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80 text-sm md:w-96" align="start">
+                  <p className="font-medium mb-2 text-foreground">{t('myPlan.howPlanChangesWork')}</p>
+                  <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
+                    <li><span className="text-foreground">{t('myPlan.upgradesLabel', 'Upgrades')}</span> {t('myPlan.upgradesImmediate')}</li>
+                    <li><span className="text-foreground">{t('myPlan.downgradesLabel', 'Downgrades')}</span> {t('myPlan.downgradesKeepContent')}</li>
+                    <li>{t('myPlan.exceedsLimit')}</li>
+                  </ul>
+                </PopoverContent>
+              </Popover>
+            </div>
+            <p className="mt-2 text-sm text-muted-foreground md:text-base">{t('myPlan.choosePlan')}</p>
+
+            <div className="mt-6">
+              <BillingToggle
+                annual={isAnnual}
+                onChange={setIsAnnual}
+                monthlyLabel={t('myPlan.monthly')}
+                annualLabel={t('myPlan.annual')}
+                saveLabel={t('myPlan.annualSave')}
+              />
             </div>
 
-
-            <div className="flex justify-center items-center gap-2">
-              <div className="inline-flex items-center gap-0 rounded-full border border-border bg-card p-1">
-                <button
-                  onClick={() => setIsAnnual(false)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${!isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                >
-                  {t('myPlan.monthly')}
-                </button>
-                <button
-                  onClick={() => setIsAnnual(true)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                >
-                  {t('myPlan.annual')} <span className="text-xs opacity-75">{t('myPlan.annualSave')}</span>
-                </button>
-              </div>
-              {isMobile && (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                      aria-label={t('myPlan.howPlanChangesWork')}
-                    >
-                      <Info className="h-4 w-4" />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-80 text-sm" align="end">
-                    <p className="font-medium mb-2 text-foreground">{t('myPlan.howPlanChangesWork')}</p>
-                    <ul className="list-disc pl-5 space-y-1.5 text-muted-foreground">
-                      <li><span className="text-foreground">{t('myPlan.upgradesLabel')}</span> {t('myPlan.upgradesImmediate')}</li>
-                      <li><span className="text-foreground">{t('myPlan.downgradesLabel')}</span> {t('myPlan.downgradesKeepContent')}</li>
-                      <li>{t('myPlan.exceedsLimit')}</li>
-                    </ul>
-                  </PopoverContent>
-                </Popover>
-              )}
-            </div>
-
-
-
-            <div className={`grid gap-6 ${isMobile ? 'grid-cols-1' : 'grid-cols-1 lg:grid-cols-3'}`}>
+            <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
               {subscriptionPlans.map((plan) => {
                 const isCurrentPlan = currentPlan === plan.id;
-                const isPremiumPlan = plan.id === "Premium";
-
+                const rank: Record<string, number> = { Free: 1, Standard: 2, Premium: 3 };
+                const isDowngrade = (rank[plan.id] ?? 1) < (rank[currentPlan] ?? 1);
                 return (
-                  <div key={plan.id} className="relative mt-4">
-                    {!isCurrentPlan && plan.highlighted && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                        <span className="bg-card border border-accent text-accent text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
-                          {t('myPlan.mostPopular', 'Most Popular')}
-                        </span>
-                      </div>
-                    )}
-                    {!isCurrentPlan && isPremiumPlan && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                        <span className="inline-flex items-center gap-1.5 bg-card border border-amber-500 text-amber-500 text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
-                          <Star className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                          {t('myPlan.bestForProfessionals', 'Best for Professionals')}
-                        </span>
-                      </div>
-                    )}
-
-                    <div
-                      className={`flex flex-col h-full p-5 rounded-lg border-2 transition-all ${
-                        isCurrentPlan
-                          ? isPremiumPlan
-                            ? "border-amber-500/50 bg-amber-500/10"
-                            : "border-accent/50 bg-accent/10"
-                          : plan.highlighted
-                          ? "border-accent shadow-lg"
-                          : "border-border hover:border-muted-foreground/50"
-                      }`}
-                    >
-                      <div className="text-center mb-4 mt-2">
-                        <p className="text-xl font-semibold text-foreground">{plan.name}</p>
-                        <div className="mt-2">
-                          <span className="text-3xl font-bold text-foreground">{formatPlanPrice(plan.monthlyPrice, isAnnual)}</span>
-                          <span className="text-sm text-muted-foreground">{isAnnual ? '/year' : '/month'}</span>
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-2">{plan.description}</p>
-                      </div>
-
-                      <ul className="space-y-2.5 mb-4 flex-1">
-                        {plan.features.map((feature, idx) => (
-                          <li
-                            key={idx}
-                            className={`flex items-start gap-2 text-sm ${feature.included ? 'text-muted-foreground' : 'text-muted-foreground/50'}`}
-                          >
-                            {feature.included ? (
-                              <Check className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
-                            ) : (
-                              <X className="h-4 w-4 text-destructive/60 flex-shrink-0 mt-0.5" />
-                            )}
-                            <span className={feature.included ? '' : 'line-through'}>{feature.text}</span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      <p className="text-xs text-muted-foreground/80 italic mb-4">{plan.tagline}</p>
-
-                      {!isCurrentPlan && (() => {
-                        const rank: Record<string, number> = { Free: 1, Standard: 2, Premium: 3 };
-                        const currentRank = rank[currentPlan] ?? 1;
-                        const planRank = rank[plan.id] ?? 1;
-                        const isDowngrade = planRank < currentRank;
-                        const actionKey = isDowngrade ? 'myPlan.downgradeTo' : 'myPlan.upgradeTo';
-                        return (
-                          <Button
-                            variant={isDowngrade ? "outline" : "default"}
-                            disabled={actionLoading !== null}
-                            onClick={() => handlePlanAction(plan.id, isDowngrade)}
-                            className={`w-full ${
-                              isDowngrade
-                                ? "bg-transparent border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground"
-                                : isPremiumPlan
-                                ? "bg-amber-500 hover:bg-amber-600 text-white border-amber-500"
-                                : "bg-accent text-accent-foreground hover:bg-accent/90"
-                            }`}
-                          >
-                            <Crown className="h-4 w-4 mr-2" />
-                            {actionLoading === plan.id ? t('myPlan.redirecting') : t(actionKey, { plan: plan.name })}
-                          </Button>
-                        );
-                      })()}
-
-                      {isCurrentPlan && (
-                        <div className="w-full py-2 text-center text-sm font-medium text-muted-foreground">
-                          {t('myPlan.currentPlan')}
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  <PlanCard
+                    key={plan.id}
+                    name={plan.name}
+                    price={formatPlanPrice(plan.monthlyPrice, isAnnual)}
+                    period={isAnnual ? '/year' : '/month'}
+                    description={plan.description}
+                    features={plan.features}
+                    tagline={plan.tagline}
+                    badge={
+                      isCurrentPlan
+                        ? { text: t('myPlan.currentPlan'), tone: "current" }
+                        : plan.highlighted
+                        ? { text: t('myPlan.mostPopular', 'Most Popular'), tone: "popular" }
+                        : plan.id === "Premium"
+                        ? { text: t('myPlan.bestForProfessionals', 'Best for Professionals'), tone: "neutral" }
+                        : null
+                    }
+                    action={
+                      isCurrentPlan ? null : (
+                        <Button
+                          disabled={actionLoading !== null}
+                          onClick={() => handlePlanAction(plan.id, isDowngrade)}
+                          className={isDowngrade ? planButtonClass.downgrade : planButtonClass.upgrade}
+                        >
+                          {actionLoading === plan.id
+                            ? t('myPlan.redirecting')
+                            : t(isDowngrade ? 'myPlan.downgradeTo' : 'myPlan.upgradeTo', { plan: plan.name })}
+                        </Button>
+                      )
+                    }
+                  />
                 );
               })}
             </div>

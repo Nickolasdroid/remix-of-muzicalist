@@ -1,3 +1,4 @@
+import PlanCard, { BillingToggle, planButtonClass } from "@/components/plans/PlanCard";
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 
@@ -80,152 +81,79 @@ const PlansPricing = () => {
   }, []);
 
   return (
-    <div className={`min-h-screen ${isAuthenticated ? 'md:ml-64' : ''}`}>
+    <div className={`min-h-screen bg-black ${isAuthenticated ? 'md:ml-64 md:py-2 md:pr-2' : 'md:px-2 md:pb-2 md:pt-[72px]'}`}>
       <SEO title="Plans & Pricing — Free, Standard & Premium | Muzicalist" description="Compare Muzicalist subscription plans for artists: Free, Standard and Premium. More visibility, more bookings, more features — choose what fits you." path="/plans" />
       <Navigation />
 
-      <section className={`pt-24 ${isAuthenticated ? 'md:pt-8' : 'md:pt-24'} pb-10 md:pb-20 px-4 md:px-6 lg:px-8`}>
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-10 md:mb-16">
-            <div className="flex items-center justify-center gap-2 mb-3 md:mb-6">
-              <h1 className="text-2xl md:text-4xl lg:text-5xl font-display font-bold text-foreground">
-                Plans & Pricing
-              </h1>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-muted-foreground hover:text-foreground"
-                    aria-label="How plan changes work"
-                  >
-                    <Info className="h-5 w-5" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-80 rounded-lg text-sm space-y-2" align="center">
-                  <p className="font-medium text-foreground">How plan changes work</p>
-                  <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
-                    <li><span className="text-foreground">Upgrades</span> take effect immediately — your new monthly allowance of posts is available right away.</li>
-                    <li><span className="text-foreground">Downgrades never delete or hide existing content.</span> Everything you've already published stays live.</li>
-                    <li>Limits reset automatically at the start of every new billing cycle. If your current usage exceeds the new plan limits, new content creation in that category is paused until your next renewal.</li>
-                  </ul>
-                </PopoverContent>
-              </Popover>
-            </div>
-            <p className="text-sm md:text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
-              Choose the plan that best fits your needs
-            </p>
-            <div className="inline-flex items-center gap-0 rounded-full border border-border bg-card p-1">
-              <button
-                onClick={() => setIsAnnual(false)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${!isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => setIsAnnual(true)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${isAnnual ? 'bg-accent text-accent-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                Annual <span className="text-xs opacity-75">Save ~17%</span>
-              </button>
-            </div>
+      <section
+        className={`min-h-screen px-4 pb-24 pt-20 md:rounded-lg md:px-8 md:pb-12 md:pt-10 ${isAuthenticated ? 'md:min-h-[calc(100vh-16px)]' : 'md:min-h-[calc(100vh-80px)]'}`}
+        style={{ background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" }}
+      >
+        <div className="mx-auto max-w-6xl">
+          <div className="flex items-center gap-1">
+            <h1 className="text-[2rem] font-bold leading-tight tracking-[-0.02em] text-foreground md:text-5xl">Plans & Pricing</h1>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground" aria-label="How plan changes work">
+                  <Info className="h-5 w-5" />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 rounded-lg text-sm space-y-2" align="start">
+                <p className="font-medium text-foreground">How plan changes work</p>
+                <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                  <li><span className="text-foreground">Upgrades</span> take effect immediately — your new monthly allowance of posts is available right away.</li>
+                  <li><span className="text-foreground">Downgrades never delete or hide existing content.</span> Everything you've already published stays live.</li>
+                  <li>Limits reset automatically at the start of every new billing cycle. If your current usage exceeds the new plan limits, new content creation in that category is paused until your next renewal.</li>
+                </ul>
+              </PopoverContent>
+            </Popover>
+          </div>
+          <p className="mt-2 text-sm text-muted-foreground md:text-base">Choose the plan that best fits your needs</p>
+
+          <div className="mt-6">
+            <BillingToggle annual={isAnnual} onChange={setIsAnnual} monthlyLabel="Monthly" annualLabel="Annual" saveLabel="Save ~17%" />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
             {plans.map((plan) => {
-              const isCurrentPlan = isAuthenticated && isArtist && currentPlan === plan.id;
+              const isAuthArtist = isAuthenticated && isArtist;
+              const isCurrentPlan = isAuthArtist && currentPlan === plan.id;
               const isPremiumPlan = plan.id === 'Premium';
+              const rank: Record<string, number> = { Free: 1, Standard: 2, Premium: 3 };
+              const isDowngrade = isAuthArtist && (rank[plan.id] ?? 1) < (rank[currentPlan || 'Free'] ?? 1);
+              const label = !isAuthArtist
+                ? (isPremiumPlan ? 'Go Premium' : 'Get Started')
+                : `${isDowngrade ? 'Downgrade' : 'Upgrade'} to ${plan.name}`;
               return (
-              <div key={plan.id} className="relative mt-4">
-                {!isCurrentPlan && plan.highlighted && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                    <span className="bg-card border border-accent text-accent text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
-                      Most Popular
-                    </span>
-                  </div>
-                )}
-                {!isCurrentPlan && isPremiumPlan && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
-                    <span className="inline-flex items-center gap-1.5 bg-card border border-amber-500 text-amber-500 text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
-                      <Star className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                      Best for Professionals
-                    </span>
-                  </div>
-                )}
-                <div
-                  className={`flex flex-col h-full p-5 rounded-lg border-2 transition-all ${
+                <PlanCard
+                  key={plan.id}
+                  name={plan.name}
+                  price={getPrice(plan.monthlyPrice)}
+                  period={isAnnual ? '/year' : '/month'}
+                  description={plan.description}
+                  features={plan.features}
+                  tagline={plan.tagline}
+                  badge={
                     isCurrentPlan
-                      ? isPremiumPlan
-                        ? 'border-amber-500/50 bg-amber-500/10'
-                        : 'border-accent/50 bg-accent/10'
+                      ? { text: 'Your current plan', tone: 'current' }
                       : plan.highlighted
-                      ? 'border-accent shadow-lg'
-                      : 'border-border hover:border-muted-foreground/50'
-                  }`}
-                >
-                  <div className="text-center mb-4 mt-2">
-                    <p className="text-xl font-semibold text-foreground">{plan.name}</p>
-                    <div className="mt-2">
-                      <span className="text-3xl font-bold text-foreground">{getPrice(plan.monthlyPrice)}</span>
-                      <span className="text-sm text-muted-foreground">{isAnnual ? '/year' : '/month'}</span>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-2">{plan.description}</p>
-                  </div>
-
-                  <ul className="space-y-2.5 mb-4 flex-1">
-                    {plan.features.map((feature, idx) => (
-                      <li
-                        key={idx}
-                        className={`flex items-start gap-2 text-sm ${feature.included ? 'text-muted-foreground' : 'text-muted-foreground/50'}`}
-                      >
-                        {feature.included ? (
-                          <Check className="h-4 w-4 text-accent flex-shrink-0 mt-0.5" />
-                        ) : (
-                          <X className="h-4 w-4 text-destructive/60 flex-shrink-0 mt-0.5" />
-                        )}
-                        <span className={feature.included ? '' : 'line-through'}>{feature.text}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <p className="text-xs text-muted-foreground/80 italic mb-4">{plan.tagline}</p>
-
-                  {isCurrentPlan ? (
-                    <div className="w-full py-2 text-center text-sm font-medium text-muted-foreground">
-                      Your current plan
-                    </div>
-                  ) : (() => {
-                    const rank: Record<string, number> = { Free: 1, Standard: 2, Premium: 3 };
-                    const currentRank = rank[currentPlan || 'Free'] ?? 1;
-                    const planRank = rank[plan.id] ?? 1;
-                    const isAuthArtist = isAuthenticated && isArtist;
-                    const isDowngrade = isAuthArtist && planRank < currentRank;
-                    return (
+                      ? { text: 'Most Popular', tone: 'popular' }
+                      : isPremiumPlan
+                      ? { text: 'Best for Professionals', tone: 'neutral' }
+                      : null
+                  }
+                  action={
+                    isCurrentPlan ? null : (
                       <Button
-                        variant={isDowngrade ? "outline" : "default"}
                         disabled={loadingPlan !== null}
                         onClick={() => handleClick(plan.id, isDowngrade)}
-                        className={`w-full ${
-                          isDowngrade
-                            ? 'bg-transparent border-border text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-                            : isPremiumPlan
-                            ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500'
-                            : 'bg-accent text-accent-foreground hover:bg-accent/90'
-                        }`}
+                        className={isDowngrade ? planButtonClass.downgrade : planButtonClass.upgrade}
                       >
-                        <Crown className="h-4 w-4 mr-2" />
-                        {loadingPlan === plan.id ? 'Redirecting…' : (() => {
-                          if (!isAuthArtist) {
-                            return isPremiumPlan ? 'Go Premium' : 'Get Started';
-                          }
-                          const action = isDowngrade ? 'Downgrade' : 'Upgrade';
-                          return `${action} to ${plan.name}`;
-                        })()}
+                        {loadingPlan === plan.id ? 'Redirecting…' : label}
                       </Button>
-                    );
-                  })()}
-                </div>
-              </div>
+                    )
+                  }
+                />
               );
             })}
           </div>

@@ -8,6 +8,8 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "/month": "/lună",
+  "/year": "/an",
   "I'm looking for artists": "Caut artiști",
   "For weddings, parties, corporate events and more.": "Pentru nunți, petreceri, evenimente corporate și altele.",
   "I'm an artist": "Sunt artist",
