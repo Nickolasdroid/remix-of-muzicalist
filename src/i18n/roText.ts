@@ -8,6 +8,11 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "Days without a color are free. Pick one to send a request.": "Zilele fără culoare sunt libere. Alege una ca să trimiți o cerere.",
+  "See all reviews": "Vezi toate recenziile",
+  "See the whole gallery": "Vezi toată galeria",
+  "Open the gallery": "Deschide galeria",
+  "Similar artists": "Artiști similari",
   "Add a description": "Adaugă o descriere",
   "Add genres": "Adaugă genuri",
   "/month": "/lună",

@@ -11,6 +11,7 @@ import AnnouncementTypeBadge from "@/components/AnnouncementTypeBadge";
 import { useTranslation } from "react-i18next";
 import SEO, { toMetaDescription } from "@/components/SEO";
 import { formatSmartDate, formatDateNoYear } from "@/lib/utils";
+import { format } from "date-fns";
 import PostMediaFrame from "@/components/PostMediaFrame";
 import ExpandableText from "@/components/ExpandableText";
 import { translateSpecialization } from "@/lib/specializationLabel";
@@ -32,6 +33,8 @@ import { ArtistAvailabilityCalendar, AvailabilityCalendarLayout, calendarAvailab
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PROFILE_PANEL } from "@/lib/profileLayout";
 import GuestSidebar from "@/components/GuestSidebar";
+import SimilarArtists from "@/components/profile/SimilarArtists";
+import { getThumbUrl } from "@/lib/imageUrl";
 import GuestSignupBar from "@/components/GuestSignupBar";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { User, Users, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays, ChevronRight, BadgeCheck } from "lucide-react";
@@ -1397,7 +1400,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
 
               {/* Stats: three quiet columns, value over label, no box */}
-              <dl className="mx-4 md:mx-8 mt-4 md:mt-6 flex gap-8 md:gap-12">
+              <dl className="mx-4 md:mx-8 mt-4 md:mt-6 flex gap-8 md:gap-12 lg:hidden">
                 <div className="min-w-0">
                   {/* Before the first confirmed event: words instead of a bare 0 */}
                   <dd className="truncate text-lg md:text-xl font-bold text-foreground tabular-nums">
@@ -1520,11 +1523,118 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                           )}
                         </div>
                       </div>
+                      <SimilarArtists artistId={artist.id} specialization={artist.specialization} county={artist.county} />
                     </div>
 
-                    {/* Side column */}
-                    <aside>
-                      <div className="space-y-6 rounded-lg bg-foreground/[0.05] p-5">
+                    {/* Side column: what helps decide to book */}
+                    <aside className="space-y-4">
+                      {/* Availability */}
+                      <div className="rounded-lg bg-foreground/[0.05] p-5">
+                        <SectionHeaderWithUsage title="Availability" size="sm" className="mb-2" />
+                        <Calendar
+                          mode="single"
+                          selected={undefined}
+                          onSelect={(d) => {
+                            if (!d) return;
+                            if (!currentUserId) { navigate('/login'); return; }
+                            navigate(`/book/${artist.id}?date=${format(d, 'yyyy-MM-dd')}`);
+                          }}
+                          disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
+                          className="-mx-3 p-0"
+                          classNames={{ day_today: "font-bold underline decoration-foreground/70 decoration-2 underline-offset-4" }}
+                          modifiers={{ busy: getBusyDates(), blocked: getBlockedDates() }}
+                          modifiersClassNames={{
+                            busy: "bg-destructive/70 text-destructive-foreground hover:bg-destructive/70",
+                            blocked: "bg-[#535353] text-foreground/80 hover:bg-[#535353]",
+                          }}
+                        />
+                        <p className="mt-2 text-xs text-muted-foreground">Days without a color are free. Pick one to send a request.</p>
+                      </div>
+
+                      {/* Rating */}
+                      <div className="rounded-lg bg-foreground/[0.05] p-5">
+                        <SectionHeaderWithUsage title="Reviews" size="sm" className="mb-2" />
+                        {reviews.length > 0 ? (
+                          <>
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-3xl font-bold tabular-nums text-foreground">{getAverageRating()}</span>
+                              <span className="flex items-center gap-0.5" aria-hidden="true">
+                                {[1, 2, 3, 4, 5].map((n) => (
+                                  <Star key={n} className={`h-4 w-4 ${n <= Math.round(Number(getAverageRating())) ? "fill-foreground text-foreground" : "text-foreground/30"}`} />
+                                ))}
+                              </span>
+                              <span className="text-sm text-muted-foreground tabular-nums">({reviews.length})</span>
+                            </div>
+                            {reviews[0]?.comment && (
+                              <blockquote className="mt-3 text-sm text-muted-foreground">
+                                <p className="line-clamp-3 notranslate" translate="no" data-user-content="true">“{reviews[0].comment}”</p>
+                                <footer className="mt-1 text-xs text-foreground/80 notranslate" translate="no">{reviews[0].reviewer_name}</footer>
+                              </blockquote>
+                            )}
+                            <button type="button" onClick={() => setActiveTab('reviews')} className="mt-3 text-sm font-bold text-foreground hover:underline">
+                              See all reviews
+                            </button>
+                          </>
+                        ) : (
+                          <p className="text-sm text-muted-foreground">No reviews yet</p>
+                        )}
+                      </div>
+
+                      {/* Gallery preview */}
+                      {getImages().length > 0 && (
+                        <div className="rounded-lg bg-foreground/[0.05] p-5">
+                          <SectionHeaderWithUsage title="Gallery" size="sm" className="mb-3" />
+                          <div className="grid grid-cols-2 gap-2">
+                            {getImages().slice(0, 4).map((img) => (
+                              <button
+                                key={img.id}
+                                type="button"
+                                onClick={() => setActiveTab('gallery')}
+                                className="aspect-square overflow-hidden rounded-md bg-foreground/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                                aria-label="Open the gallery"
+                              >
+                                <img src={getThumbUrl(img.thumbnail_url || img.url, 300)} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform hover:scale-105" />
+                              </button>
+                            ))}
+                          </div>
+                          <button type="button" onClick={() => setActiveTab('gallery')} className="mt-3 text-sm font-bold text-foreground hover:underline">
+                            See the whole gallery
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Artist details: the stats from under the name, plus instrument / members */}
+                      <div className="space-y-5 rounded-lg bg-foreground/[0.05] p-5">
+                        <div className="hidden lg:block">
+                          <SectionHeaderWithUsage title="Details" size="sm" className="mb-2" />
+                          <dl className="space-y-2 text-sm">
+                            <div className="flex justify-between gap-3">
+                              <dt className="text-muted-foreground">Events</dt>
+                              <dd className="font-medium text-foreground tabular-nums">{acceptedEventsCount > 0 ? `${acceptedEventsCount}+` : <span>None yet</span>}</dd>
+                            </div>
+                            <div className="flex justify-between gap-3">
+                              <dt className="text-muted-foreground">Member since</dt>
+                              <dd className="font-medium text-foreground">
+                                {artist.created_at
+                                  ? new Date(artist.created_at).toLocaleDateString(i18n.language || 'en', { month: 'short', year: 'numeric' }).replace('.', '')
+                                  : '—'}
+                              </dd>
+                            </div>
+                            {artist.career_start_year ? (
+                              <div className="flex justify-between gap-3">
+                                <dt className="text-muted-foreground">Experience</dt>
+                                <dd className="font-medium text-foreground">
+                                  {(() => {
+                                    const yrs = Math.max(1, new Date().getFullYear() - artist.career_start_year!);
+                                    const isRo = (i18n.language || 'en').split('-')[0] === 'ro';
+                                    const unit = isRo ? (yrs === 1 ? 'an' : yrs < 20 ? 'ani' : 'de ani') : (yrs === 1 ? 'year' : 'years');
+                                    return `${yrs} ${unit}`;
+                                  })()}
+                                </dd>
+                              </div>
+                            ) : null}
+                          </dl>
+                        </div>
                         {artist.specialization?.toLowerCase() === 'instrumentalist' && artist.instruments && (() => {
                           const instrumentName = artist.instruments.split(',')[0].trim();
                           const InstrumentIcon = getInstrumentIcon(instrumentName);
@@ -1565,6 +1675,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                             </div>
                           </dl>
                         </div>
+                      
                       </div>
                     </aside>
                   </div>
