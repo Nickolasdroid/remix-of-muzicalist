@@ -26,7 +26,12 @@ import {
   Building2,
   Globe,
   BookOpenCheck,
+  Mail,
 } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import GuestSidebar from "@/components/GuestSidebar";
+import { RO_TEXT } from "@/i18n/roText";
 
 
 
@@ -290,11 +295,137 @@ const faqSections = [
   },
 ];
 
+const normalize = (v: string) => v.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
 const HelpSupport = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const [query, setQuery] = useState("");
+  const [section, setSection] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setSignedIn(!!session));
+  }, []);
+
+  // Questions are written in English and translated on screen, so search both versions
+  const isRo = (i18n.language || "ro").startsWith("ro");
+  const matches = (text: string, q: string) => normalize(text).includes(q) || (isRo && normalize(RO_TEXT[text] || "").includes(q));
+
+  const visibleSections = useMemo(() => {
+    const q = normalize(query.trim());
+    return faqSections
+      .filter((s) => !section || s.title === section)
+      .map((s) => ({ ...s, items: q ? s.items.filter((it) => matches(it.q, q) || matches(it.a, q)) : s.items }))
+      .filter((s) => s.items.length > 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, section, isRo]);
+
+  const panel = (
+    <div
+      className="min-w-0 flex-1 bg-background px-4 pb-16 pt-16 md:rounded-lg md:px-8 md:pt-10"
+      style={{ background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" }}
+    >
+      <div className="mx-auto max-w-3xl">
+        <h1 className="hidden text-5xl font-bold leading-tight tracking-[-0.02em] text-foreground md:block">Help & Support</h1>
+        <p className="text-sm text-muted-foreground md:mt-2 md:text-base">Find answers to common questions about using Muzicalist.</p>
+
+        {/* Search */}
+        <div className="relative mt-6">
+          <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search for a question"
+            aria-label="Search for a question"
+            className="h-12 w-full rounded-full border-0 bg-foreground/[0.08] pl-12 pr-4 text-base text-foreground placeholder:text-muted-foreground focus:bg-foreground/[0.12] focus:outline-none focus:ring-2 focus:ring-white/60"
+          />
+        </div>
+
+        {/* Topics */}
+        <div className="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:flex-wrap md:px-0 [&::-webkit-scrollbar]:hidden" role="tablist" aria-label="Topics">
+          {[null, ...faqSections.map((s) => s.title)].map((title) => {
+            const selected = section === title;
+            return (
+              <button
+                key={title ?? "all"}
+                type="button"
+                role="tab"
+                aria-selected={selected}
+                onClick={() => setSection(title)}
+                className={`h-8 shrink-0 rounded-full px-3.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${
+                  selected ? "bg-foreground/[0.24] font-medium text-foreground" : "bg-foreground/[0.07] text-foreground hover:bg-foreground/[0.12]"
+                }`}
+              >
+                {title ?? <span>All</span>}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Questions */}
+        <div className="mt-10 space-y-10">
+          {visibleSections.map((s) => (
+            <section key={s.title}>
+              <h2 className="text-xl font-bold tracking-[-0.01em] text-foreground md:text-2xl">{s.title}</h2>
+              <Accordion type="single" collapsible className="mt-2">
+                {s.items.map((item, idx) => (
+                  <AccordionItem key={item.q} value={`${s.title}-${idx}`} className="border-foreground/10">
+                    <AccordionTrigger className="py-4 text-left text-base font-medium text-foreground hover:no-underline hover:text-foreground/80">
+                      {item.q}
+                    </AccordionTrigger>
+                    <AccordionContent className="pb-4 text-sm leading-relaxed text-muted-foreground md:text-[15px]">
+                      {item.a}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </section>
+          ))}
+          {visibleSections.length === 0 && (
+            <div className="py-2">
+              <p className="text-base font-bold text-foreground">No questions match your search</p>
+              <p className="mt-1 text-sm text-muted-foreground">Try other words, or write to us below.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Still need help */}
+        <section className="mt-14">
+          <h2 className="text-xl font-bold tracking-[-0.01em] text-foreground md:text-2xl">Still need help?</h2>
+          <p className="mt-2 text-sm text-muted-foreground md:text-base">Write to us and we'll get back to you within a few business days.</p>
+          <a
+            href="mailto:contact@muzicalist.com"
+            className="mt-4 inline-flex h-11 items-center gap-2 rounded-full bg-foreground px-6 text-base font-bold text-background transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+          >
+            <Mail className="h-4 w-4" aria-hidden="true" />
+            <span className="notranslate" translate="no">contact@muzicalist.com</span>
+          </a>
+
+          <div className="mt-8 flex flex-wrap gap-2">
+            {[
+              { to: "/rules", label: t("navigation.rules") },
+              { to: "/plans", label: "Plans & Pricing" },
+              { to: "/terms-of-service", label: "Terms of Service" },
+              { to: "/privacy-policy", label: "Privacy Policy" },
+              { to: "/about", label: "About Muzicalist" },
+            ].map((l) => (
+              <Link
+                key={l.to}
+                to={l.to}
+                className="inline-flex h-9 items-center rounded-full border border-foreground/25 px-4 text-sm font-medium text-foreground transition-colors hover:border-foreground"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       <SEO
         title="Help & Support — FAQ | Muzicalist"
         description="Answers to common questions about Muzicalist: accounts, plans, bookings, messaging, payments, privacy and more."
@@ -313,96 +444,14 @@ const HelpSupport = () => {
       />
       <Navigation mobileTitle="Help & Support" mobileBackPath={-1} />
 
-      <main className="md:ml-[316px] lg:ml-[356px] pt-14 md:pt-0 pb-6 md:pb-8">
-        <div className="max-w-3xl mx-auto px-4 py-8 md:py-12">
-          {/* Header */}
-          <div className="text-center mb-10 hidden md:block">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-accent/10 mb-4">
-              <HelpCircle className="h-7 w-7 text-accent" />
-            </div>
-            <h1 className="text-3xl md:text-4xl font-display font-bold text-foreground mb-2">
-              Help & Support
-            </h1>
-            <p className="text-muted-foreground max-w-lg mx-auto">
-              Find answers to common questions about using Muzicalist.
-            </p>
-          </div>
-
-          {/* FAQ Sections */}
-          <div className="space-y-6">
-            {faqSections.map((section) => (
-              <div key={section.title} className="rounded-xl border border-border bg-card p-4 md:p-6">
-                <div className="flex items-center gap-3 mb-4">
-                  <section.icon className="h-5 w-5 text-accent flex-shrink-0" />
-                  <h2 className="text-lg font-display font-bold text-foreground">
-                    {section.title}
-                  </h2>
-                </div>
-                <Accordion type="single" collapsible className="space-y-1">
-                  {section.items.map((item, idx) => (
-                    <AccordionItem key={idx} value={`${section.title}-${idx}`} className="border-border/50">
-                      <AccordionTrigger className="text-sm font-medium text-foreground hover:text-accent py-3">
-                        {item.q}
-                      </AccordionTrigger>
-                      <AccordionContent className="text-sm text-muted-foreground pb-3">
-                        {item.a}
-                      </AccordionContent>
-                    </AccordionItem>
-                  ))}
-                </Accordion>
-              </div>
-            ))}
-          </div>
-
-
-
-
-          {/* Useful Links */}
-          <div className="mt-10 rounded-xl border border-border bg-card p-4 md:p-6">
-            <h2 className="text-lg font-display font-bold text-foreground mb-4 flex items-center gap-2">
-              <FileText className="h-5 w-5 text-accent" />
-              Useful Links
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Link
-                to="/rules"
-                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border/50 hover:border-accent/50 hover:bg-accent/5 transition-colors"
-              >
-                <BookOpenCheck className="h-4 w-4 text-accent" />
-                <span className="text-sm font-medium text-foreground">{t("navigation.rules")}</span>
-              </Link>
-              <Link
-                to="/about"
-                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border/50 hover:border-accent/50 hover:bg-accent/5 transition-colors"
-              >
-                <BookOpen className="h-4 w-4 text-accent" />
-                <span className="text-sm font-medium text-foreground">About Muzicalist</span>
-              </Link>
-              <Link
-                to="/privacy-policy"
-                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border/50 hover:border-accent/50 hover:bg-accent/5 transition-colors"
-              >
-                <Shield className="h-4 w-4 text-accent" />
-                <span className="text-sm font-medium text-foreground">Privacy Policy</span>
-              </Link>
-              <Link
-                to="/terms-of-service"
-                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border/50 hover:border-accent/50 hover:bg-accent/5 transition-colors"
-              >
-                <FileText className="h-4 w-4 text-accent" />
-                <span className="text-sm font-medium text-foreground">Terms of Service</span>
-              </Link>
-              <Link
-                to="/plans"
-                className="flex items-center gap-3 px-4 py-3 rounded-lg border border-border/50 hover:border-accent/50 hover:bg-accent/5 transition-colors"
-              >
-                <Crown className="h-4 w-4 text-accent" />
-                <span className="text-sm font-medium text-foreground">Plans & Pricing</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </main>
+      {signedIn ? (
+        <main className="md:ml-[316px] md:py-2 md:pr-2 lg:ml-[356px]">{panel}</main>
+      ) : (
+        <main className="md:flex md:items-start md:gap-2 md:px-2 md:pb-2 md:pt-[72px]">
+          {signedIn === false && <GuestSidebar />}
+          {panel}
+        </main>
+      )}
     </div>
   );
 };

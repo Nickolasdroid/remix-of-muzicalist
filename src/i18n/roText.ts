@@ -8,6 +8,11 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "Search for a question": "Caută o întrebare",
+  "No questions match your search": "Nicio întrebare nu se potrivește căutării",
+  "Try other words, or write to us below.": "Încearcă alte cuvinte sau scrie-ne mai jos.",
+  "Still need help?": "Ai nevoie de ajutor în continuare?",
+  "Write to us and we'll get back to you within a few business days.": "Scrie-ne și îți răspundem în câteva zile lucrătoare.",
   "Paid": "Achitat",
   "Pick a day": "Alege o zi",
   "Mark it available or unavailable, or see the events booked that day.": "Marchează-o ca disponibilă sau indisponibilă, ori vezi evenimentele rezervate în ziua aceea.",
