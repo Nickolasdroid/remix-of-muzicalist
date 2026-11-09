@@ -1059,98 +1059,71 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   if (isUserAccount) {
     const activeAnnouncements = announcements.filter((a) => !isAdExpired(a));
     const memberSince = artist.created_at
-      ? new Date(artist.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+      ? new Date(artist.created_at).toLocaleDateString(i18n.language || 'ro', { month: 'short', year: 'numeric' }).replace('.', '')
       : null;
 
-    return <div className={`min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''} bg-background notranslate`} data-no-translate="true" translate="no">
+    const fullName = `${artist.first_name || ""} ${artist.last_name || ""}`.trim();
+    return <div className={`min-h-screen bg-black ${currentUserId ? 'md:ml-[316px] md:py-2 md:pr-2 lg:ml-[356px]' : 'md:flex md:items-start md:gap-2 md:px-2 md:pb-2 md:pt-[72px]'}`}>
       <Navigation />
-      <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20 px-0 md:px-4`}>
-        <div className="container mx-auto max-w-4xl px-4 md:px-0">
+      {!currentUserId && <GuestSidebar />}
+      <div className={`${PROFILE_PANEL} min-w-0 flex-1 pt-14 md:pt-0 pb-6 md:pb-20 px-0`}>
+        <div className="container mx-auto max-w-none px-4 md:px-8">
 
-          {/* Hero header — mirrors the User Dashboard */}
-          <div className="mb-6 md:mb-8 -mx-4 md:mx-0">
-            <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
-              <div className="absolute inset-0 bg-gradient-cinematic opacity-70 pointer-events-none" />
+          {/* Header, same as artist profiles: full-width cover, photo and name over its fade */}
+          <div className="relative left-1/2 mb-6 w-screen -translate-x-1/2 md:left-0 md:-ml-8 md:mb-8 md:w-[calc(100%+4rem)] md:translate-x-0">
+            <div className="relative w-full aspect-[16/7] md:aspect-auto md:h-[220px] xl:h-[260px] overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
               <div
                 className="pointer-events-none absolute inset-x-0 bottom-0 h-full"
                 style={{
                   background:
-                    "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.98) 12%, hsl(var(--background) / 0.9) 25%, hsl(var(--background) / 0.7) 42%, hsl(var(--background) / 0.45) 60%, hsl(var(--background) / 0.2) 78%, hsl(var(--background) / 0) 100%)",
+                    "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.9) 25%, hsl(var(--background) / 0.45) 60%, hsl(var(--background) / 0) 100%)",
                 }}
               />
-
-                {/* Secondary profile actions */}
-                <div className="absolute top-2 right-2 md:top-3 md:right-3 z-30">
-                  <div className="rounded-full bg-black/45 backdrop-blur-sm border border-white/15 text-white hover:bg-black/60 transition-colors">
-                    <ProfileActionsMenu
-                      profileId={artist.id}
-                      profileName={`${artist.first_name || ""} ${artist.last_name || ""}`.trim()}
-                      isOwnProfile={isOwnProfile}
-                      currentUserId={currentUserId}
-                      isArtist={false}
-                    />
-                  </div>
-                </div>
-              <div className="absolute inset-x-0 bottom-0 p-4 md:p-5 lg:p-6 flex items-end gap-3 md:gap-4 lg:gap-5">
-                <div className="relative p-1 rounded-full shadow-xl flex-shrink-0">
-                  <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
-                    <AvatarImage src={artist.avatar_url || undefined} alt={`${artist.first_name || ''} ${artist.last_name || ''}`} />
-                    <AvatarFallback className="text-xl bg-gradient-to-br from-accent/30 to-accent/10">
-                      {artist.first_name?.[0]}{artist.last_name?.[0]}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-                <div className="flex-1 min-w-0 pb-1 md:pb-2">
-                  <h1
-                    className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-white truncate drop-shadow-lg name-overlay-outline notranslate"
-                    data-user-content="true"
-                    data-no-translate="true"
-                    translate="no"
-                  >
-                    {artist.first_name} {artist.last_name}
-                  </h1>
-                  <div className="flex items-center gap-1.5 md:gap-2 text-white/90 text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
-                    <span>User</span>
-                    {memberSince && (
-                      <>
-                        <span className="opacity-70">•</span>
-                        <Clock className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                        <span>Member since {memberSince}</span>
-                      </>
-                    )}
-                  </div>
+              <div className="absolute top-2 right-2 md:top-3 md:right-3 z-30">
+                <div className="rounded-full bg-black/45 backdrop-blur-sm text-white hover:bg-black/60 transition-colors">
+                  <ProfileActionsMenu profileId={artist.id} profileName={fullName} isOwnProfile={isOwnProfile} currentUserId={currentUserId} isArtist={false} />
                 </div>
               </div>
             </div>
 
-            {/* Followers / Following — shared compact row */}
-            <SocialStats
-              className="mx-4 md:mx-0 mt-3 md:mt-4"
-              followersCount={followersCount}
-              followingCount={followingCount}
-              onFollowersClick={() => openConnections("followers")}
-              onFollowingClick={() => openConnections("following")}
-              showFollowButton={!isOwnProfile}
-              isFollowing={isFollowing}
-              onFollowToggle={handleFollowToggle}
-            />
-
-            {/* Compact public stat row */}
-            <div className="mx-4 md:mx-0 mt-3">
-              <div className="w-full flex items-center gap-3 rounded-lg border border-border/60 bg-card/60 backdrop-blur-sm px-4 py-2.5 md:px-6 md:py-3">
-                <div className="flex flex-col items-start text-left">
-                  <span className="text-lg md:text-xl font-display font-bold text-foreground leading-none">
-                    {activeAnnouncements.length}
-                  </span>
-                  <span className="mt-1 text-[11px] md:text-xs uppercase tracking-wider text-muted-foreground">
-                    Announcements
-                  </span>
-                </div>
+            <div className="relative z-10 -mt-10 flex items-center gap-3 px-4 md:-mt-12 md:gap-4 md:px-8 lg:-mt-14 lg:gap-5 xl:-mt-16">
+              <Avatar className="h-24 w-24 shrink-0 shadow-[0_8px_24px_rgba(0,0,0,0.5)] md:h-32 md:w-32 lg:h-36 lg:w-36">
+                <AvatarImage src={artist.avatar_url || undefined} alt={fullName} className="object-cover" />
+                <AvatarFallback className="bg-foreground/10 text-2xl text-foreground">
+                  {artist.first_name?.[0]}{artist.last_name?.[0]}
+                </AvatarFallback>
+              </Avatar>
+              <div className="min-w-0 flex-1">
+                <h1 className="truncate text-3xl font-bold leading-tight tracking-[-0.03em] text-foreground md:text-5xl lg:text-6xl notranslate" data-user-content="true" translate="no">
+                  {fullName}
+                </h1>
+                <p className="mt-1 text-sm text-muted-foreground md:text-base">Organizer</p>
+                <SocialStats
+                  className="mt-1.5"
+                  followersCount={followersCount}
+                  followingCount={followingCount}
+                  onFollowersClick={() => openConnections("followers")}
+                  onFollowingClick={() => openConnections("following")}
+                  showFollowButton={!isOwnProfile}
+                  isFollowing={isFollowing}
+                  onFollowToggle={handleFollowToggle}
+                />
               </div>
             </div>
 
+            <dl className="mx-4 mt-4 flex gap-8 md:mx-8 md:mt-6 md:gap-12">
+              <div>
+                <dd className="text-lg font-bold tabular-nums text-foreground md:text-xl">{activeAnnouncements.length > 0 ? activeAnnouncements.length : <span>None yet</span>}</dd>
+                <dt className="text-xs text-muted-foreground md:text-sm">Events</dt>
+              </div>
+              {memberSince && (
+                <div>
+                  <dd className="text-lg font-bold text-foreground md:text-xl">{memberSince}</dd>
+                  <dt className="text-xs text-muted-foreground md:text-sm">Member since</dt>
+                </div>
+              )}
+            </dl>
           </div>
-
 
           <AlertDialog open={showUnfollowConfirm} onOpenChange={(open) => { if (!open) setShowUnfollowConfirm(false); }}>
             <AlertDialogContent className="rounded-lg">
@@ -1165,21 +1138,24 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
             </AlertDialogContent>
           </AlertDialog>
 
-          {/* User's Announcements */}
-          {activeAnnouncements.length > 0 && <div>
-            <SectionHeaderWithUsage
-              icon={<CalendarIcon className="h-5 w-5 text-accent" />}
-              title="Events"
-              className="mb-3"
-            />
-            <AnnouncementList
-                        announcements={activeAnnouncements}
-                        profile={artist}
-                        onDeleted={(id) => setAnnouncements((items) => items.filter((x) => x.id !== id))}
-                        onUpdated={(id, patch) => setAnnouncements((items) => items.map((x) => (x.id === id ? { ...x, ...patch } : x)))}
-                        onMediaClick={(m) => setMediaPreview(m)}
-                      />
-          </div>}
+          {/* Events this organizer is looking for artists for */}
+          <div>
+            <SectionHeaderWithUsage title="Events" className="mb-4" />
+            {activeAnnouncements.length > 0 ? (
+              <AnnouncementList
+                announcements={activeAnnouncements}
+                profile={artist}
+                onDeleted={(id) => setAnnouncements((items) => items.filter((x) => x.id !== id))}
+                onUpdated={(id, patch) => setAnnouncements((items) => items.map((x) => (x.id === id ? { ...x, ...patch } : x)))}
+                onMediaClick={(m) => setMediaPreview(m)}
+              />
+            ) : (
+              <div className="py-2">
+                <p className="text-base font-bold text-foreground">No events yet</p>
+                <p className="mt-1 text-sm text-muted-foreground">When this organizer is looking for artists, their events show up here.</p>
+              </div>
+            )}
+          </div>
 
           {/* Media Preview Dialog */}
           <InstagramZoomPreview media={mediaPreview} onClose={() => setMediaPreview(null)} />

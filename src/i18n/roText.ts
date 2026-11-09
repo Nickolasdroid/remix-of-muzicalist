@@ -8,6 +8,7 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "When this organizer is looking for artists, their events show up here.": "Când organizatorul caută artiști, evenimentele lui apar aici.",
   "How your profile turns visits into bookings.": "Cum transformă profilul tău vizitele în rezervări.",
   "of views": "din vizite",
   "of requests": "din cereri",
