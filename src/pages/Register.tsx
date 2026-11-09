@@ -183,7 +183,10 @@ const Register = () => {
       }
     } catch (error: any) {
       const raw = (error?.message || "").toLowerCase();
-      if (raw.includes("rate limit") || raw.includes("too many") || error?.status === 429) {
+      if (isWeakPasswordError(error)) {
+        toast.error(LEAKED_PASSWORD_MESSAGE_EN);
+        setStep(1);
+      } else if (raw.includes("rate limit") || raw.includes("too many") || error?.status === 429) {
         toast.error("Too many sign-up attempts. Wait a few minutes and try again. If you already got a confirmation email, check your inbox and spam folder.");
       } else {
         toast.error(error?.message || "Sign-up failed. Please try again.");

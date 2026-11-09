@@ -141,7 +141,9 @@ const ResetPassword = () => {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message || "Could not update password.",
+        description: isWeakPasswordError(error)
+          ? LEAKED_PASSWORD_MESSAGE_EN
+          : error.message || "Could not update password.",
         variant: "destructive",
       });
     } finally {

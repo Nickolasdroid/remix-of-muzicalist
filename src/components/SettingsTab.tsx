@@ -694,7 +694,13 @@ const SettingsTab = ({
       resetPasswordForm();
       setActiveSection("main");
     } catch (error: any) {
-      toast({ title: "Error", description: error.message || "Eroare la schimbarea parolei.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: isWeakPasswordError(error)
+          ? LEAKED_PASSWORD_MESSAGE_RO
+          : error.message || "Eroare la schimbarea parolei.",
+        variant: "destructive",
+      });
     } finally {
       setIsChangingPassword(false);
     }
