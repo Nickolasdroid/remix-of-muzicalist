@@ -4,9 +4,7 @@ import { goBack } from "@/lib/backNavigation";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, BarChart3, ChevronRight, Eye, Inbox, CalendarCheck, CalendarX, TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import { fetchMyProfileViews, viewsChangePct, type ProfileViewStats } from "@/lib/profileViews";
 import { isPremium } from "@/lib/planLimits";
 
@@ -137,155 +135,130 @@ const ArtistAnalytics = () => {
     );
   }
 
-  const funnel = [
-    { label: "Profile views", value: stats.profileViews, icon: Eye },
-    { label: "Requests", value: stats.totalRequests, icon: Inbox },
-    { label: "Bookings", value: stats.counts.booked, icon: CalendarCheck },
-  ];
-  const funnelRates = [stats.requestRate, stats.bookingRate];
+  const tile = "rounded-lg bg-foreground/[0.05] p-4 md:p-5";
+  const heading = "text-xl font-bold tracking-[-0.01em] text-foreground md:text-2xl";
+  const rateLine = (rate: number | null, of: string) =>
+    rate === null ? null : (
+      <p className="mt-1 text-xs text-muted-foreground md:text-sm">
+        <span className="font-semibold tabular-nums text-foreground">{rate}%</span> <span>{of}</span>
+      </p>
+    );
 
   return (
-    <div className="min-h-screen bg-background md:ml-[316px] lg:ml-[356px]">
+    <div className="min-h-screen bg-black md:ml-[316px] md:py-2 md:pr-2 lg:ml-[356px]">
       <Navigation mobileTitle="Statistics" mobileBackPath={-1} />
-      <div className="container mx-auto px-4 pt-20 md:pt-8 pb-24 md:pb-8 max-w-4xl space-y-4 md:space-y-6">
-        <div className="flex items-center justify-between gap-3">
-          <div className="hidden md:flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => goBack(navigate, "/dashboard")} className="-ml-2">
-              <ArrowLeft className="h-4 w-4 mr-1.5" />
-              Back
-            </Button>
-            <h1 className="text-2xl font-display font-bold flex items-center gap-2">
-              <BarChart3 className="h-6 w-6 text-accent" />
-              Statistics
-            </h1>
-          </div>
+      <div
+        className="min-h-screen px-4 pb-24 pt-16 md:min-h-[calc(100vh-16px)] md:rounded-lg md:px-8 md:pb-12 md:pt-10"
+        style={{ background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" }}
+      >
+        <div className="mx-auto max-w-4xl">
+          <h1 className="hidden text-5xl font-bold leading-tight tracking-[-0.02em] text-foreground md:block">Statistics</h1>
+          <p className="text-sm text-muted-foreground md:mt-2 md:text-base">How your profile turns visits into bookings.</p>
 
-          <div role="tablist" aria-label="Period" className="inline-flex rounded-full bg-muted p-1 md:ml-auto">
+          {/* Period: grey chips like the other filters */}
+          <div role="tablist" aria-label="Period" className="mt-5 flex gap-2">
             {([
               { id: "30d", label: "Last 30 days" },
               { id: "all", label: "All time" },
             ] as const).map((opt) => (
               <button
                 key={opt.id}
+                type="button"
                 role="tab"
                 aria-selected={period === opt.id}
                 onClick={() => setPeriod(opt.id)}
-                className={`px-3.5 py-1.5 rounded-full text-xs md:text-sm font-medium transition-colors ${
-                  period === opt.id ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"
+                className={`h-8 rounded-full px-3.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${
+                  period === opt.id ? "bg-foreground/[0.24] font-medium text-foreground" : "bg-foreground/[0.07] text-foreground hover:bg-foreground/[0.12]"
                 }`}
               >
                 {opt.label}
               </button>
             ))}
           </div>
-        </div>
 
-        {/* From views to bookings */}
-        <Card className="border-border/50">
-          <CardContent className="p-4 md:p-6">
-            <h2 className="text-base md:text-lg font-semibold text-foreground">From views to bookings</h2>
-            <p className="text-xs md:text-sm text-muted-foreground mt-0.5">How many visitors send a request, and how many requests become bookings.</p>
-
-            <div className="mt-5 grid grid-cols-[1fr_auto_1fr_auto_1fr] items-start gap-1 md:gap-3">
-              {funnel.map((step, i) => (
-                <div key={step.label} className="contents">
-                  <div className="flex flex-col items-center text-center min-w-0">
-                    <div className="p-2 md:p-2.5 rounded-xl bg-accent/10">
-                      <step.icon className="h-4 w-4 md:h-5 md:w-5 text-accent" aria-hidden="true" />
-                    </div>
-                    <p className="mt-2 text-2xl md:text-4xl font-bold tabular-nums text-foreground">{step.value}</p>
-                    <p className="text-[11px] md:text-sm text-muted-foreground leading-tight">{step.label}</p>
-                  </div>
-                  {i < funnelRates.length && (
-                    <div className="flex flex-col items-center pt-3 md:pt-4 text-muted-foreground">
-                      <ChevronRight className="h-4 w-4 md:h-5 md:w-5" aria-hidden="true" />
-                      <span className="text-xs md:text-sm font-semibold tabular-nums text-foreground">
-                        {funnelRates[i] === null ? "–" : `${funnelRates[i]}%`}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {stats.viewsChange !== null && (
-              <p className={`mt-4 flex items-center justify-center gap-1 text-xs ${stats.viewsChange >= 0 ? "text-green-500" : "text-destructive"}`}>
-                {stats.viewsChange >= 0 ? <TrendingUp className="h-3.5 w-3.5" aria-hidden="true" /> : <TrendingDown className="h-3.5 w-3.5" aria-hidden="true" />}
-                <span className="tabular-nums">{stats.viewsChange > 0 ? `+${stats.viewsChange}` : stats.viewsChange}%</span>
-                <span className="text-muted-foreground">profile views vs. the previous 30 days</span>
-              </p>
-            )}
-            {stats.profileViews === 0 && (
-              <p className="mt-4 text-center text-xs text-muted-foreground">No profile views yet in this period. Share your profile link to get discovered.</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Requests by status */}
-        <Card className="border-border/50">
-          <CardContent className="p-4 md:p-6">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className="text-base md:text-lg font-semibold text-foreground">Booking requests</h2>
-                <p className="text-xs md:text-sm text-muted-foreground mt-0.5">Where each request stands right now.</p>
+          {/* From views to bookings */}
+          <section className="mt-10">
+            <h2 className={heading}>From views to bookings</h2>
+            <div className="mt-4 grid grid-cols-3 gap-2 md:gap-4">
+              <div className={tile}>
+                <p className="text-xs text-muted-foreground md:text-sm">Profile views</p>
+                <p className="mt-1 text-3xl font-bold tabular-nums text-foreground md:text-5xl">{stats.profileViews}</p>
+                {stats.viewsChange !== null && (
+                  <p className={`mt-1 flex items-center gap-1 text-xs md:text-sm ${stats.viewsChange >= 0 ? "text-green-500" : "text-destructive"}`}>
+                    {stats.viewsChange >= 0 ? <TrendingUp className="h-3.5 w-3.5" aria-hidden="true" /> : <TrendingDown className="h-3.5 w-3.5" aria-hidden="true" />}
+                    <span className="tabular-nums">{stats.viewsChange > 0 ? `+${stats.viewsChange}` : stats.viewsChange}%</span>
+                  </p>
+                )}
               </div>
+              <div className={tile}>
+                <p className="text-xs text-muted-foreground md:text-sm">Requests</p>
+                <p className="mt-1 text-3xl font-bold tabular-nums text-foreground md:text-5xl">{stats.totalRequests}</p>
+                {rateLine(stats.requestRate, "of views")}
+              </div>
+              <div className={tile}>
+                <p className="text-xs text-muted-foreground md:text-sm">Bookings</p>
+                <p className="mt-1 text-3xl font-bold tabular-nums text-foreground md:text-5xl">{stats.counts.booked}</p>
+                {rateLine(stats.bookingRate, "of requests")}
+              </div>
+            </div>
+            {stats.profileViews === 0 && (
+              <p className="mt-3 text-sm text-muted-foreground">No profile views yet in this period. Share your profile link to get discovered.</p>
+            )}
+          </section>
+
+          {/* Requests by status */}
+          <section className="mt-10">
+            <div className="flex items-end justify-between gap-3">
+              <h2 className={heading}>Booking requests</h2>
               {stats.responseRate !== null && (
-                <div className="text-right shrink-0">
-                  <p className="text-xl md:text-2xl font-bold tabular-nums text-foreground">{stats.responseRate}%</p>
-                  <p className="text-[11px] md:text-xs text-muted-foreground">Response rate</p>
-                </div>
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-bold tabular-nums text-foreground">{stats.responseRate}%</span> <span>response rate</span>
+                </p>
               )}
             </div>
+            <div className={`${tile} mt-4`}>
+              {stats.totalRequests > 0 ? (
+                <>
+                  <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-foreground/10" aria-hidden="true">
+                    {REQUEST_SEGMENTS.map((seg) =>
+                      stats.counts[seg.key] > 0 ? (
+                        <div key={seg.key} className={seg.bar} style={{ width: `${(stats.counts[seg.key] / stats.totalRequests) * 100}%` }} />
+                      ) : null,
+                    )}
+                  </div>
+                  <ul className="mt-4 grid grid-cols-1 gap-x-8 gap-y-2.5 sm:grid-cols-2">
+                    {REQUEST_SEGMENTS.map((seg) => (
+                      <li key={seg.key} className="flex items-center justify-between gap-2 text-sm">
+                        <span className="flex min-w-0 items-center gap-2 text-muted-foreground">
+                          <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${seg.bar}`} aria-hidden="true" />
+                          <span className="truncate">{seg.label}</span>
+                        </span>
+                        <span className="font-semibold tabular-nums text-foreground">{stats.counts[seg.key]}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <p className="text-sm text-muted-foreground">No booking requests in this period.</p>
+              )}
+            </div>
+          </section>
 
-            {stats.totalRequests > 0 ? (
-              <>
-                <div className="mt-4 flex h-2.5 w-full overflow-hidden rounded-full bg-muted" aria-hidden="true">
-                  {REQUEST_SEGMENTS.map((seg) =>
-                    stats.counts[seg.key] > 0 ? (
-                      <div key={seg.key} className={seg.bar} style={{ width: `${(stats.counts[seg.key] / stats.totalRequests) * 100}%` }} />
-                    ) : null,
-                  )}
-                </div>
-                <ul className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2.5">
-                  {REQUEST_SEGMENTS.map((seg) => (
-                    <li key={seg.key} className="flex items-center justify-between gap-2 text-sm">
-                      <span className="flex items-center gap-2 min-w-0 text-muted-foreground">
-                        <span className={`h-2.5 w-2.5 rounded-full shrink-0 ${seg.bar}`} aria-hidden="true" />
-                        <span className="truncate">{seg.label}</span>
-                      </span>
-                      <span className="font-semibold tabular-nums text-foreground">{stats.counts[seg.key]}</span>
-                    </li>
-                  ))}
-                </ul>
-              </>
-            ) : (
-              <p className="mt-4 text-sm text-muted-foreground">No booking requests in this period.</p>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Upcoming calendar */}
-        <Card className="border-border/50">
-          <CardContent className="p-4 md:p-6">
-            <h2 className="text-base md:text-lg font-semibold text-foreground">Upcoming</h2>
-            <div className="mt-3 grid grid-cols-2 gap-3">
-              <div className="flex items-center gap-3">
-                <CalendarCheck className="h-5 w-5 text-green-500 shrink-0" aria-hidden="true" />
-                <div>
-                  <p className="text-xl font-bold tabular-nums text-foreground">{stats.upcomingBooked}</p>
-                  <p className="text-xs text-muted-foreground">Booked events</p>
-                </div>
+          {/* Upcoming calendar */}
+          <section className="mt-10">
+            <h2 className={heading}>Upcoming</h2>
+            <div className="mt-4 grid grid-cols-2 gap-2 md:gap-4">
+              <div className={tile}>
+                <p className="text-xs text-muted-foreground md:text-sm">Booked events</p>
+                <p className="mt-1 text-3xl font-bold tabular-nums text-foreground md:text-4xl">{stats.upcomingBooked}</p>
               </div>
-              <div className="flex items-center gap-3">
-                <CalendarX className="h-5 w-5 text-muted-foreground shrink-0" aria-hidden="true" />
-                <div>
-                  <p className="text-xl font-bold tabular-nums text-foreground">{stats.upcomingBlocked}</p>
-                  <p className="text-xs text-muted-foreground">Unavailable dates</p>
-                </div>
+              <div className={tile}>
+                <p className="text-xs text-muted-foreground md:text-sm">Unavailable dates</p>
+                <p className="mt-1 text-3xl font-bold tabular-nums text-foreground md:text-4xl">{stats.upcomingBlocked}</p>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </section>
+        </div>
       </div>
     </div>
   );

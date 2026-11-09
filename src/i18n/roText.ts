@@ -8,6 +8,10 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "How your profile turns visits into bookings.": "Cum transformă profilul tău vizitele în rezervări.",
+  "of views": "din vizite",
+  "of requests": "din cereri",
+  "response rate": "rată de răspuns",
   "Search for a question": "Caută o întrebare",
   "No questions match your search": "Nicio întrebare nu se potrivește căutării",
   "Try other words, or write to us below.": "Încearcă alte cuvinte sau scrie-ne mai jos.",
