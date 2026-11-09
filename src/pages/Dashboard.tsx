@@ -1941,8 +1941,8 @@ const Dashboard = () => {
         } : undefined}
       />
       
-      <div className={`${PROFILE_PANEL} min-w-0 flex-1 pt-14 ${activeTab === "profile" && !calendarOnly && !isAdmin ? "md:pt-0" : "md:pt-8"} ${activeTab === "settings" ? "pb-[env(safe-area-inset-bottom)] md:pb-8" : "pb-6 md:pb-20"} px-0`}>
-        <div className={`container mx-auto ${activeTab === "profile" && !calendarOnly ? "max-w-none md:px-8" : "max-w-4xl md:px-0"} ${activeTab === "settings" ? "px-0" : "px-4"}`}>
+      <div style={calendarOnly ? { background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" } : undefined} className={`${PROFILE_PANEL} min-w-0 flex-1 pt-14 ${activeTab === "profile" && !calendarOnly && !isAdmin ? "md:pt-0" : "md:pt-8"} ${activeTab === "settings" ? "pb-[env(safe-area-inset-bottom)] md:pb-8" : "pb-6 md:pb-20"} px-0`}>
+        <div className={`container mx-auto ${activeTab === "profile" && !calendarOnly ? "max-w-none md:px-8" : calendarOnly ? "max-w-6xl md:px-8" : "max-w-4xl md:px-0"} ${activeTab === "settings" ? "px-0" : "px-4"}`}>
           {activeTab !== "profile"}
               {/* Profile Tab */}
               {activeTab === "profile" && <div className="space-y-6 md:space-y-8">
@@ -2920,19 +2920,18 @@ const Dashboard = () => {
                       {/* Calendar Tab */}
                       {!isAdmin && <TabsContent value="calendar">
                         <div className={calendarOnly ? "pt-4" : undefined}>
-                          <SectionHeaderWithUsage
-                            icon={<CalendarIcon className="h-5 w-5 text-accent" />}
-                            title="Calendar"
-                            className={calendarOnly ? "mb-4 hidden md:flex" : "mb-4"}
-                            action={isPremium(currentPlan) ? (
-                              <Button variant="outline" size="sm" onClick={() => navigate('/analytics')} className="gap-1.5">
+                          <div className={`mb-6 items-center justify-between gap-3 ${calendarOnly ? "hidden md:flex" : "flex"}`}>
+                            <h1 className="text-[2rem] font-bold leading-tight tracking-[-0.02em] text-foreground md:text-5xl">Calendar</h1>
+                            {isPremium(currentPlan) && (
+                              <Button variant="outline" size="sm" onClick={() => navigate('/analytics')} className="h-9 gap-1.5 rounded-full border-foreground/25 bg-transparent px-4 font-bold hover:border-foreground hover:bg-transparent">
                                 <BarChart3 className="h-4 w-4" />
                                 Statistics
                               </Button>
-                            ) : undefined}
-                          />
-                          <AvailabilityCalendarLayout>
-                            <ArtistAvailabilityCalendar selected={selectedDate} onSelect={(date) => {
+                            )}
+                          </div>
+                          <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
+                            <div className="rounded-lg bg-foreground/[0.05] p-4 md:p-6">
+                            <ArtistAvailabilityCalendar large selected={selectedDate} onSelect={(date) => {
                       if (!date) {
                         setSelectedDate(undefined);
                         setUserChangedStatus(false);
@@ -2961,7 +2960,8 @@ const Dashboard = () => {
                         setEventNotes("");
                       }
                     }} busyDates={calendarEvents.filter((e) => (e.status === 'busy' || e.status === 'booked') && isDayFullyBooked(parseSlotsFromNotes(e.notes))).map((e) => parseYMDToLocalDate(e.event_date))} partialDates={calendarEvents.filter((e) => (e.status === 'busy' || e.status === 'booked') && !isDayFullyBooked(parseSlotsFromNotes(e.notes))).map((e) => parseYMDToLocalDate(e.event_date))} blockedDates={calendarEvents.filter((e) => e.status === 'blocked' || e.status === 'unavailable').map((e) => parseYMDToLocalDate(e.event_date))} />
-                            
+                            </div>
+
                             {/* Date Details Form */}
                             {(() => {
                               const detailsNode = selectedDate ? (() => {
@@ -3131,19 +3131,19 @@ const Dashboard = () => {
                               }
 
                               return (
-                                <div className="w-full lg:min-w-0 lg:w-auto">
-                                  {detailsNode ? <div className="h-full rounded-lg bg-card p-5">{detailsNode}</div> : <div className="h-full flex items-center justify-center p-8 rounded-lg bg-card text-muted-foreground">
-                                    <p className="text-sm text-center">Select a date to set availability</p>
+                                <div className="w-full lg:min-w-0">
+                                  {detailsNode ? <div className="rounded-lg bg-foreground/[0.05] p-5">{detailsNode}</div> : <div className="rounded-lg bg-foreground/[0.05] p-5">
+                                    <p className="text-base font-bold text-foreground">Pick a day</p>
+                                    <p className="mt-1 text-sm text-muted-foreground">Mark it available or unavailable, or see the events booked that day.</p>
                                   </div>}
                                 </div>
                               );
                             })()}
 
-                            
-                          </AvailabilityCalendarLayout>
+                          </div>
 
                           {/* Booking Requests Section */}
-                          <div className="mt-8 pt-8 border-t border-border">
+                          <div className="mt-10">
                             <div className="flex items-center justify-between mb-4 gap-2">
                               <h3 className="text-xl md:text-2xl font-display font-bold tracking-[-0.01em] flex items-center gap-2">
                                 Booking Requests
@@ -3153,7 +3153,7 @@ const Dashboard = () => {
                                     (r) => r.status === "pending" && r.event_date >= todayStr
                                   ).length;
                                   return newCount > 0 ? (
-                                    <Badge variant="secondary" className="ml-2 bg-accent/10 text-accent">
+                                    <Badge variant="secondary" className="ml-2 rounded-full bg-foreground/[0.12] text-foreground hover:bg-foreground/[0.12]">
                                       {newCount}
                                     </Badge>
                                   ) : null;
@@ -3163,7 +3163,7 @@ const Dashboard = () => {
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  className="rounded-lg text-accent hover:text-accent"
+                                  className="rounded-full font-bold text-foreground hover:bg-transparent hover:underline"
                                   onClick={() => navigate("/booking-requests")}
                                 >
                                   See all
@@ -3171,12 +3171,10 @@ const Dashboard = () => {
                               )}
                             </div>
                             
-                            {bookingPreview.length === 0 ? <Card className="border-0 bg-card shadow-none">
-                                <CardContent className="p-8 text-center">
-                                  <CalendarIcon className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                                  <p className="text-muted-foreground">No booking requests yet</p>
-                                </CardContent>
-                              </Card> : <div className="space-y-2.5">
+                            {bookingPreview.length === 0 ? <div className="py-2">
+                                <p className="text-base font-bold text-foreground">No booking requests yet</p>
+                                <p className="mt-1 text-sm text-muted-foreground">Requests from organizers will show up here.</p>
+                              </div> : <div className="space-y-2.5">
                                 {bookingPreview.map((request: any) => request.__sent ? (
                                   <BookingRequestCard
                                     key={`sent-${request.id}`}

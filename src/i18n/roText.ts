@@ -8,6 +8,9 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "Pick a day": "Alege o zi",
+  "Mark it available or unavailable, or see the events booked that day.": "Marchează-o ca disponibilă sau indisponibilă, ori vezi evenimentele rezervate în ziua aceea.",
+  "Requests from organizers will show up here.": "Cererile de la organizatori vor apărea aici.",
   "Pick a free day to send a request.": "Alege o zi liberă ca să trimiți o cerere.",
   "Pick a day to manage it in your calendar.": "Alege o zi ca s-o gestionezi în calendar.",
   "No posts yet": "Încă nicio postare",

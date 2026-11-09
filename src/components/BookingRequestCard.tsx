@@ -96,7 +96,7 @@ const BookingRequestCard = ({
           onClick();
         }
       }}
-      className="group rounded-xl border border-border/50 bg-card p-3 md:p-4 cursor-pointer transition-colors hover:border-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      className="group rounded-lg bg-foreground/[0.05] p-3 md:p-4 cursor-pointer transition-colors hover:bg-foreground/[0.09] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
     >
       <div className="flex items-center gap-3 md:gap-4">
         <BookingDateTile ymd={booking.event_date} closed={closed} />
@@ -111,7 +111,7 @@ const BookingRequestCard = ({
           <div className="mt-0.5 flex min-w-0 items-center gap-1.5">
             <Avatar className="h-5 w-5 shrink-0">
               {counterpartAvatarUrl && <AvatarImage src={counterpartAvatarUrl} alt="" />}
-              <AvatarFallback className="bg-accent/10 text-[10px] font-semibold text-accent">
+              <AvatarFallback className="bg-foreground/10 text-[10px] font-semibold text-foreground">
                 {(counterpartName || "?").charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>

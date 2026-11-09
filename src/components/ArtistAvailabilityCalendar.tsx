@@ -10,6 +10,8 @@ interface ArtistAvailabilityCalendarProps {
   /** Days with bookings but still some free hours */
   partialDates?: Date[];
   disablePastDates?: boolean;
+  /** Full-width calendar with big days (the Calendar page); legend shown under it */
+  large?: boolean;
 }
 
 export const calendarAvailabilityStyles = {
@@ -84,17 +86,33 @@ export function ArtistAvailabilityCalendar({
   blockedDates,
   partialDates = [],
   disablePastDates = false,
+  large = false,
 }: ArtistAvailabilityCalendarProps) {
   const startOfToday = new Date(new Date().setHours(0, 0, 0, 0));
 
   return (
-    <div className="flex w-full shrink-0 flex-col items-center gap-3 lg:w-auto lg:items-start">
+    <div className={large ? "w-full" : "flex w-full shrink-0 flex-col items-center gap-3 lg:w-auto lg:items-start"}>
       <Calendar
         mode="single"
         selected={selected}
         onSelect={onSelect}
-        className="pointer-events-auto rounded-lg bg-card"
+        className={large ? "pointer-events-auto w-full p-0" : "pointer-events-auto rounded-lg bg-card"}
         classNames={{
+          ...(large
+            ? {
+                months: "w-full",
+                month: "w-full space-y-4",
+                caption_label: "text-base font-bold capitalize",
+                nav_button: "h-9 w-9 inline-flex items-center justify-center rounded-full bg-foreground/[0.07] hover:bg-foreground/[0.12]",
+                nav_button_previous: "absolute left-0",
+                nav_button_next: "absolute right-0",
+                head_row: "flex w-full",
+                head_cell: "flex-1 text-muted-foreground font-normal text-sm capitalize",
+                row: "flex w-full mt-1",
+                cell: "flex-1 h-12 md:h-14 p-0 text-center flex items-center justify-center",
+                day: "h-11 w-11 md:h-12 md:w-12 rounded-full p-0 text-base font-normal hover:bg-foreground/[0.1] aria-selected:opacity-100",
+              }
+            : {}),
           // Same as the booking page: selected day white, today only underlined
           day_selected:
             "bg-foreground text-background font-semibold hover:bg-foreground hover:text-background focus:bg-foreground focus:text-background",
@@ -111,7 +129,7 @@ export function ArtistAvailabilityCalendar({
         }}
         disabled={disablePastDates ? (date) => date < startOfToday : undefined}
       />
-      <CalendarLegend />
+      {large ? <CompactCalendarLegend /> : <CalendarLegend />}
     </div>
   );
 }
