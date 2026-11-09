@@ -30,7 +30,7 @@ const CategoryTile = ({ tile, href, count }: { tile: (typeof CATEGORY_TILES)[num
           {count} <span>{count === 1 ? "artist" : "artists"}</span>
         </span>
       )}
-      <img src={tile.img} alt="" loading="lazy" decoding="async" className="absolute -bottom-3 -right-5 h-[78%] rotate-[25deg] object-contain opacity-90" />
+      <img src={tile.img} alt="" loading="lazy" decoding="async" className="absolute bottom-0 right-2 h-[78%] object-contain opacity-90" />
     </Link>
   );
 };
