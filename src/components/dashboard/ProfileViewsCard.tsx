@@ -25,10 +25,10 @@ const ProfileViewsCard = ({ plan }: { plan?: string | null }) => {
   // Free: the counter is a Standard / Premium feature
   if (free) {
     return (
-      <div className="mb-4 md:mb-8 rounded-lg border border-border bg-card p-4 md:p-5">
+      <div className="mb-4 md:mb-8 rounded-lg bg-foreground/[0.05] p-4 md:p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="flex items-center gap-3 md:gap-4">
-            <div className="p-2.5 md:p-3 rounded-xl bg-muted">
+            <div className="p-2.5 md:p-3 rounded-full bg-foreground/[0.08]">
               <Lock className="h-5 w-5 md:h-6 md:w-6 text-muted-foreground" aria-hidden="true" />
             </div>
             <div>
@@ -50,10 +50,10 @@ const ProfileViewsCard = ({ plan }: { plan?: string | null }) => {
   const premium = isPremium(plan);
 
   return (
-    <div className="mb-4 md:mb-8 rounded-lg border border-border bg-card p-4 md:p-5">
+    <div className="mb-4 md:mb-8 rounded-lg bg-foreground/[0.05] p-4 md:p-5">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3 md:gap-4">
-          <div className="p-2.5 md:p-3 rounded-xl bg-accent/10">
+          <div className="p-2.5 md:p-3 rounded-full bg-foreground/[0.08]">
             <Eye className="h-5 w-5 md:h-6 md:w-6 text-accent" aria-hidden="true" />
           </div>
           <div>

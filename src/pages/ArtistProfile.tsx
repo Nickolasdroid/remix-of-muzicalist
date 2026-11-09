@@ -30,6 +30,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
 import { ArtistAvailabilityCalendar, AvailabilityCalendarLayout, calendarAvailabilityStyles } from "@/components/ArtistAvailabilityCalendar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PROFILE_PANEL } from "@/lib/profileLayout";
 import GuestSignupBar from "@/components/GuestSignupBar";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { User, Users, MapPin, Star, Music, Calendar as CalendarIcon, CalendarCheck, Award, Phone, Mail, Instagram, Facebook, Youtube, ArrowLeft, ArrowRight, Images, Play, DollarSign, Euro, Megaphone, MessageCircle, Trash2, FileText, MoreHorizontal, Flag, Heart, Globe, Music2, Clock, Lock, UserPlus, UserCheck, Pencil, Zap, CalendarDays, ChevronRight, BadgeCheck } from "lucide-react";
@@ -983,7 +984,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   // Official / Brand account (Muzicalist admin) — content-producing brand profile
   if (id && adminIds.has(id)) {
     const officialAnnouncements = announcements.filter((a) => !isAdExpired(a));
-    return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+    return <div className={`min-h-screen bg-black ${currentUserId ? 'md:ml-64 md:py-2 md:pr-2' : 'md:px-2 md:pb-2 md:pt-[72px]'}`}>
       <SEO
         title={`${artist.stage_name || 'Muzicalist'} — Admin | Muzicalist`}
         description={`Muzicalist admin account — posts and announcements.`}
@@ -1212,7 +1213,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   };
   const writeReviewButton = currentUserId !== id ? <Button onClick={openReviewDialog} disabled={checkingReviewEligibility} size="sm" className="ml-auto h-8 px-3 bg-accent text-accent-foreground hover:bg-accent/90 whitespace-nowrap">Write a Review</Button> : null;
 
-  return <div className={`min-h-screen ${currentUserId ? 'md:ml-64' : ''} bg-background`}>
+  return <div className={`min-h-screen bg-black ${currentUserId ? 'md:ml-64 md:py-2 md:pr-2' : 'md:px-2 md:pb-2 md:pt-[72px]'}`}>
       <SEO
         title={`${artist.stage_name} — ${artist.specialization || "Musical Artist"} | Muzicalist`}
         description={toMetaDescription(
@@ -1283,8 +1284,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
           </div>
         </div>;
       })()}
-      <div className={`${isReviewsView ? 'hidden' : ''} pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20 px-0 md:px-4`}>
-        <div ref={profileContentRef} className="container mx-auto max-w-4xl px-4 md:px-0">
+      <div className={`${isReviewsView ? 'hidden' : ''} ${PROFILE_PANEL} pt-14 md:pt-0 pb-6 md:pb-20 px-0`}>
+        <div ref={profileContentRef} className="container mx-auto max-w-none px-4 md:px-8">
           <Link to="/leaderboard">
             
           </Link>
@@ -1292,8 +1293,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
           {/* Header Section - matching dashboard profile layout */}
           <div className="space-y-6 md:space-y-8">
             {/* Hero Header: Cover + overlapping avatar/name/meta — responsive */}
-            <div className="relative left-1/2 mb-6 w-screen -translate-x-1/2 md:left-0 md:mb-8 md:w-full md:translate-x-0">
-              <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
+            <div className="relative left-1/2 mb-6 w-screen -translate-x-1/2 md:left-0 md:-ml-8 md:mb-8 md:w-[calc(100%+4rem)] md:translate-x-0">
+              <div className="relative w-full aspect-[16/7] md:aspect-auto md:h-[220px] xl:h-[260px] overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
                 {artist.cover_url ? (
                   <button
                     type="button"
@@ -1350,7 +1351,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
               </div>
 
               {/* Avatar overlapping cover bottom + info below (Facebook-style) */}
-              <div className="px-4 md:px-0 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
+              <div className="px-4 md:px-8 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
                 <button
                   type="button"
                   onClick={() => artist.avatar_url && setLightboxSrc(artist.avatar_url)}
@@ -1393,7 +1394,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
 
               {/* Stats: three quiet columns, value over label, no box */}
-              <dl className="mx-4 md:mx-0 mt-4 md:mt-6 flex gap-8 md:gap-12">
+              <dl className="mx-4 md:mx-8 mt-4 md:mt-6 flex gap-8 md:gap-12">
                 <div className="min-w-0">
                   {/* Before the first confirmed event: words instead of a bare 0 */}
                   <dd className="truncate text-lg md:text-xl font-bold text-foreground tabular-nums">
@@ -1428,13 +1429,13 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
               {/* Action buttons */}
               {!isOwnProfile && (
-                <div className="mx-4 md:mx-0 mt-6 md:mt-7 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
+                <div className="mx-4 md:mx-8 mt-6 md:mt-7 grid grid-cols-1 gap-2 md:flex md:gap-3">
                   <Button
                     onClick={() => {
                       if (!currentUserId) { navigate('/login'); return; }
                       navigate(`/book/${artist.id}`);
                     }}
-                    className="w-full h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-bold text-[15px]"
+                    className="w-full md:w-auto md:px-8 h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-bold text-[15px]"
                   >
                     <CalendarIcon className="mr-2 h-5 w-5" />
                     Check availability
@@ -1445,7 +1446,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       navigate(`/messages?artistId=${artist.id}`);
                     }}
                     variant="outline"
-                    className="w-full h-12 font-bold text-[15px]"
+                    className="w-full md:w-auto md:px-8 h-12 font-bold text-[15px]"
                   >
                     <MessageCircle className="mr-2 h-5 w-5" />
                     Send Message

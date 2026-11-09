@@ -1,3 +1,4 @@
+import { PROFILE_PANEL } from "@/lib/profileLayout";
 import { useState, useEffect } from "react";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { formatDateNoYear, formatSmartDate, sanitizeFileName } from "@/lib/utils";
@@ -362,7 +363,7 @@ const UserDashboard = () => {
   }
 
   return (
-    <div className={`min-h-screen md:ml-64 bg-background`}>
+    <div className={`min-h-screen md:ml-64 bg-black md:py-2 md:pr-2`}>
       <Navigation
         onMobileBack={activeTab === 'settings' && settingsSection !== 'main' ? () => setSettingsSection('main') : undefined}
       />
@@ -394,7 +395,7 @@ const UserDashboard = () => {
       )}
 
       {activeTab === 'settings' ? (
-        <div className="pt-16 md:pt-8 pb-[calc(4rem+1.25rem+env(safe-area-inset-bottom))] md:pb-8 px-0 md:px-0 bg-background">
+        <div className={`${PROFILE_PANEL} pt-16 md:pt-8 pb-[calc(4rem+1.25rem+env(safe-area-inset-bottom))] md:pb-8 px-0`}>
           <div className="container mx-auto max-w-4xl px-0 md:px-0">
             <SettingsTab
               accountType="user"
@@ -408,8 +409,8 @@ const UserDashboard = () => {
           </div>
         </div>
       ) : (
-      <div className="pt-16 md:pt-8 pb-6 md:pb-20 px-0 md:px-4">
-        <div className="container mx-auto max-w-4xl px-4 md:px-0">
+      <div className={`${PROFILE_PANEL} pt-16 md:pt-0 pb-6 md:pb-20 px-0`}>
+        <div className="container mx-auto max-w-none px-4 md:px-8">
 
         {(() => {
           // Derived data
@@ -439,12 +440,12 @@ const UserDashboard = () => {
             <>
               {/* Header: same layout as the artist dashboard (cover, avatar under it, name, subline, follows, stats) */}
               <div className="space-y-4 md:space-y-5">
-                <div className="mb-4 md:mb-5 -mx-4 md:mx-0">
-                  <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
+                <div className="mb-4 md:mb-5 -mx-4 md:-mx-8">
+                  <div className="relative w-full aspect-[16/7] md:aspect-auto md:h-[220px] xl:h-[260px] overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
                     <div className="absolute inset-0 bg-gradient-cinematic opacity-70 pointer-events-none" />
                   </div>
 
-                  <div className="px-4 md:px-0 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
+                  <div className="px-4 md:px-8 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
                     <div className="relative p-1 rounded-full shadow-xl flex-shrink-0 group/avatar">
                       <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
                         <AvatarImage src={profile?.avatar_url} alt="" />
@@ -478,7 +479,7 @@ const UserDashboard = () => {
                   </div>
 
                   {/* Stats card row, same as the artist's */}
-                  <dl className="mx-4 md:mx-0 mt-4 md:mt-6 flex gap-8 md:gap-12">
+                  <dl className="mx-4 md:mx-8 mt-4 md:mt-6 flex gap-8 md:gap-12">
                     {[
                       { icon: Send, value: String(sentRequests), label: "Requests sent" },
                       { icon: CalendarCheck, value: String(confirmedBookings), label: "Artists booked" },

@@ -38,6 +38,7 @@ import OwnerAnnouncementsList from "@/components/dashboard/OwnerAnnouncementsLis
 import { useProfileAvatars, useProfileBasics } from "@/hooks/useProfileAvatars";
 import ContentKindChips, { announcementKind, type ContentKind } from "@/components/profile/ContentKindChips";
 import ProfileViewsCard from "@/components/dashboard/ProfileViewsCard";
+import { PROFILE_PANEL } from "@/lib/profileLayout";
 import BookingRequestCard from "@/components/BookingRequestCard";
 import { sortBookingsForPreview, isClosedBooking, bookingStatusKey } from "@/lib/bookingDisplay";
 import PostActionsMenu from "@/components/PostActionsMenu";
@@ -1689,7 +1690,7 @@ const Dashboard = () => {
                             </div>
       </div>;
   }
-  return <div className={`min-h-screen md:ml-64 bg-background`}>
+  return <div className={`min-h-screen md:ml-64 bg-black md:py-2 md:pr-2`}>
       <Navigation 
         mobileTitle={calendarOnly ? undefined : getMobileTitle()} 
         mobileBackPath={calendarOnly ? undefined : getMobileBackPath()}
@@ -1705,15 +1706,15 @@ const Dashboard = () => {
         } : undefined}
       />
       
-      <div className={`pt-14 md:pt-8 ${activeTab === "settings" ? "pb-[env(safe-area-inset-bottom)] md:pb-8 bg-background" : "pb-6 md:pb-20"} ${activeTab === "settings" ? "px-0 md:px-0" : "px-0 md:px-4"}`}>
-        <div className={`container mx-auto max-w-4xl ${activeTab === "settings" ? "px-0 md:px-0" : "px-4 md:px-0"}`}>
+      <div className={`${PROFILE_PANEL} pt-14 ${activeTab === "profile" && !calendarOnly && !isAdmin ? "md:pt-0" : "md:pt-8"} ${activeTab === "settings" ? "pb-[env(safe-area-inset-bottom)] md:pb-8" : "pb-6 md:pb-20"} px-0`}>
+        <div className={`container mx-auto ${activeTab === "profile" && !calendarOnly ? "max-w-none md:px-8" : "max-w-4xl md:px-0"} ${activeTab === "settings" ? "px-0" : "px-4"}`}>
           {activeTab !== "profile"}
               {/* Profile Tab */}
               {activeTab === "profile" && <div className="space-y-6 md:space-y-8">
                     {/* Hero Header: Cover + overlapping avatar/name/meta — responsive (owner view) */}
                     {!isAdmin && !calendarOnly && (
-                      <div className="relative left-1/2 mb-6 w-screen -translate-x-1/2 md:left-0 md:mb-8 md:w-full md:translate-x-0">
-                        <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary group">
+                      <div className="relative left-1/2 mb-6 w-screen -translate-x-1/2 md:left-0 md:-ml-8 md:mb-8 md:w-[calc(100%+4rem)] md:translate-x-0">
+                        <div className="relative w-full aspect-[16/7] md:aspect-auto md:h-[220px] xl:h-[260px] overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary group">
                           {/* Spacer to keep name from overlapping top-right action buttons on tablet */}
                           <div className="absolute top-0 right-0 h-12 md:h-14 w-full pointer-events-none" />
                           {profile?.cover_url ? (
@@ -1808,7 +1809,7 @@ const Dashboard = () => {
                         </div>
 
                         {/* Avatar overlapping cover bottom + info below (Facebook-style) */}
-                        <div className="px-4 md:px-0 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
+                        <div className="px-4 md:px-8 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
                           <div className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)} shadow-xl flex-shrink-0 group/avatar`}>
                             <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
                               <AvatarImage src={profile?.avatar_url} />
@@ -1848,7 +1849,7 @@ const Dashboard = () => {
 
 
                         {/* Stats: three quiet columns, same as the public profile */}
-                        <dl className="mx-4 md:mx-0 mt-4 md:mt-6 flex gap-8 md:gap-12">
+                        <dl className="mx-4 md:mx-8 mt-4 md:mt-6 flex gap-8 md:gap-12">
                           <div className="min-w-0">
                             <dd className="truncate text-lg md:text-xl font-bold text-foreground tabular-nums">
                               {acceptedEventsCount > 0 ? `${acceptedEventsCount}+` : <span>None yet</span>}
