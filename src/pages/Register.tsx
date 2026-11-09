@@ -129,6 +129,12 @@ const Register = () => {
 
   const google = async () => {
     setGoogleLoading(true);
+    // Google can't carry the role: the welcome screen preselects it from here
+    try {
+      if (accountType) localStorage.setItem("signup_intent", accountType);
+    } catch {
+      /* storage unavailable */
+    }
     try {
       const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
       if (result.error) {

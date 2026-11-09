@@ -12,7 +12,14 @@ import { getOnboardingState } from "@/lib/onboarding";
 const Welcome = () => {
   const navigate = useNavigate();
   const [ready, setReady] = useState(false);
-  const [accountType, setAccountType] = useState<AccountType | null>(null);
+  const [accountType, setAccountType] = useState<AccountType | null>(() => {
+    try {
+      const v = localStorage.getItem("signup_intent");
+      return v === "artist" || v === "user" ? v : null;
+    } catch {
+      return null;
+    }
+  });
   const [promoConsent, setPromoConsent] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -48,6 +55,11 @@ const Welcome = () => {
       data: { session },
     } = await supabase.auth.getSession();
     if (session) await getOnboardingState(session.user.id, true);
+    try {
+      localStorage.removeItem("signup_intent");
+    } catch {
+      /* storage unavailable */
+    }
     navigate(homeForAccount(accountType), { replace: true });
   };
 
