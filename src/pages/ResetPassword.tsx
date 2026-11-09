@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { isWeakPasswordError, LEAKED_PASSWORD_MESSAGE_EN } from "@/lib/authErrors";
 import { Link, useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -141,7 +142,9 @@ const ResetPassword = () => {
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message || "Could not update password.",
+        description: isWeakPasswordError(error)
+          ? LEAKED_PASSWORD_MESSAGE_EN
+          : error.message || "Could not update password.",
         variant: "destructive",
       });
     } finally {

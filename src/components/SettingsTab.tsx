@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import { isWeakPasswordError, LEAKED_PASSWORD_MESSAGE_RO } from "@/lib/authErrors";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -694,7 +695,13 @@ const SettingsTab = ({
       resetPasswordForm();
       setActiveSection("main");
     } catch (error: any) {
-      toast({ title: "Error", description: error.message || "Eroare la schimbarea parolei.", variant: "destructive" });
+      toast({
+        title: "Error",
+        description: isWeakPasswordError(error)
+          ? LEAKED_PASSWORD_MESSAGE_RO
+          : error.message || "Eroare la schimbarea parolei.",
+        variant: "destructive",
+      });
     } finally {
       setIsChangingPassword(false);
     }
