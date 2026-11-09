@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import { isWeakPasswordError, LEAKED_PASSWORD_MESSAGE_RO } from "@/lib/authErrors";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

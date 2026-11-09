@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { isWeakPasswordError, LEAKED_PASSWORD_MESSAGE_EN } from "@/lib/authErrors";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ChevronLeft, Eye, EyeOff, Mic, Search } from "lucide-react";
 import { toast } from "sonner";
