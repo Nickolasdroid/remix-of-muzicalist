@@ -183,6 +183,13 @@
       "when": 1794217773268,
       "tag": "0025_unified_signup",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1794218387625,
+      "tag": "0026_grant_account_type_chosen_select",
+      "breakpoints": true
     }
   ]
 }
