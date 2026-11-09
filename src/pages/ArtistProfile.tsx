@@ -950,7 +950,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         </Avatar>
         <div className="flex-1 min-w-0">
           <span className="font-medium text-sm text-foreground block notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.reviewer_name}</span>
-          <span className="text-xs text-muted-foreground">{new Date(review.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+          <span className="text-xs text-muted-foreground">{new Date(review.created_at).toLocaleDateString(i18n.language || 'en', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
           {review.is_verified_booking && <span className="mt-1 flex w-fit items-center gap-1 text-xs font-medium text-emerald-500"><BadgeCheck className="h-3.5 w-3.5" />Verified booking</span>}
         </div>
       </div>
@@ -1690,22 +1690,26 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   })()}
                   {postsKind === "posts" ? <>
                   <div>
-                    <SectionHeaderWithUsage
-                      icon={<FileText className="h-5 w-5 text-accent" />}
-                      title="Posts"
-                      className="mb-4"
-                      action={<PostsViewSwitcher mode={postsViewMode} onChange={setPostsViewMode} />}
-                    />
+                    {(() => {
+                      const noPosts = posts.length === 0 && announcements.filter((a) => a.is_premium && !isAdExpired(a)).length === 0;
+                      return (
+                        <SectionHeaderWithUsage
+                          title="Posts"
+                          className="mb-4"
+                          action={noPosts ? undefined : <PostsViewSwitcher mode={postsViewMode} onChange={setPostsViewMode} />}
+                        />
+                      );
+                    })()}
                     {posts.length === 0 && announcements.filter((a) => a.is_premium && !isAdExpired(a)).length === 0 ?
-                <Card className="p-8 text-center">
-                        <FileText className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-                        <p className="text-muted-foreground">This artist doesn't have any posts yet.</p>
+                <div className="py-2">
+                        <p className="text-base font-bold text-foreground">No posts yet</p>
+                        <p className="mt-1 text-sm text-muted-foreground">When this artist shares news, availability or videos, they'll show up here.</p>
                         {isOwnProfile && (
-                          <Button onClick={() => navigate('/my-plan')} className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90">
+                          <Button onClick={() => navigate('/my-plan')} className="mt-4 h-9 rounded-full bg-accent px-4 font-bold text-accent-foreground hover:bg-accent/90">
                             Upgrade to Start Posting
                           </Button>
                         )}
-                      </Card> :
+                      </div> :
 
                 <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
                   <div className="w-full max-w-[500px] mx-auto space-y-2 md:space-y-4">
@@ -1902,37 +1906,29 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   <div className="space-y-6 md:space-y-8">
                     {/* Photos Section */}
                     <div>
-                      <SectionHeaderWithUsage
-                        icon={<Images className="h-5 w-5 text-accent" />}
-                        title="Photos"
-                        className="mb-4"
-                      />
+                      <SectionHeaderWithUsage title="Photos" className="mb-4" />
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
-                        {getImages().length > 0 ? getImages().map((image, index) => <div key={image.id} className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors" onClick={() => {
+                        {getImages().length > 0 ? getImages().map((image, index) => <div key={image.id} className="aspect-square rounded-lg overflow-hidden cursor-pointer bg-foreground/[0.06]" onClick={() => {
                       trackActivityEvent("gallery_media_open");
                       setMediaPreview({ url: image.url, type: "image" });
                     }}>
                             <img src={image.url} alt={`Gallery image ${index + 1}`} className="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
-                          </div>) : <div className="col-span-full text-center text-muted-foreground py-8">
-                            No photos available yet.
+                          </div>) : <div className="col-span-full py-2">
+                            <p className="text-base font-bold text-foreground">No photos yet</p>
                           </div>}
                       </div>
                     </div>
 
                     {/* Videos Section */}
                     {getVideos().length > 0 && <div>
-                      <SectionHeaderWithUsage
-                        icon={<Play className="h-5 w-5 text-accent" />}
-                        title="Videos"
-                        className="mb-4"
-                      />
+                      <SectionHeaderWithUsage title="Videos" className="mb-4" />
                       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
                         {getVideos().length > 0 ? getVideos().map((video, index) => {
                           const info = getEmbedInfo(video.url);
                           return (
                             <div
                               key={video.id}
-                              className="aspect-square rounded-lg overflow-hidden cursor-pointer border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center relative"
+                              className="aspect-square rounded-lg overflow-hidden cursor-pointer bg-black/80 flex items-center justify-center relative"
                               onClick={() => setMediaPreview({ url: video.url, type: "video" })}
                             >
                               {info?.thumbnail ? (

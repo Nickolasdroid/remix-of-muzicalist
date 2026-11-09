@@ -181,14 +181,13 @@ export function SectionEmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center text-center rounded-lg border-2 border-dashed border-border/60 bg-card/30 px-6 py-12",
+        "flex flex-col items-start py-2",
         className,
       )}
     >
-      {icon && <div className="mb-3 text-muted-foreground">{icon}</div>}
-      <p className="text-sm text-muted-foreground">{title}</p>
+      <p className="text-base font-bold text-foreground">{title}</p>
       {description && (
-        <p className="text-sm text-muted-foreground/80 mt-1">{description}</p>
+        <p className="text-sm text-muted-foreground mt-1">{description}</p>
       )}
       {action && <div className="mt-4">{action}</div>}
     </div>

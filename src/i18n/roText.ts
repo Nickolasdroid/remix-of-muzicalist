@@ -8,6 +8,9 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "No posts yet": "Încă nicio postare",
+  "When this artist shares news, availability or videos, they'll show up here.": "Când artistul publică noutăți, disponibilități sau videoclipuri, le vei vedea aici.",
+  "No photos yet": "Încă nicio fotografie",
   "Write a review": "Scrie o recenzie",
   "Organizers who book this artist through Muzicalist can leave a review after the event.": "Organizatorii care rezervă acest artist prin Muzicalist pot lăsa o recenzie după eveniment.",
   "Days without a color are free. Pick one to send a request.": "Zilele fără culoare sunt libere. Alege una ca să trimiți o cerere.",
