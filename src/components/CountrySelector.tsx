@@ -330,16 +330,16 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
             type="button"
             variant="ghost" 
             size="sm"
-            className="h-8 px-2 hover:bg-accent/10"
+            className="h-8 px-2 hover:bg-foreground/[0.07]"
           >
             {value === "all" || !selectedCountry ? (
-              <Globe className="h-5 w-5 text-accent" />
+              <Globe className="h-5 w-5 text-muted-foreground" />
             ) : (
               <CountryFlagIcon country={selectedCountry.code} className="h-5 w-7 rounded-sm shadow-sm" />
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-72 p-0 bg-card border-border z-50" align="end">
+        <PopoverContent className="w-72 p-0 z-50" align="end">
           <div className="p-3 border-b border-border">
             <Input
               placeholder={t("countries.searchPlaceholder")}
@@ -355,13 +355,13 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
               <button
                 type="button"
                 onClick={() => handleSelectCountry("all")}
-                className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-foreground/[0.07] ${
+                className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-md transition-colors hover:bg-foreground/[0.07] ${
                   value === "all"
-                    ? "bg-foreground/[0.12] text-foreground"
+                    ? "bg-foreground/[0.12] font-medium text-foreground"
                     : "text-foreground"
                 }`}
               >
-                <Globe className="h-5 w-5 text-accent" />
+                <Globe className="h-5 w-5 text-muted-foreground" />
                 <span className="flex-1 text-left font-medium">{t("countries.allCountries")}</span>
                 {value === "all" && (
                   <Check className="h-4 w-4 text-foreground" />
@@ -376,9 +376,9 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
                     key={country.code}
                     type="button"
                     onClick={() => handleSelectCountry(country.code)}
-                    className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-foreground/[0.07] ${
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-md transition-colors hover:bg-foreground/[0.07] ${
                       selectedCountry?.code === country.code
-                        ? "bg-foreground/[0.12] text-foreground"
+                        ? "bg-foreground/[0.12] font-medium text-foreground"
                         : "text-foreground"
                     }`}
                   >
@@ -411,7 +411,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
             <Button 
               type="button"
               variant="outline" 
-              className="w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent pl-9 pr-3 overflow-hidden relative"
+              className="w-full justify-between bg-input border-border hover:bg-foreground/[0.07] hover:border-foreground pl-9 pr-3 overflow-hidden relative"
             >
               <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
               {selectedCountry ? (
@@ -421,7 +421,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-80 p-0 bg-card border-border z-50" align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
+          <PopoverContent className="w-80 p-0 z-50" align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
             <div className="p-3 border-b border-border">
               <Input
                 placeholder={t("countries.searchPlaceholder")}
@@ -439,9 +439,9 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
                       key={country.code}
                       type="button"
                       onClick={() => handleSelectCountry(country.code)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-foreground/[0.07] ${
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-md transition-colors hover:bg-foreground/[0.07] ${
                         selectedCountry?.code === country.code
-                          ? "bg-foreground/[0.12] text-foreground"
+                          ? "bg-foreground/[0.12] font-medium text-foreground"
                           : "text-foreground"
                       }`}
                     >
@@ -472,7 +472,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
         <Button 
           type="button"
           variant="outline" 
-          className={cn("w-full justify-between bg-input border-border hover:bg-accent/10 hover:border-accent pl-9 pr-3 h-9 overflow-hidden relative", triggerClassName)}
+          className={cn("w-full justify-between bg-input border-border hover:bg-foreground/[0.07] hover:border-foreground pl-9 pr-3 h-9 overflow-hidden relative", triggerClassName)}
         >
           <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
           {selectedCountry ? (
@@ -485,7 +485,7 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0 bg-card border-border z-50" align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
+      <PopoverContent className="w-80 p-0 z-50" align="start" onOpenAutoFocus={(e) => e.preventDefault()}>
         <div className="p-3 border-b border-border">
           <Input
             placeholder={t("countries.searchPlaceholder")}
@@ -503,9 +503,9 @@ const CountrySelector = ({ value, onChange, showLabel = false, variant = "icon",
                   key={country.code}
                   type="button"
                   onClick={() => handleSelectCountry(country.code)}
-                  className={`w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors hover:bg-foreground/[0.07] ${
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm rounded-md transition-colors hover:bg-foreground/[0.07] ${
                     selectedCountry?.code === country.code
-                      ? "bg-foreground/[0.12] text-foreground"
+                      ? "bg-foreground/[0.12] font-medium text-foreground"
                       : "text-foreground"
                   }`}
                 >

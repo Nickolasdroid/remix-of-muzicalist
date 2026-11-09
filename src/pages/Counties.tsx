@@ -123,7 +123,7 @@ const Counties = () => {
                 <Link key={county} to={`/counties/${county}`}>
                   <Button 
                     variant="outline" 
-                    className="h-auto py-4 md:py-6 w-full flex items-center justify-start gap-2 md:gap-3 hover:bg-accent/10 hover:border-accent transition-all group"
+                    className="h-auto py-4 md:py-6 w-full flex items-center justify-start gap-2 md:gap-3 hover:bg-foreground/[0.07] hover:border-foreground transition-all group"
                   >
                     <MapPin className="h-4 w-4 md:h-5 md:w-5 text-accent group-hover:scale-110 transition-transform" />
                     <span className="text-sm md:text-lg font-medium truncate">{county}</span>

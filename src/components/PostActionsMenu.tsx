@@ -74,7 +74,7 @@ const PostActionsMenu = ({ actions, disabled, open, onOpenChange, title }: PostA
                 className={`flex items-center gap-3 w-full px-3 py-3.5 rounded-lg text-sm font-medium transition-colors ${
                   action.destructive
                     ? "text-destructive hover:bg-destructive/10"
-                    : "text-foreground hover:bg-accent/10"
+                    : "text-foreground hover:bg-foreground/[0.07]"
                 }`}
               >
                 <action.icon className={`h-5 w-5 ${action.destructive ? "" : "text-accent"}`} />

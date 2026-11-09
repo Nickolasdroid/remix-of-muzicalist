@@ -30,18 +30,18 @@ const CountryList = ({
   onSelect: (dbValue: string) => void;
   hideAllOption?: boolean;
 }) => (
-  <div className="py-2 space-y-0.5">
+  <div className="space-y-0.5 p-1">
     {!hideAllOption && (
       <button
         type="button"
         onClick={() => onSelect("__all__")}
-        className={`w-full flex items-center gap-3 px-4 py-3 text-base transition-colors hover:bg-accent/10 ${
-          selectedCountry === "__all__" ? "bg-accent/20 text-accent" : "text-foreground"
+        className={`w-full flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-foreground/[0.07] ${
+          selectedCountry === "__all__" ? "bg-foreground/[0.12] font-medium text-foreground" : "text-foreground"
         }`}
       >
-        <Globe className="h-5 w-5 text-accent" />
-        <span className="flex-1 text-left font-medium">All Countries</span>
-        {selectedCountry === "__all__" && <Check className="h-5 w-5 text-accent" />}
+        <Globe className="h-5 w-5 text-muted-foreground" />
+        <span className="flex-1 text-left">All Countries</span>
+        {selectedCountry === "__all__" && <Check className="h-4 w-4 text-foreground" />}
       </button>
     )}
 
@@ -56,13 +56,13 @@ const CountryList = ({
           key={dbValue}
           type="button"
           onClick={() => onSelect(dbValue)}
-          className={`w-full flex items-center gap-3 px-4 py-3 text-base transition-colors hover:bg-accent/10 ${
-            isSelected ? "bg-accent/20 text-accent" : "text-foreground"
+          className={`w-full flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-foreground/[0.07] ${
+            isSelected ? "bg-foreground/[0.12] font-medium text-foreground" : "text-foreground"
           }`}
         >
           <CountryFlagIcon country={dbValue} className="h-5 w-7 flex-shrink-0 rounded-sm shadow-sm" />
-          <span className="flex-1 text-left font-medium">{name}</span>
-          {isSelected && <Check className="h-5 w-5 text-accent" />}
+          <span className="flex-1 text-left">{name}</span>
+          {isSelected && <Check className="h-4 w-4 text-foreground" />}
         </button>
       );
     })}
@@ -164,7 +164,7 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange, hideAllOption }
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>{triggerButton}</PopoverTrigger>
-      <PopoverContent className="w-72 p-0 bg-card border-border z-50" align="center" onOpenAutoFocus={(e) => e.preventDefault()}>
+      <PopoverContent className="w-72 p-0 z-50" align="center" onOpenAutoFocus={(e) => e.preventDefault()}>
         <div className="p-3 border-b border-border">{searchInput}</div>
         <ScrollArea className="h-64">
           <CountryList filtered={filtered} selectedCountry={selectedCountry} onSelect={handleSelect} hideAllOption={hideAllOption} />

@@ -108,8 +108,8 @@ const HeroSearchBar = () => {
                 setCountrySearch("");
               }}
               className={cn(
-                "w-full flex items-center gap-3 px-4 py-3 text-base rounded-md transition-colors hover:bg-accent/10",
-                selectedCountry === c && "bg-accent/20 text-accent"
+                "w-full flex items-center gap-3 px-4 py-3 text-base rounded-md transition-colors hover:bg-foreground/[0.07]",
+                selectedCountry === c && "bg-foreground/[0.12] font-medium text-foreground"
               )}
             >
               <span className="text-xl">{getCountryFlag(c)}</span>
@@ -128,8 +128,8 @@ const HeroSearchBar = () => {
                   type="button"
                   onClick={() => { setSelectedRegion(null); setLocationOpen(false); }}
                   className={cn(
-                    "w-full flex items-center gap-3 text-left px-4 py-3 text-base font-medium rounded-md hover:bg-accent/10",
-                    !selectedRegion && "bg-accent/20 text-accent"
+                    "w-full flex items-center gap-3 text-left px-4 py-3 text-base font-medium rounded-md hover:bg-foreground/[0.07]",
+                    !selectedRegion && "bg-foreground/[0.12] font-medium text-foreground"
                   )}
                 >
                   All Regions
@@ -140,8 +140,8 @@ const HeroSearchBar = () => {
                     type="button"
                     onClick={() => { setSelectedRegion(r); setLocationOpen(false); }}
                     className={cn(
-                      "w-full flex items-center gap-3 text-left px-4 py-3 text-base font-medium rounded-md hover:bg-accent/10",
-                      selectedRegion === r && "bg-accent/20 text-accent"
+                      "w-full flex items-center gap-3 text-left px-4 py-3 text-base font-medium rounded-md hover:bg-foreground/[0.07]",
+                      selectedRegion === r && "bg-foreground/[0.12] font-medium text-foreground"
                     )}
                   >
                     {r}
@@ -164,8 +164,8 @@ const HeroSearchBar = () => {
           type="button"
           onClick={() => { setSelectedCategory(cat); setCategoryOpen(false); }}
           className={cn(
-            "w-full text-left px-3 py-2.5 text-sm rounded-md hover:bg-accent/10 transition-colors",
-            selectedCategory === cat && "bg-accent/20 text-accent"
+            "w-full text-left px-3 py-2.5 text-sm rounded-md hover:bg-foreground/[0.07] transition-colors",
+            selectedCategory === cat && "bg-foreground/[0.12] font-medium text-foreground"
           )}
         >
           {cat}
@@ -267,7 +267,7 @@ const HeroSearchBar = () => {
               <span className="truncate text-foreground/90">{categoryLabel}</span>
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-48 p-0 bg-card border-border z-50" align="start">
+          <PopoverContent className="w-48 p-0 z-50" align="start">
             {categoryContent}
           </PopoverContent>
         </Popover>
@@ -282,7 +282,7 @@ const HeroSearchBar = () => {
               <span className="truncate text-foreground/90">{locationLabel}</span>
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-72 p-3 bg-card border-border z-50" align="center">
+          <PopoverContent className="w-72 p-3 z-50" align="center">
             {locationContent}
           </PopoverContent>
         </Popover>
@@ -297,7 +297,7 @@ const HeroSearchBar = () => {
               <span className="truncate text-foreground/90">{dateLabel}</span>
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 bg-card border-border z-50" align="end">
+          <PopoverContent className="w-auto p-0 z-50" align="end">
             <Calendar
               mode="single"
               selected={selectedDate}

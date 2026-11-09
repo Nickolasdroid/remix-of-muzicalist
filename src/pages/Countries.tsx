@@ -137,7 +137,7 @@ const Countries = () => {
                 <Link key={country.original} to={`/countries/${encodeURIComponent(country.original)}`}>
                   <Button
                     variant="outline"
-                    className="h-auto py-4 md:py-6 w-full flex items-center justify-start gap-3 md:gap-4 hover:bg-accent/10 hover:border-accent transition-all group px-4"
+                    className="h-auto py-4 md:py-6 w-full flex items-center justify-start gap-3 md:gap-4 hover:bg-foreground/[0.07] hover:border-foreground transition-all group px-4"
                   >
                     <CountryFlagIcon country={country.original} className="h-6 w-8 md:h-7 md:w-10 flex-shrink-0 rounded-sm shadow-sm" />
                     <span className="text-sm md:text-base font-medium text-left">{country.name}</span>

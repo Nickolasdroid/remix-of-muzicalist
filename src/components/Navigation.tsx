@@ -787,7 +787,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 <span className="font-medium">{t('navigation.more')}</span>
               </button>
             </PopoverTrigger>
-            <PopoverContent side="top" align="start" className="w-[calc(316px-2rem)] lg:w-[calc(356px-2rem)] bg-card border-border p-2 z-50">
+            <PopoverContent side="top" align="start" className="w-[calc(316px-2rem)] lg:w-[calc(356px-2rem)] p-2 z-50">
               <div className="space-y-1">
                 {user && (
                   <Link

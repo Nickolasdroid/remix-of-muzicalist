@@ -83,7 +83,7 @@ export function MusicGenreCombobox({ value, onChange }: MusicGenreComboboxProps)
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-full p-0 bg-popover border-border z-50" align="start">
+        <PopoverContent className="w-full p-0 z-50" align="start">
           <Command className="bg-popover">
             <CommandInput
               placeholder={t("artistRegistration.placeholders.searchGenres")}

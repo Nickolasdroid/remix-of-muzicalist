@@ -165,7 +165,7 @@ const FilterButton = (props: FilterButtonProps & { placement: "header" | "page";
           Filter
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 bg-card border border-border z-50">
+      <PopoverContent className="w-80 z-50">
         <div className="space-y-4">
           <div>
             <h4 className="font-medium text-foreground mb-1">Filter Artists</h4>
