@@ -172,7 +172,6 @@ const ResetPassword = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={authInputClass}
-                placeholder="Email"
               />
             </div>
             <Button type="submit" disabled={isLoading} className={`${authButtonClass} !mt-8`}>

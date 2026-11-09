@@ -7,6 +7,7 @@
 // Generated 2026-07-14 from all JSX text + placeholder/title/aria-label literals.
 
 export const RO_TEXT: Record<string, string> = {
+  "Log in to your account": "Intră în cont",
   "artist": "artist",
   "Choose the kind of artist you're looking for.": "Alege ce fel de artist cauți.",
   "artists": "artiști",

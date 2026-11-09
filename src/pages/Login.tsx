@@ -163,7 +163,7 @@ const Login = () => {
     <>
       <SEO title="Log in | Muzicalist" description="Log in to your Muzicalist account to book musical artists, manage bookings, and message performers." path="/login" noindex />
       <AuthShell
-        title="Log in to Muzicalist"
+        title="Log in to your account"
         footer={
           <>
             <span>Don't have an account?</span>{" "}
@@ -183,7 +183,6 @@ const Login = () => {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               className={authInputClass}
-              placeholder="Email"
             />
           </div>
 
@@ -197,7 +196,6 @@ const Login = () => {
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className={`${authInputClass} pr-12`}
-                placeholder="Password"
               />
               <button
                 type="button"
