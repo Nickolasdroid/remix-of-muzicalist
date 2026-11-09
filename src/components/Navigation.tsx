@@ -34,7 +34,6 @@ const MobileMenuRow = ({
   icon: Icon,
   label,
   active,
-  first,
   trailing,
   onNavigate,
 }: {
@@ -49,18 +48,11 @@ const MobileMenuRow = ({
   <Link
     to={to}
     onClick={onNavigate}
-    className={`flex items-center justify-between gap-3 px-4 py-4 border-b border-border ${first ? 'border-t' : ''} active:bg-accent/10 transition-colors ${
-      active ? 'text-accent' : 'text-foreground'
-    }`}
+    className="flex items-center gap-4 px-5 py-3.5 transition-colors active:bg-foreground/[0.07]"
   >
-    <div className="flex items-center gap-3 min-w-0">
-      <Icon className={`h-5 w-5 shrink-0 ${active ? 'text-accent' : 'text-muted-foreground'}`} />
-      <span className="text-sm font-semibold truncate">{label}</span>
-    </div>
-    <div className="flex items-center gap-2 shrink-0">
-      {trailing}
-      <ChevronRight className="h-5 w-5 text-muted-foreground" />
-    </div>
+    <Icon className="h-6 w-6 shrink-0 text-foreground" />
+    <span className={`min-w-0 flex-1 truncate text-base ${active ? "font-bold text-foreground" : "font-medium text-foreground"}`}>{label}</span>
+    {trailing}
   </Link>
 );
 
@@ -160,7 +152,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       // Fetch profile
       const { data: profileData } = await supabase
         .from('profiles')
-        .select('avatar_url, stage_name, plan, country')
+        .select('avatar_url, stage_name, first_name, last_name, plan, country')
         .eq('id', sessionUser.id)
         .single();
       setProfile(profileData);
@@ -501,68 +493,68 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 <Menu className="h-6 w-6" />
               </button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-screen max-w-none sm:max-w-none bg-background border-r border-border p-0 flex flex-col !duration-150 data-[state=open]:!duration-150 data-[state=closed]:!duration-150">
-              {/* Logo */}
-              <div className="p-4 border-b border-border">
-                <Link to="/feed" className="flex items-center gap-2" onClick={() => setMobileMenuOpen(false)}>
-                  <img src={logo} alt="Muzicalist — The Global Stage for Musical Artists" className="h-10 w-10 object-contain" />
-                  <span className="font-bold text-lg text-foreground uppercase" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
-                </Link>
-              </div>
+            <SheetContent side="left" className="w-[85vw] max-w-sm border-0 bg-[#121212] p-0 flex flex-col !duration-150 data-[state=open]:!duration-150 data-[state=closed]:!duration-150">
+              {/* Who's signed in, like Spotify: photo, name, a link to the profile */}
+              <Link
+                to={userType === 'user' ? '/user-dashboard' : (userType as string) === 'admin' ? '/admin/dashboard' : '/dashboard'}
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-5 pb-5 pt-6"
+              >
+                <Avatar className="h-12 w-12 shrink-0">
+                  <AvatarImage src={profile?.avatar_url || undefined} alt="" className="object-cover" />
+                  <AvatarFallback className="bg-foreground/10 text-foreground font-semibold">
+                    {(profile?.stage_name || profile?.first_name || 'M').charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                <span className="min-w-0">
+                  <span className="block truncate text-lg font-bold text-foreground notranslate" translate="no">
+                    {profile?.stage_name || [profile?.first_name, profile?.last_name].filter(Boolean).join(' ') || 'Muzicalist'}
+                  </span>
+                  <span className="block text-sm text-muted-foreground">{t('navigation.viewProfile', 'View profile')}</span>
+                </span>
+              </Link>
+              <div className="mx-5 h-px bg-foreground/10" aria-hidden="true" />
 
-              {/* Main navigation - Instagram-style list, grouped: Discover / Account, logout at the bottom */}
-              <div className="flex-1 overflow-y-auto flex flex-col">
-                <p className="px-4 pt-5 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  {t('navigation.discover', 'Discover')}
-                </p>
-                {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/search').map((link, i) => (
+              <nav className="flex-1 overflow-y-auto flex flex-col py-2">
+                {sidebarLinks.filter(link => link.to !== '/feed' && link.to !== '/search').map((link) => (
                   <MobileMenuRow
                     key={link.to}
                     to={link.to}
                     icon={link.icon}
                     label={link.label}
                     active={isActive(link.to.split('?')[0])}
-                    first={i === 0}
                     onNavigate={() => setMobileMenuOpen(false)}
                   />
                 ))}
 
-                <p className="px-4 pt-6 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  {t('navigation.account', 'Account')}
-                </p>
+                <div className="mx-5 my-2 h-px bg-foreground/10" aria-hidden="true" />
 
-                {/* My Plan (only for artist accounts): shows the current plan, Free gets an Upgrade nudge */}
                 {user && userType === 'artist' && (
                   <MobileMenuRow
                     to="/my-plan"
                     icon={Crown}
                     label={t('navigation.myPlan', 'My Plan')}
                     active={isActive('/my-plan')}
-                    first
                     onNavigate={() => setMobileMenuOpen(false)}
                     trailing={(() => {
                       const plan = getPlan(profile?.plan);
                       return plan === 'Free' ? (
-                        <span className="rounded-full bg-accent px-2.5 py-0.5 text-xs font-semibold text-accent-foreground">
+                        <span className="rounded-full bg-accent px-2.5 py-0.5 text-xs font-bold text-accent-foreground">
                           {t('navigation.upgrade', 'Upgrade')}
                         </span>
                       ) : (
-                        <span className={`notranslate rounded-full px-2.5 py-0.5 text-xs font-semibold ${plan === 'Premium' ? 'bg-amber-500/15 text-amber-400' : 'bg-accent/15 text-accent'}`} translate="no">
-                          {plan}
-                        </span>
+                        <span className="notranslate text-sm text-muted-foreground" translate="no">{plan}</span>
                       );
                     })()}
                   />
                 )}
 
-                {/* Admin Dashboard (admin only) */}
                 {user && (userType as string) === 'admin' && (
                   <MobileMenuRow
                     to="/admin/dashboard"
                     icon={Shield}
                     label={t('navigation.adminDashboard', 'Admin Dashboard')}
                     active={isActive('/admin/dashboard')}
-                    first={userType !== 'artist'}
                     onNavigate={() => setMobileMenuOpen(false)}
                   />
                 )}
@@ -573,7 +565,6 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                     icon={Settings}
                     label={t('navigation.settings')}
                     active={location.search.includes('tab=settings')}
-                    first={userType !== 'artist' && (userType as string) !== 'admin'}
                     onNavigate={() => setMobileMenuOpen(false)}
                   />
                 )}
@@ -586,20 +577,19 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   onNavigate={() => setMobileMenuOpen(false)}
                 />
 
-                {/* Logout: an action, not a page, so no chevron; kept apart at the bottom */}
-                <div className="mt-auto pt-8 safe-area-bottom">
+                <div className="mt-auto pb-2 pt-6 safe-area-bottom">
                   <button
                     onClick={() => {
                       setMobileMenuOpen(false);
                       setLogoutConfirmOpen(true);
                     }}
-                    className="w-full flex items-center gap-3 px-4 py-4 border-t border-border text-destructive active:bg-destructive/10 transition-colors"
+                    className="flex w-full items-center gap-4 px-5 py-3.5 text-muted-foreground transition-colors active:bg-foreground/[0.07]"
                   >
-                    <LogOut className="h-5 w-5" />
-                    <span className="text-sm font-semibold">{t('navigation.logout')}</span>
+                    <LogOut className="h-6 w-6" />
+                    <span className="text-base font-medium">{t('navigation.logout')}</span>
                   </button>
                 </div>
-              </div>
+              </nav>
 
             </SheetContent>
           </Sheet>
