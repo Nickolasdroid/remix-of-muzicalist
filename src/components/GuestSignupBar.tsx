@@ -8,7 +8,7 @@ const GuestSignupBar = () => (
   <>
     {/* Keeps the end of the page from hiding behind the bar */}
     <div className="h-20 md:h-24" aria-hidden="true" />
-    <div className="fixed inset-x-0 bottom-0 z-40 px-0 pb-[env(safe-area-inset-bottom)] md:px-2 md:pb-2">
+    <div className="fixed inset-x-0 bottom-16 z-40 px-0 md:bottom-0 md:px-2 md:pb-2">
       <div
         className="flex items-center justify-between gap-4 px-4 py-3 md:rounded-md md:px-5 md:py-3.5"
         style={{ background: "linear-gradient(90deg, #8C6A12 0%, #C99A22 100%)" }}

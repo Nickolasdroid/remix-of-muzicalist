@@ -684,9 +684,9 @@ const Messages = () => {
   return <div className="min-h-screen md:ml-[316px] lg:ml-[356px] bg-background">
       <Navigation mobileTitle="Messages" onMobileBack={handleMobileBack} hideMobileHeader={conversationActive} />
       
-      <div className="px-0 pt-14 md:pt-0 pb-16 md:pb-0 h-screen">
+      <div className="px-0 pt-14 md:pt-0 pb-16 md:pb-0 h-screen md:h-[calc(100vh-64px)]">
         {/* Desktop: Grid layout */}
-        <div className="hidden md:grid md:grid-cols-3 h-screen">
+        <div className="hidden md:grid md:grid-cols-3 md:h-[calc(100vh-64px)]">
           {/* Conversations List */}
           <div className="md:col-span-1 p-0 overflow-hidden bg-background border-r border-border">
             <h1 className="flex h-[49px] items-center border-b border-border px-4 text-base font-semibold">Messages</h1>

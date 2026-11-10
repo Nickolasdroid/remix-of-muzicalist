@@ -152,7 +152,7 @@ const PostDetail = () => {
   return (
     <div className={`min-h-screen ${userId ? "md:ml-[316px] lg:ml-[356px]" : ""} bg-background`}>
       <div className="hidden md:block"><Navigation /></div>
-      <div className="sticky top-0 z-30 border-b border-border/60 bg-background/95 backdrop-blur-sm">
+      <div className="sticky top-0 md:top-16 z-30 border-b border-border/60 bg-background/95 backdrop-blur-sm">
         <div className="mx-auto flex h-12 max-w-2xl items-center gap-2 px-2">
           <Button variant="ghost" size="icon" onClick={goBack} aria-label={t("postDetail.back", "Back")} className="h-10 w-10">
             <ArrowLeft className="h-5 w-5" />

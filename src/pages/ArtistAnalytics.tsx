@@ -148,7 +148,7 @@ const ArtistAnalytics = () => {
     <div className="min-h-screen bg-black md:ml-[316px] md:py-2 md:pr-2 lg:ml-[356px]">
       <Navigation mobileTitle="Statistics" mobileBackPath={-1} />
       <div
-        className="min-h-screen px-4 pb-24 pt-16 md:min-h-[calc(100vh-16px)] md:rounded-lg md:px-8 md:pb-12 md:pt-10"
+        className="min-h-screen px-4 pb-24 pt-16 md:min-h-[calc(100vh-80px)] md:rounded-lg md:px-8 md:pb-12 md:pt-10"
         style={{ background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" }}
       >
         <div className="mx-auto max-w-4xl">

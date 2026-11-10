@@ -3262,7 +3262,7 @@ const Dashboard = () => {
 
       {/* Right panel, same as on the public profile */}
       {showSidePanel && (
-        <aside className="sticky top-2 hidden h-[calc(100vh-16px)] w-[300px] shrink-0 flex-col gap-2 overflow-y-auto rounded-lg bg-background p-2 [scrollbar-width:thin] xl:flex 2xl:w-[340px]">
+        <aside className="sticky top-[72px] hidden h-[calc(100vh-80px)] w-[300px] shrink-0 flex-col gap-2 overflow-y-auto rounded-lg bg-background p-2 [scrollbar-width:thin] xl:flex 2xl:w-[340px]">
           {ownSideCards}
         </aside>
       )}

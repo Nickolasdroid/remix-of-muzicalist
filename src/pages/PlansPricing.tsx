@@ -86,7 +86,7 @@ const PlansPricing = () => {
       <Navigation />
 
       <section
-        className={`min-h-screen px-4 pb-24 pt-20 md:rounded-lg md:px-8 md:pb-12 md:pt-10 ${isAuthenticated ? 'md:min-h-[calc(100vh-16px)]' : 'md:min-h-[calc(100vh-80px)]'}`}
+        className={`min-h-screen px-4 pb-24 pt-20 md:rounded-lg md:px-8 md:pb-12 md:pt-10 ${isAuthenticated ? 'md:min-h-[calc(100vh-80px)]' : 'md:min-h-[calc(100vh-80px)]'}`}
         style={{ background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" }}
       >
         <div className="mx-auto max-w-6xl">

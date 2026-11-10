@@ -36,7 +36,7 @@ const AuthShell = ({
       <div className="overflow-hidden rounded-none bg-background md:rounded-lg">
         <div
           className={`flex items-start justify-center px-6 pb-16 pt-10 md:pt-12 ${
-            signedIn ? "min-h-[calc(100vh-56px)] md:min-h-[calc(100vh-16px)]" : "min-h-[calc(100vh-56px)] md:min-h-[calc(100vh-80px)] md:items-center"
+            signedIn ? "min-h-[calc(100vh-56px)] md:min-h-[calc(100vh-80px)]" : "min-h-[calc(100vh-56px)] md:min-h-[calc(100vh-80px)] md:items-center"
           }`}
           style={{ background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" }}
         >

@@ -1,390 +1,383 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { ArrowLeft, Search as SearchIcon, User, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import Navigation from "@/components/Navigation";
+import GuestSidebar from "@/components/GuestSidebar";
+import CategoryTile, { CATEGORY_TILES, type ArtistCategoryValue } from "@/components/CategoryTile";
+import SEO from "@/components/SEO";
+import { supabase } from "@/integrations/supabase/client";
 import { goBack } from "@/lib/backNavigation";
 import { trackActivityEvent } from "@/lib/activityTracker";
-import { Link, useNavigate } from "react-router-dom";
-import { Search as SearchIcon, User, Sparkles, ArrowRight, Loader2, ArrowLeft } from "lucide-react";
-import { getCountryName } from "@/lib/countryFlags";
-import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import Navigation from "@/components/Navigation";
-import SEO from "@/components/SEO";
 import { translateSpecialization } from "@/lib/specializationLabel";
-import { genreListLabel } from "@/lib/genreLabel";
-import { supabase } from "@/integrations/supabase/client";
 import { sortByPlanPriority } from "@/lib/planLimits";
-import { toast } from "sonner";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { getCountryRegions } from "@/lib/countryAdminDivisions";
+import { getThumbUrl } from "@/lib/imageUrl";
+import { cn } from "@/lib/utils";
 
-interface ArtistProfile {
+interface Result {
   id: string;
+  slug?: string | null;
   stage_name: string;
   avatar_url: string | null;
   specialization: string | null;
   country: string | null;
-  county: string;
-  music_genres: string | null;
+  county: string | null;
+  plan?: string | null;
 }
 
+const RECENT_KEY = "muzicalist.recentSearches";
+const norm = (v: string) => v.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+
+// Words people type for each artist type (Romanian and English)
+const TYPE_WORDS: Record<ArtistCategoryValue, string[]> = {
+  Singer: ["solist", "solisti", "solista", "cantaret", "cantareata", "singer", "singers", "voce", "vocalist"],
+  Instrumentalist: ["instrumentist", "instrumentisti", "instrumentalist", "muzician", "chitarist", "pianist", "violonist", "saxofonist", "toboșar", "tobosar"],
+  DJ: ["dj", "djs", "deejay"],
+  Band: ["formatie", "formatii", "trupa", "trupe", "band", "bands", "orchestra"],
+};
+const FILLER = new Set(["in", "din", "la", "de", "pentru", "for", "the", "a", "un", "o", "si", "and", "?"]);
+const RO_COUNTIES = getCountryRegions("RO");
+
+/** "solist in cluj" → type Singer, county Cluj, no name left. */
+const parseQuery = (q: string) => {
+  let rest = ` ${norm(q).replace(/[?!.,]/g, " ")} `;
+  let type: ArtistCategoryValue | null = null;
+  for (const [t, words] of Object.entries(TYPE_WORDS) as [ArtistCategoryValue, string[]][]) {
+    const hit = words.find((w) => rest.includes(` ${norm(w)} `));
+    if (hit) {
+      type = t;
+      rest = rest.replace(` ${norm(hit)} `, " ");
+      break;
+    }
+  }
+  let county: string | null = null;
+  for (const c of [...RO_COUNTIES].sort((a, b) => b.length - a.length)) {
+    const n = norm(c);
+    if (rest.includes(` ${n} `)) {
+      county = c;
+      rest = rest.replace(` ${n} `, " ");
+      break;
+    }
+  }
+  const name = rest.split(/\s+/).filter((w) => w && !FILLER.has(w)).join(" ");
+  return { type, county, name };
+};
+
+const readRecent = (): string[] => {
+  try {
+    return JSON.parse(localStorage.getItem(RECENT_KEY) || "[]").slice(0, 8);
+  } catch {
+    return [];
+  }
+};
+const writeRecent = (list: string[]) => {
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list.slice(0, 8)));
+  } catch {
+    /* storage unavailable */
+  }
+};
+
 const Search = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
-  const isMobile = useIsMobile();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [suggestions, setSuggestions] = useState<ArtistProfile[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isAIMode, setIsAIMode] = useState(false);
-  const [aiResponse, setAiResponse] = useState<string | null>(null);
-  const [aiArtists, setAiArtists] = useState<any[]>([]);
-  const [isAILoading, setIsAILoading] = useState(false);
-  const [isAuthChecked, setIsAuthChecked] = useState(false);
-  const [isFocused, setIsFocused] = useState(false);
+  const [params, setParams] = useSearchParams();
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const [query, setQuery] = useState(params.get("q") || "");
+  const [results, setResults] = useState<Result[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [type, setType] = useState<ArtistCategoryValue | null>(null);
+  const [recent, setRecent] = useState<string[]>(readRecent);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate('/login');
-        return;
-      }
-      setIsAuthChecked(true);
-    };
-    checkAuth();
-  }, [navigate]);
+    supabase.auth.getSession().then(({ data: { session } }) => setSignedIn(!!session));
+  }, []);
 
-  if (!isAuthChecked) {
-    return null;
-  }
+  // Header search on other pages lands here with ?q=
+  useEffect(() => {
+    const q = params.get("q") || "";
+    setQuery((cur) => (cur === q ? cur : q));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params]);
 
-  const fetchSuggestions = async (query: string) => {
-    if (query.trim().length < 2) {
-      setSuggestions([]);
+  // Search as you type
+  useEffect(() => {
+    const q = query.trim();
+    if (q.length < 2) {
+      setResults([]);
+      setLoading(false);
       return;
     }
-
-    setIsLoading(true);
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('id, stage_name, avatar_url, specialization, country, county, music_genres, plan')
-      .not('specialization', 'is', null)
-      .ilike('stage_name', `%${query.trim()}%`)
-      .limit(10);
-
-    if (error) {
-      console.error('Error fetching suggestions:', error);
-      setSuggestions([]);
-    } else {
-      const sorted = [...(data || [])].sort((a, b) => sortByPlanPriority(a, b));
-      setSuggestions(sorted);
-    }
-    setIsLoading(false);
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-
-    if (!isAIMode) {
-      const debounceTimeout = setTimeout(() => fetchSuggestions(value), 300);
-      return () => clearTimeout(debounceTimeout);
-    }
-  };
-
-  const handleAISearch = async () => {
-    trackActivityEvent("search_performed");
-    if (!searchQuery.trim()) {
-      toast.error("Please enter a search query");
-      return;
-    }
-
-    setIsAILoading(true);
-    setAiResponse(null);
-    setAiArtists([]);
-
-    try {
-      const { data, error } = await supabase.functions.invoke("ai-search", {
-        body: { query: searchQuery.trim() }
-      });
-
-      if (error) {
-        console.error("Search error:", error);
-        if (error.message.includes("429")) {
-          toast.error("Too many requests. Please try again later.");
-        } else if (error.message.includes("402")) {
-          toast.error("Service temporarily unavailable. Please contact support.");
-        } else {
-          toast.error("Failed to process search. Please try again.");
-        }
-        return;
+    setLoading(true);
+    const handle = setTimeout(async () => {
+      const parsed = parseQuery(q);
+      let req = supabase
+        .from("profiles")
+        .select("id, slug, stage_name, avatar_url, specialization, country, county, plan")
+        .not("specialization", "is", null)
+        .limit(40);
+      if (parsed.type) req = req.eq("specialization", parsed.type as any);
+      if (parsed.county) req = req.ilike("county", `%${parsed.county}%`);
+      if (parsed.name) {
+        const like = `%${parsed.name.replace(/[%,()]/g, " ")}%`;
+        req = parsed.type || parsed.county ? req.ilike("stage_name", like) : req.or(`stage_name.ilike.${like},county.ilike.${like}`);
       }
+      const { data } = await req;
+      setResults([...((data as Result[]) || [])].sort((a, b) => sortByPlanPriority(a as any, b as any)));
+      setType(parsed.type);
+      setLoading(false);
+    }, 300);
+    return () => clearTimeout(handle);
+  }, [query]);
 
-      if (data?.response) setAiResponse(data.response);
-      if (Array.isArray(data?.artists)) setAiArtists(data.artists);
-      if (!data?.response && !(Array.isArray(data?.artists) && data.artists.length)) {
-        toast.error("No results found. Please try a different search.");
-      }
-    } catch (error) {
-      console.error("Search error:", error);
-      toast.error("An unexpected error occurred. Please try again.");
-    } finally {
-      setIsAILoading(false);
-    }
+  const remember = (q: string) => {
+    const v = q.trim();
+    if (v.length < 2) return;
+    const next = [v, ...recent.filter((r) => norm(r) !== norm(v))];
+    setRecent(next.slice(0, 8));
+    writeRecent(next);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isAIMode) {
-      handleAISearch();
-    }
+  const filtered = useMemo(() => (type ? results.filter((r) => r.specialization === type) : results), [results, type]);
+  const [top, ...rest] = filtered;
+  const hasQuery = query.trim().length >= 2;
+
+  const subtitle = (r: Result) => (
+    <>
+      <span>{translateSpecialization(r.specialization)}</span>
+      {r.county ? (
+        <>
+          <span aria-hidden="true"> · </span>
+          <span className="notranslate" translate="no">{r.county}</span>
+        </>
+      ) : null}
+      {r.country && !/^ro(mania)?$/i.test(r.country) ? (
+        <>
+          <span aria-hidden="true">, </span>
+          <span>{r.country}</span>
+        </>
+      ) : null}
+    </>
+  );
+
+  const open = (r: Result) => {
+    remember(query);
+    trackActivityEvent("search_result_click");
   };
 
-  const toggleAIMode = () => {
-    setIsAIMode((prev) => !prev);
-    setSearchQuery("");
-    setSuggestions([]);
-    setAiResponse(null);
-    setAiArtists([]);
-  };
+  const searchField = (
+    <form
+      role="search"
+      onSubmit={(e) => {
+        e.preventDefault();
+        remember(query);
+        setParams(query.trim() ? { q: query.trim() } : {}, { replace: true });
+        inputRef.current?.blur();
+      }}
+      className="relative w-full"
+    >
+      <SearchIcon className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+      <input
+        ref={inputRef}
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder={t("navigation.searchArtists", "Which artist are you looking for?")}
+        aria-label="Search artists"
+        autoFocus={!params.get("q") && typeof window !== "undefined" && window.innerWidth < 768}
+        className="h-12 w-full rounded-full border-0 bg-foreground/[0.1] pl-12 pr-11 text-base text-foreground placeholder:text-muted-foreground focus:bg-foreground/[0.14] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 [&::-webkit-search-cancel-button]:hidden"
+      />
+      {query && (
+        <button
+          type="button"
+          onClick={() => {
+            setQuery("");
+            setParams({}, { replace: true });
+            inputRef.current?.focus();
+          }}
+          aria-label="Clear search"
+          className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground hover:text-foreground"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      )}
+    </form>
+  );
 
-  const getSpecializationLabel = (spec: string | null) => {
-    if (!spec) return '';
-    return translateSpecialization(spec);
-  };
+  const content = (
+    <div className="min-h-screen min-w-0 flex-1 bg-background px-4 pb-24 pt-[4.5rem] md:min-h-[calc(100vh-80px)] md:rounded-lg md:px-8 md:pb-12 md:pt-4">
+      <div className="mx-auto max-w-5xl">
+        <h1 className="sr-only">Search</h1>
+
+        {!hasQuery ? (
+          <>
+            {recent.length > 0 && (
+              <section className="mt-8">
+                <h2 className="text-xl font-bold text-foreground md:text-2xl">Recent searches</h2>
+                <ul className="mt-2">
+                  {recent.map((r) => (
+                    <li key={r} className="-mx-2 flex items-center rounded-md hover:bg-foreground/[0.07]">
+                      <button type="button" onClick={() => setQuery(r)} className="flex min-w-0 flex-1 items-center gap-3 px-2 py-2.5 text-left">
+                        <SearchIcon className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                        <span className="truncate text-base text-foreground notranslate" translate="no">{r}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const next = recent.filter((x) => x !== r);
+                          setRecent(next);
+                          writeRecent(next);
+                        }}
+                        aria-label="Remove"
+                        className="mr-1 rounded-full p-2 text-muted-foreground hover:text-foreground"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+
+            <section className="mt-8">
+              <h2 className="text-xl font-bold text-foreground md:text-2xl">Browse categories</h2>
+              <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
+                {CATEGORY_TILES.map((tile) => (
+                  <CategoryTile key={tile.value} tile={tile} />
+                ))}
+              </div>
+            </section>
+          </>
+        ) : (
+          <>
+            {/* Type filter */}
+            <div className="-mx-4 mt-2 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:mt-5 md:px-0 [&::-webkit-scrollbar]:hidden" role="tablist" aria-label="Artist type">
+              {[{ v: null as ArtistCategoryValue | null, label: <span>All</span> }, ...CATEGORY_TILES.map((c) => ({ v: c.value as ArtistCategoryValue | null, label: <span>{t(`platformStats.${c.statKey}`)}</span> }))].map((chip) => {
+                const selected = type === chip.v;
+                return (
+                  <button
+                    key={chip.v ?? "all"}
+                    type="button"
+                    role="tab"
+                    aria-selected={selected}
+                    onClick={() => setType(chip.v)}
+                    className={cn(
+                      "h-8 shrink-0 rounded-full px-3.5 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60",
+                      selected ? "bg-foreground/[0.24] font-medium text-foreground" : "bg-foreground/[0.07] text-foreground hover:bg-foreground/[0.12]",
+                    )}
+                  >
+                    {chip.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {loading ? (
+              <div className="mt-8 space-y-3" aria-hidden="true">
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="h-12 w-12 animate-pulse rounded-full bg-foreground/[0.08]" />
+                    <div className="h-3.5 w-1/3 animate-pulse rounded bg-foreground/[0.08]" />
+                  </div>
+                ))}
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="mt-8">
+                <p className="text-base font-bold text-foreground">
+                  <span>No artists for</span> <span className="notranslate" translate="no">“{query.trim()}”</span>
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">Try only the county (for example “Cluj”) or only the type (for example “DJ”).</p>
+              </div>
+            ) : (
+              <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+                {/* Top result: the whole card opens the profile */}
+                <section>
+                  <h2 className="mb-3 text-xl font-bold text-foreground md:text-2xl">Top result</h2>
+                  <Link
+                    to={`/artist/${top.slug || top.id}`}
+                    onClick={() => open(top)}
+                    className="block rounded-lg bg-foreground/[0.05] p-5 transition-colors hover:bg-foreground/[0.09] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+                  >
+                    <div className="h-24 w-24 overflow-hidden rounded-full bg-foreground/[0.08] shadow-[0_8px_24px_rgba(0,0,0,0.5)]">
+                      {top.avatar_url ? (
+                        <img src={getThumbUrl(top.avatar_url, 240)} alt="" className="h-full w-full object-cover" />
+                      ) : (
+                        <User className="m-auto mt-7 h-10 w-10 text-foreground/30" />
+                      )}
+                    </div>
+                    <p className="mt-5 truncate text-3xl font-bold tracking-[-0.02em] text-foreground notranslate" translate="no" data-user-content="true">
+                      {top.stage_name}
+                    </p>
+                    <p className="mt-1 truncate text-sm text-muted-foreground">{subtitle(top)}</p>
+                  </Link>
+                </section>
+
+                {/* The rest */}
+                {rest.length > 0 && (
+                  <section>
+                    <h2 className="mb-2 text-xl font-bold text-foreground md:text-2xl">Artists</h2>
+                    <ul>
+                      {rest.map((r) => (
+                        <li key={r.id}>
+                          <Link
+                            to={`/artist/${r.slug || r.id}`}
+                            onClick={() => open(r)}
+                            className="-mx-2 flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-foreground/[0.07] focus-visible:bg-foreground/[0.07] focus-visible:outline-none"
+                          >
+                            <span className="h-12 w-12 shrink-0 overflow-hidden rounded-full bg-foreground/[0.08]">
+                              {r.avatar_url ? (
+                                <img src={getThumbUrl(r.avatar_url, 120)} alt="" loading="lazy" className="h-full w-full object-cover" />
+                              ) : (
+                                <User className="m-auto mt-3 h-6 w-6 text-foreground/30" />
+                              )}
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block truncate text-base font-medium text-foreground notranslate" translate="no" data-user-content="true">
+                                {r.stage_name}
+                              </span>
+                              <span className="block truncate text-sm text-muted-foreground">{subtitle(r)}</span>
+                            </span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-background">
-      <SEO title="Search Musical Artists | Muzicalist" description="Search singers, bands, DJs and instrumentalists by name, category, location, date and event type. Find the perfect artist on Muzicalist." path="/search" />
+    <div className="min-h-screen bg-black">
+      <SEO
+        title="Search Musical Artists | Muzicalist"
+        description="Search singers, bands, DJs and instrumentalists by name, type or county. Find the perfect artist on Muzicalist."
+        path="/search"
+      />
       <Navigation hideMobileHeader={true} />
 
-      {/* Mobile: Custom search header */}
-      {isMobile && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border md:hidden">
-          <form onSubmit={handleSubmit} className="flex items-center gap-2 h-14 px-4">
-            <button
-              type="button"
-              onClick={() => {
-                setIsFocused(false);
-                setSearchQuery("");
-                setSuggestions([]);
-                inputRef.current?.blur();
-                goBack(navigate, "/feed");
-              }}
-              className="-ml-1 flex-shrink-0 p-2 text-foreground/80 hover:text-accent transition-colors"
-              aria-label="Back"
-            >
-              <ArrowLeft className="h-6 w-6" />
-            </button>
-            <div className="relative flex-1">
-              <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
-              <Input
-                ref={inputRef}
-                type="search"
-                placeholder={isAIMode ? "E.g. rock band for a wedding" : "Search artists..."}
-                value={searchQuery}
-                onChange={handleSearchChange}
-                onFocus={() => setIsFocused(true)}
-                className={`pl-10 ${isAIMode && searchQuery.trim() ? "pr-12" : "pr-3"} h-10 w-full text-base rounded-2xl border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted text-foreground placeholder:text-muted-foreground`}
-                disabled={isAILoading}
-              />
-              {isAIMode && searchQuery.trim() && (
-                <Button
-                  type="submit"
-                  disabled={isAILoading}
-                  size="icon"
-                  variant="ghost"
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
-                >
-                  {isAILoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
-                </Button>
-              )}
-            </div>
-          </form>
-        </div>
+      {/* Phone: back arrow and the search field on top */}
+      <div className="fixed left-0 right-0 top-0 z-50 flex h-16 items-center gap-2 bg-black px-3 md:hidden">
+        <button type="button" onClick={() => goBack(navigate, signedIn ? "/feed" : "/")} aria-label="Back" className="shrink-0 p-2 text-foreground">
+          <ArrowLeft className="h-6 w-6" />
+        </button>
+        {searchField}
+      </div>
+
+      {signedIn ? (
+        <main className="md:ml-[316px] md:py-2 md:pr-2 lg:ml-[356px]">{content}</main>
+      ) : (
+        <main className="md:flex md:items-start md:gap-2 md:px-2 md:pb-2 md:pt-[72px]">
+          {signedIn === false && <GuestSidebar />}
+          {content}
+        </main>
       )}
-      
-      <main className="pt-14 pb-20 md:pt-2 md:pb-8 md:pl-[316px] lg:pl-[356px]">
-        <div className="max-w-2xl mx-auto py-2 md:py-8 px-0">
-          {/* Desktop Search Input */}
-          {!isMobile && (
-          <form onSubmit={handleSubmit}>
-            <div className="relative mb-1">
-              <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
-              <Input
-                type="search"
-                placeholder={isAIMode
-                  ? "E.g., 'Jazz singers in București' or 'Rock bands for wedding'"
-                  : "Search artists..."}
-                value={searchQuery}
-                onChange={handleSearchChange}
-                className={`pl-12 ${isAIMode && searchQuery.trim() ? "pr-14" : "pr-4"} h-14 w-full text-base rounded-full border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted text-foreground placeholder:text-muted-foreground`}
-                disabled={isAILoading}
-              />
-              {isAIMode && searchQuery.trim() && (
-                <Button
-                  type="submit"
-                  disabled={isAILoading}
-                  size="icon"
-                  variant="ghost"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-accent text-accent-foreground hover:bg-accent/90"
-                >
-                  {isAILoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <ArrowRight className="h-4 w-4" />
-                  )}
-                </Button>
-              )}
-            </div>
-          </form>
-          )}
-
-          {/* AI search on/off */}
-          <div className="px-4 md:px-0 mt-3 mb-4">
-            <label
-              htmlFor="ai-search-switch"
-              className={`inline-flex cursor-pointer items-center gap-2.5 rounded-full border px-3 py-1.5 transition-colors ${
-                isAIMode ? "border-accent/40 bg-accent/10" : "border-border bg-muted/40 hover:bg-muted"
-              }`}
-            >
-              <Sparkles className={`h-4 w-4 ${isAIMode ? "text-accent" : "text-muted-foreground"}`} aria-hidden="true" />
-              <span className={`text-sm font-medium ${isAIMode ? "text-foreground" : "text-muted-foreground"}`}>AI Search</span>
-              <Switch
-                id="ai-search-switch"
-                checked={isAIMode}
-                onCheckedChange={(on) => { if (on !== isAIMode) toggleAIMode(); }}
-                className="h-5 w-9 data-[state=checked]:bg-accent data-[state=unchecked]:bg-muted-foreground/40 [&>span]:h-4 [&>span]:w-4 [&>span]:bg-white [&>span]:data-[state=checked]:translate-x-4"
-              />
-            </label>
-          </div>
-
-          {/* AI Response */}
-          {isAIMode && (aiResponse || aiArtists.length > 0) && (
-            <div className="mb-6 p-4 rounded-xl bg-secondary/50 border border-border space-y-4">
-              <div className="flex items-start gap-2">
-                <Sparkles className="h-4 w-4 text-accent mt-1 flex-shrink-0" />
-                <div className="flex-1">
-                  <h4 className="font-semibold text-foreground mb-2">Search Results</h4>
-                  {aiResponse && (
-                    <div className="text-sm text-muted-foreground whitespace-pre-wrap">
-                      {aiResponse}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {aiArtists.length > 0 && (
-                <div className="space-y-2">
-                  {aiArtists.map((artist: any) => (
-                    <Link
-                      key={artist.id}
-                      to={`/artist/${artist.id}`}
-                      onClick={() => trackActivityEvent("search_result_click")}
-                      className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-accent/50 hover:bg-accent/5 transition-all"
-                    >
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                        <AvatarFallback className="bg-accent/10 text-accent">
-                          <User className="h-5 w-5" />
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                          {artist.stage_name || `${artist.first_name ?? ""} ${artist.last_name ?? ""}`.trim()}
-                        </h3>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          {artist.specialization && (
-                            <span>{getSpecializationLabel(artist.specialization)}</span>
-                          )}
-                          {artist.specialization && artist.country && <span>•</span>}
-                          {artist.country && <span>{getCountryName(artist.country)}</span>}
-                          {artist.country && artist.county && <span>•</span>}
-                          {artist.county && <span>{artist.county}</span>}
-                        </div>
-                        {artist.music_genres && (
-                          <p className="text-xs text-muted-foreground truncate mt-0.5">
-                            {genreListLabel(artist.music_genres)}
-                          </p>
-                        )}
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Classic Suggestions */}
-          {!isAIMode && (
-            <div className="space-y-2">
-              {isLoading && (
-                <div className="text-center py-8 text-muted-foreground">
-                  Searching...
-                </div>
-              )}
-              
-              {!isLoading && searchQuery.trim().length >= 2 && suggestions.length === 0 && (
-                <div className="text-center py-8 text-muted-foreground">
-                  No artists found matching "{searchQuery}"
-                </div>
-              )}
-
-              {!isLoading && suggestions.map((artist) => (
-                <Link
-                  key={artist.id}
-                  to={`/artist/${artist.id}`}
-                  onClick={() => trackActivityEvent("search_result_click")}
-                  className="flex items-center gap-4 p-4 rounded-xl bg-card border border-border hover:border-accent/50 hover:bg-accent/5 transition-all"
-                >
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                    <AvatarFallback className="bg-accent/10 text-accent">
-                      <User className="h-5 w-5" />
-                    </AvatarFallback>
-                  </Avatar>
-                  
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                      {artist.stage_name}
-                    </h3>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      {artist.specialization && (
-                        <span>{getSpecializationLabel(artist.specialization)}</span>
-                      )}
-                      {artist.specialization && artist.country && <span>•</span>}
-                      {artist.country && <span>{getCountryName(artist.country)}</span>}
-                      {artist.country && artist.county && <span>•</span>}
-                      {artist.county && <span>{artist.county}</span>}
-                    </div>
-                    {artist.music_genres && (
-                      <p className="text-xs text-muted-foreground truncate mt-0.5">
-                        {genreListLabel(artist.music_genres)}
-                      </p>
-                    )}
-                  </div>
-                </Link>
-              ))}
-
-              {!isLoading && searchQuery.trim().length < 2 && (
-                <div className="text-center py-12 text-muted-foreground">
-                  <SearchIcon className="h-12 w-12 mx-auto mb-4 opacity-30" />
-                  <p>Start typing to search for artists</p>
-                  <p className="text-sm mt-1">Minimum 2 characters required</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* AI mode empty state */}
-          {isAIMode && !aiResponse && aiArtists.length === 0 && !isAILoading && (
-            <div className="text-center py-12 text-muted-foreground">
-              <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-30" />
-              <p>Ask anything about artists or events</p>
-              <p className="text-sm mt-1">Our AI will help you find exactly what you need</p>
-            </div>
-          )}
-        </div>
-      </main>
     </div>
   );
 };

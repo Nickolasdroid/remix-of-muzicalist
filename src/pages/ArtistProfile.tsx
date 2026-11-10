@@ -2037,7 +2037,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
       {/* Right panel, like the guest panel on the left */}
       {!isReviewsView && (
-        <aside className={`sticky hidden w-[300px] shrink-0 flex-col gap-2 overflow-y-auto rounded-lg bg-background p-2 [scrollbar-width:thin] xl:flex 2xl:w-[340px] ${currentUserId ? 'top-2 h-[calc(100vh-16px)]' : 'top-[72px] h-[calc(100vh-80px)]'}`}>
+        <aside className={`sticky hidden w-[300px] shrink-0 flex-col gap-2 overflow-y-auto rounded-lg bg-background p-2 [scrollbar-width:thin] xl:flex 2xl:w-[340px] ${'top-[72px] h-[calc(100vh-80px)]'}`}>
           {sideCards}
         </aside>
       )}

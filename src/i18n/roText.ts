@@ -8,6 +8,11 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "Recent searches": "Căutări recente",
+  "Top result": "Cel mai bun rezultat",
+  "No artists for": "Niciun artist pentru",
+  "Try only the county (for example “Cluj”) or only the type (for example “DJ”).": "Încearcă doar județul (de exemplu „Cluj”) sau doar tipul (de exemplu „DJ”).",
+  "Clear search": "Șterge căutarea",
   "sent you a booking request for": "ți-a trimis o cerere de rezervare pentru",
   "When this organizer is looking for artists, their events show up here.": "Când organizatorul caută artiști, evenimentele lui apar aici.",
   "How your profile turns visits into bookings.": "Cum transformă profilul tău vizitele în rezervări.",

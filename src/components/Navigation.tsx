@@ -126,6 +126,9 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
   const [bookingActionCount, setBookingActionCount] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [navQuery, setNavQuery] = useState(() =>
+    typeof window !== 'undefined' && window.location.pathname === '/search' ? new URLSearchParams(window.location.search).get('q') || '' : '',
+  );
   const [logoutConfirmOpen, setLogoutConfirmOpen] = useState(false);
 
   const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path + '/');
@@ -410,24 +413,35 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     goBack(navigate, fallback);
   };
 
+  // Signed-in pages sit under the fixed desktop top bar
+  useEffect(() => {
+    document.body.classList.toggle('has-app-topbar', !!user);
+    const guestTabs = !user && !['/login', '/register', '/reset-password', '/welcome'].includes(location.pathname);
+    document.body.classList.toggle('has-guest-tabbar', guestTabs);
+    return () => {
+      document.body.classList.remove('has-app-topbar');
+      document.body.classList.remove('has-guest-tabbar');
+    };
+  }, [user, location.pathname]);
+
   const showBottomNav = !!user && !((location.pathname === '/dashboard' || location.pathname === '/user-dashboard') && location.search.includes('tab=settings'));
 
   return (
     <>
-      {/* Desktop: Top Header Bar - Only when NOT logged in */}
-      {!user && (
+      {/* Desktop: top bar with home, search and account, signed in or not (like Spotify) */}
+      {(
       <nav data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 right-0 h-16 z-50 bg-black hidden md:flex items-center justify-between gap-2 px-4 lg:px-6">
         <div className="flex min-w-0 flex-1 items-center gap-2">
-          <Link to="/" className="mr-2 flex shrink-0 items-center gap-2" aria-label="Muzicalist">
+          <Link to={user ? "/feed" : "/"} className="mr-2 flex shrink-0 items-center gap-2" aria-label="Muzicalist">
             <img src={logo} alt="" className="h-9 w-9 object-contain" />
             <span className="hidden font-bold text-lg text-foreground uppercase xl:inline" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
           </Link>
           <Link
-            to="/"
+            to={user ? "/feed" : "/"}
             aria-label={t('navigation.home')}
-            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#1f1f1f] transition-transform hover:scale-[1.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${location.pathname === '/' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#1f1f1f] transition-transform hover:scale-[1.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${location.pathname === '/' || location.pathname === '/feed' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            <Home className="h-6 w-6" fill={location.pathname === '/' ? 'currentColor' : 'none'} />
+            <Home className="h-6 w-6" fill={location.pathname === '/' || location.pathname === '/feed' ? 'currentColor' : 'none'} />
           </Link>
           {/* Search: artists by name, type or place (opens the full list filtered) */}
           <form
@@ -435,7 +449,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
             onSubmit={(e) => {
               e.preventDefault();
               const q = String(new FormData(e.currentTarget).get('q') || '').trim();
-              navigate(q ? `/artists?q=${encodeURIComponent(q)}` : '/artists');
+              navigate(q ? `/search?q=${encodeURIComponent(q)}` : "/search");
             }}
             className="group relative w-full max-w-[460px]"
           >
@@ -443,13 +457,36 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
             <input
               name="q"
               type="search"
-              defaultValue={location.pathname === '/artists' ? new URLSearchParams(location.search).get('q') || '' : ''}
+              value={navQuery}
+              onChange={(e) => {
+                setNavQuery(e.target.value);
+                // On the search page the results follow what you type
+                if (location.pathname === '/search') {
+                  const v = e.target.value.trim();
+                  navigate(v ? `/search?q=${encodeURIComponent(v)}` : '/search', { replace: true });
+                }
+              }}
               placeholder={t('navigation.searchArtists', 'Which artist are you looking for?')}
               className="h-12 w-full rounded-full border-0 bg-[#1f1f1f] pl-12 pr-4 text-base text-foreground placeholder:text-muted-foreground transition-colors hover:bg-[#2a2a2a] focus:bg-[#2a2a2a] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
             />
           </form>
         </div>
 
+        {user ? (
+          <Link
+            to={userType === 'user' ? '/user-dashboard' : (userType as string) === 'admin' ? '/admin/dashboard' : '/dashboard'}
+            aria-label={t('navigation.profile', 'Profile')}
+            className="ml-4 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#1f1f1f] transition-transform hover:scale-[1.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
+          >
+            <Avatar className="h-8 w-8">
+              <AvatarImage src={profile?.avatar_url || undefined} alt="" className="object-cover" />
+              <AvatarFallback className="bg-foreground/10 text-sm font-semibold text-foreground">
+                {(profile?.stage_name || profile?.first_name || 'M').charAt(0).toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          </Link>
+        ) : (
+        <>
         <div className="ml-4 hidden shrink-0 items-center gap-5 lg:flex">
           {[
             { to: '/plans', label: t('navigation.plans', 'Plans') },
@@ -471,6 +508,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
             {t('navigation.loginDesktop')}
           </Link>
         </div>
+        </>
+        )}
       </nav>
       )}
 
@@ -697,15 +736,36 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
         </nav>
       )}
 
+      {/* Phone, not signed in: Home, Search, Log in at the bottom (like Spotify) */}
+      {!user && !['/login', '/register', '/reset-password', '/welcome'].includes(location.pathname) && (
+        <nav data-no-translate={skipAutoTranslate ? true : undefined} className="fixed bottom-0 left-0 right-0 z-50 bg-black/95 backdrop-blur md:hidden safe-area-bottom">
+          <div className="flex h-16 items-center justify-around px-1">
+            {[
+              { to: '/', icon: Home, label: t('navigation.home') },
+              { to: '/search', icon: Search, label: t('common.search') },
+              { to: '/login', icon: User, label: t('navigation.loginDesktop') },
+            ].map((item) => {
+              const active = location.pathname === item.to;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`flex flex-1 flex-col items-center justify-center gap-1 py-1.5 text-[11px] font-medium transition-colors ${active ? 'text-foreground' : 'text-muted-foreground'}`}
+                >
+                  <item.icon className="h-6 w-6" strokeWidth={active ? 2.4 : 2} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+      )}
+
       {/* Desktop: Left Sidebar - Only when logged in */}
       {!user ? null : (
-      <aside data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-0 left-0 h-screen w-[316px] lg:w-[356px] bg-black z-40 hidden md:flex md:flex-col gap-2 p-2">
+      <aside data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-16 left-0 h-[calc(100vh-64px)] w-[316px] lg:w-[356px] bg-black z-40 hidden md:flex md:flex-col gap-2 p-2 pt-0">
         {/* Panel 1: logo and browsing (like Spotify's Home / Search box) */}
-        <div className="rounded-lg bg-background px-3 pb-2 pt-3">
-          <Link to="/feed" className="mb-2 flex h-10 items-center gap-2 px-2">
-            <img src={logo} alt="Muzicalist — The Global Stage for Musical Artists" className="h-8 w-8 object-contain" />
-            <span className="font-bold text-foreground uppercase" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
-          </Link>
+        <div className="rounded-lg bg-background px-3 py-2">
           {sidebarLinks.map((link) => {
             const active = isActive(link.to.split('?')[0]);
             return (

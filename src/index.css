@@ -267,3 +267,13 @@ html:not(.dark) .name-overlay-outline *:not(svg):not(svg *) {
   color: hsl(var(--accent));
 }
 
+
+/* Signed-in desktop: content starts under the 64px top bar */
+@media (min-width: 768px) {
+  body.has-app-topbar { padding-top: 64px; }
+}
+
+/* Phone, not signed in: room for the bottom bar */
+@media (max-width: 767px) {
+  body.has-guest-tabbar { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
+}

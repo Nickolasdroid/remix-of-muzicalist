@@ -597,7 +597,7 @@ const Notifications = () => {
         onMobileBack={() => goBack(navigate, "/feed")}
       />
       <main className="md:ml-[316px] md:py-2 md:pr-2 lg:ml-[356px]">
-        <div className="min-h-screen bg-background pb-6 pt-14 md:min-h-[calc(100vh-16px)] md:rounded-lg md:px-4 md:pb-10 md:pt-10">
+        <div className="min-h-screen bg-background pb-6 pt-14 md:min-h-[calc(100vh-80px)] md:rounded-lg md:px-4 md:pb-10 md:pt-10">
         <div className="max-w-3xl mx-auto">
           <h1 className="mb-2 hidden px-4 text-5xl font-bold leading-tight tracking-[-0.02em] text-foreground md:block">Notifications</h1>
 
