@@ -100,6 +100,11 @@ import BookingDetailsDialog from "@/components/BookingDetailsDialog";
 import { isDayFullyBooked, parseSlotsFromNotes } from "@/lib/calendarSlots";
 const capitalizeFirst = (v: string) => (v ? v.charAt(0).toUpperCase() + v.slice(1) : v);
 
+/** Inline profile editors: filled grey fields, a quiet Cancel and a gold Save, no icons. */
+const EDIT_FIELD = "rounded-lg border-0 bg-foreground/[0.07] text-base text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-foreground/40 focus-visible:ring-offset-0";
+const EDIT_CANCEL_BTN = "h-9 rounded-full px-4 text-sm font-bold text-muted-foreground hover:bg-transparent hover:text-foreground";
+const EDIT_SAVE_BTN = "h-9 rounded-full bg-accent px-5 text-sm font-bold text-accent-foreground hover:bg-accent hover:scale-[1.03] transition-transform";
+
 const Dashboard = () => {
   const {
     toast
@@ -1855,15 +1860,9 @@ const Dashboard = () => {
                                     ))}
                                   </div>
                                   <p className="text-xs text-muted-foreground">Shown on your profile, under your specialization.</p>
-                                  <div className="flex gap-2">
-                                    <Button size="sm" onClick={() => saveField('collabStatus')} disabled={isSaving}>
-                                      <Save className="h-3 w-3 mr-1" />
-                                      Save
-                                    </Button>
-                                    <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                      <X className="h-3 w-3 mr-1" />
-                                      Cancel
-                                    </Button>
+                                  <div className="flex justify-end gap-1">
+                                    <Button type="button" variant="ghost" onClick={cancelEditing} className={EDIT_CANCEL_BTN}>Cancel</Button>
+                                    <Button type="button" onClick={() => saveField('collabStatus')} disabled={isSaving} className={EDIT_SAVE_BTN}>Save</Button>
                                   </div>
                                 </div> : isCollabStatus(formData.collabStatus) ? <span className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium ${isOpenToCollabs(formData.collabStatus) ? "bg-green-500/15 text-green-500" : "bg-muted text-muted-foreground"}`}>
                                     <span className="h-2 w-2 rounded-full bg-current" />
@@ -1887,16 +1886,10 @@ const Dashboard = () => {
                                   </Button>}
                               </div>
                               {editingField === 'bandMembers' ? <div className="space-y-2">
-                                  <Input type="number" min={2} placeholder="e.g. 5" value={formData.bandMembers} onChange={e => setFormData({ ...formData, bandMembers: e.target.value })} className="max-w-[160px]" />
-                                  <div className="flex gap-2">
-                                    <Button size="sm" onClick={() => saveField('bandMembers')} disabled={isSaving}>
-                                      <Save className="h-3 w-3 mr-1" />
-                                      Save
-                                    </Button>
-                                    <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                      <X className="h-3 w-3 mr-1" />
-                                      Cancel
-                                    </Button>
+                                  <Input type="number" min={2} placeholder="e.g. 5" value={formData.bandMembers} onChange={e => setFormData({ ...formData, bandMembers: e.target.value })} className={`h-10 max-w-[160px] ${EDIT_FIELD}`} />
+                                  <div className="flex justify-end gap-1">
+                                    <Button type="button" variant="ghost" onClick={cancelEditing} className={EDIT_CANCEL_BTN}>Cancel</Button>
+                                    <Button type="button" onClick={() => saveField('bandMembers')} disabled={isSaving} className={EDIT_SAVE_BTN}>Save</Button>
                                   </div>
                                 </div> : formData.bandMembers ? <Badge className="rounded-full border-0 bg-foreground/[0.07] text-foreground px-3 py-1 text-sm font-normal hover:bg-foreground/[0.07]">
                                     <span className="notranslate" translate="no">{bandMembersLabel(formData.bandMembers, i18n.language || "ro")}</span>
@@ -2215,20 +2208,14 @@ const Dashboard = () => {
                         bio: e.target.value
                       });
                     }
-                  }} placeholder="Tell us about yourself, your musical journey, your style..." className="min-h-[120px]" maxLength={200} />
-                              <div className="flex items-center justify-between">
-                                <span className={`text-xs ${formData.bio.length >= 200 ? 'text-destructive' : 'text-muted-foreground'}`}>
+                  }} placeholder="Tell us about yourself, your musical journey, your style..." className={`min-h-[112px] resize-none ${EDIT_FIELD}`} maxLength={200} />
+                              <div className="flex items-center justify-between gap-2">
+                                <span className={`text-xs tabular-nums ${formData.bio.length >= 200 ? 'text-destructive' : 'text-muted-foreground'}`}>
                                   {formData.bio.length}/200 characters
                                 </span>
-                                <div className="flex gap-2">
-                                  <Button size="sm" onClick={() => saveField('bio')} disabled={isSaving}>
-                                    <Save className="h-3 w-3 mr-1" />
-                                    Save
-                                  </Button>
-                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                    <X className="h-3 w-3 mr-1" />
-                                    Cancel
-                                  </Button>
+                                <div className="flex gap-1">
+                                  <Button type="button" variant="ghost" onClick={cancelEditing} className={EDIT_CANCEL_BTN}>Cancel</Button>
+                                  <Button type="button" onClick={() => saveField('bio')} disabled={isSaving} className={EDIT_SAVE_BTN}>Save</Button>
                                 </div>
                               </div>
                             </div> : <div>
@@ -2312,15 +2299,9 @@ const Dashboard = () => {
 
                     })()}
                                 
-                                <div className="flex gap-2 pt-2">
-                                  <Button size="sm" onClick={() => saveField('genres')} disabled={isSaving}>
-                                    <Save className="h-3 w-3 mr-1" />
-                                    Save
-                                  </Button>
-                                  <Button size="sm" variant="outline" onClick={cancelEditing}>
-                                    <X className="h-3 w-3 mr-1" />
-                                    Cancel
-                                  </Button>
+                                <div className="flex justify-end gap-1 pt-2">
+                                  <Button type="button" variant="ghost" onClick={cancelEditing} className={EDIT_CANCEL_BTN}>Cancel</Button>
+                                  <Button type="button" onClick={() => saveField('genres')} disabled={isSaving} className={EDIT_SAVE_BTN}>Save</Button>
                                 </div>
                               </div> : <div>
                                 <div className="flex flex-wrap gap-2">
