@@ -1198,30 +1198,20 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
     <>
                       {/* Availability */}
                       <div className="rounded-lg bg-foreground/[0.05] p-5">
-                        <SectionHeaderWithUsage title="Availability" size="sm" className="mb-2" />
-                        <Calendar
-                          mode="single"
+                        <SectionHeaderWithUsage title="Availability" size="sm" className="mb-4" />
+                        <ArtistAvailabilityCalendar
+                          large
                           selected={undefined}
                           onSelect={(d) => {
                             if (!d) return;
                             if (!currentUserId) { navigate('/login'); return; }
                             navigate(`/book/${artist.id}?date=${format(d, 'yyyy-MM-dd')}`);
                           }}
-                          disabled={(d) => d < new Date(new Date().setHours(0, 0, 0, 0))}
-                          className="-mx-3 p-0"
-                          classNames={{ day_today: "font-bold underline decoration-foreground/70 decoration-2 underline-offset-4" }}
-                          modifiers={{
-                            busy: getBusyDates().filter((d) => isDayFullyBooked(getEventsForDate(d).flatMap((ev) => extractAllTimeSlotsFromNotes(ev.notes)))),
-                            partial: getBusyDates().filter((d) => !isDayFullyBooked(getEventsForDate(d).flatMap((ev) => extractAllTimeSlotsFromNotes(ev.notes)))),
-                            blocked: getBlockedDates(),
-                          }}
-                          modifiersClassNames={{
-                            busy: "bg-destructive/70 text-destructive-foreground hover:bg-destructive/70",
-                            partial: "bg-orange-600/80 text-white hover:bg-orange-600/80",
-                            blocked: "bg-[#535353] text-foreground/80 hover:bg-[#535353]",
-                          }}
+                          disablePastDates
+                          busyDates={getBusyDates().filter((d) => isDayFullyBooked(getEventsForDate(d).flatMap((ev) => extractAllTimeSlotsFromNotes(ev.notes))))}
+                          partialDates={getBusyDates().filter((d) => !isDayFullyBooked(getEventsForDate(d).flatMap((ev) => extractAllTimeSlotsFromNotes(ev.notes))))}
+                          blockedDates={getBlockedDates()}
                         />
-                        <CompactCalendarLegend />
                         <p className="mt-1 text-xs text-muted-foreground/80">Pick a free day to send a request.</p>
                       </div>
 

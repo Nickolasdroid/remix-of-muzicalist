@@ -107,10 +107,11 @@ export function ArtistAvailabilityCalendar({
                 nav_button_previous: "absolute left-0",
                 nav_button_next: "absolute right-0",
                 head_row: "flex w-full",
-                head_cell: "flex-1 text-muted-foreground font-normal text-sm capitalize",
+                head_cell: "flex-1 min-w-0 text-muted-foreground font-normal text-sm capitalize",
                 row: "flex w-full mt-1",
-                cell: "flex-1 h-12 md:h-14 p-0 text-center flex items-center justify-center",
-                day: "h-11 w-11 md:h-12 md:w-12 rounded-full p-0 text-base font-normal hover:bg-foreground/[0.1] aria-selected:opacity-100",
+                // Cells share the width and shrink in narrow panels; days stay round up to 44-48px
+                cell: "flex-1 min-w-0 h-12 md:h-14 p-0 text-center flex items-center justify-center",
+                day: "aspect-square h-auto w-full max-w-[2.75rem] md:max-w-[3rem] rounded-full p-0 text-base font-normal hover:bg-foreground/[0.1] aria-selected:opacity-100",
               }
             : {}),
           // Same as the booking page: selected day white, today only underlined
