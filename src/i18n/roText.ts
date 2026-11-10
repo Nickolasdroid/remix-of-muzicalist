@@ -8,6 +8,7 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "Add video": "Adaugă videoclip",
   "Recent searches": "Căutări recente",
   "Top result": "Cel mai bun rezultat",
   "No artists for": "Niciun artist pentru",

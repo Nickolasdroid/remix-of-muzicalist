@@ -1574,21 +1574,17 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
               {/* Tabs Section */}
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="flex w-full justify-start mb-5 md:mb-8 h-auto p-0 gap-2 bg-transparent border-0 rounded-none">
-                  <TabsTrigger value="details" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                    <User strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
-                    <span className="hidden sm:inline">Details</span>
+                  <TabsTrigger value="details" className="group relative flex h-8 items-center justify-center px-3.5 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                    <span>Details</span>
                   </TabsTrigger>
-                  <TabsTrigger value="posts" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                    <FileText strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
-                    <span className="hidden sm:inline">Posts</span>
+                  <TabsTrigger value="posts" className="group relative flex h-8 items-center justify-center px-3.5 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                    <span>Posts</span>
                   </TabsTrigger>
-                  <TabsTrigger value="reviews" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                    <Star strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
-                    <span className="hidden sm:inline">Reviews</span>
+                  <TabsTrigger value="reviews" className="group relative flex h-8 items-center justify-center px-3.5 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                    <span>Reviews</span>
                   </TabsTrigger>
-                  <TabsTrigger value="gallery" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                    <Images strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
-                    <span className="hidden sm:inline">Gallery</span>
+                  <TabsTrigger value="gallery" className="group relative flex h-8 items-center justify-center px-3.5 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                    <span>Gallery</span>
                   </TabsTrigger>
                 </TabsList>
 

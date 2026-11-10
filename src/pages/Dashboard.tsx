@@ -2173,25 +2173,21 @@ const Dashboard = () => {
                     <Tabs value={profileSection} onValueChange={setProfileSection} className="w-full">
                       {!calendarOnly && <TabsList className="flex w-full justify-start mt-6 mb-5 md:mb-8 h-auto p-0 gap-2 bg-transparent border-0 rounded-none">
                         {!isAdmin && (
-                          <TabsTrigger value="details" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                            <User strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
-                            <span className="hidden sm:inline">Details</span>
+                          <TabsTrigger value="details" className="group relative flex h-8 items-center justify-center px-3.5 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                            <span>Details</span>
                           </TabsTrigger>
                         )}
-                        <TabsTrigger value="posts" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                          <FileText strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
-                          <span className="hidden sm:inline">Posts</span>
+                        <TabsTrigger value="posts" className="group relative flex h-8 items-center justify-center px-3.5 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                          <span>Posts</span>
                         </TabsTrigger>
                         {!isAdmin && (
-                          <TabsTrigger value="reviews" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                            <Star strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
-                            <span className="hidden sm:inline">Reviews</span>
+                          <TabsTrigger value="reviews" className="group relative flex h-8 items-center justify-center px-3.5 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                            <span>Reviews</span>
                           </TabsTrigger>
                         )}
                         {!isAdmin && (
-                          <TabsTrigger value="gallery" className="group relative flex h-9 flex-1 md:flex-none items-center justify-center gap-2 px-4 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
-                            <Images strokeWidth={2.25} className="h-5 w-5 sm:h-4 sm:w-4 transition-colors duration-200 ease-in-out group-data-[state=active]:text-foreground" />
-                            <span className="hidden sm:inline">Gallery</span>
+                          <TabsTrigger value="gallery" className="group relative flex h-8 items-center justify-center px-3.5 rounded-full border-0 bg-foreground/[0.07] text-sm font-normal text-foreground transition-colors hover:bg-foreground/[0.12] data-[state=active]:bg-foreground/[0.24] data-[state=active]:font-medium data-[state=active]:text-foreground data-[state=active]:shadow-none">
+                            <span>Gallery</span>
                           </TabsTrigger>
                         )}
                       </TabsList>}
@@ -2783,8 +2779,7 @@ const Dashboard = () => {
 
                           {/* Photos section */}
                           <SectionHeaderWithUsage
-                            icon={<ImageIcon className="h-5 w-5 text-accent" />}
-                            title={t('dashboardGallery.photos', 'Photos')}
+                                                        title={t('dashboardGallery.photos', 'Photos')}
                             usage={`${imagesUsed}/${STANDARD_IMAGE_LIMIT}`}
                           />
 
@@ -2795,7 +2790,7 @@ const Dashboard = () => {
                               return (
                                 <div key={item.id} className="relative group">
                                   <div
-                                    className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors cursor-pointer relative"
+                                    className="aspect-square rounded-lg overflow-hidden bg-foreground/[0.05] cursor-pointer relative"
                                     onClick={() => setMediaPreview({ url: item.url, type: 'image' })}
                                     title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : undefined}
                                   >
@@ -2832,9 +2827,10 @@ const Dashboard = () => {
                                 aria-label={t('dashboardGallery.photos', 'Photos')}
                                 onClick={() => document.getElementById('gallery-upload-inline')?.click()}
                                 disabled={isSaving}
-                                className="aspect-square rounded-lg border-2 border-dashed border-accent/40 hover:border-accent hover:bg-accent/5 transition-colors flex items-center justify-center"
+                                className="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg bg-foreground/[0.05] text-muted-foreground transition-colors hover:bg-foreground/[0.1] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
                               >
-                                <Plus className="h-8 w-8 text-accent" />
+                                <Plus className="h-7 w-7" />
+                                <span className="text-sm font-medium">Add photo</span>
                               </button>
                             )}
                           </div>
@@ -2842,8 +2838,7 @@ const Dashboard = () => {
 
                           {/* Videos section */}
                           <SectionHeaderWithUsage
-                            icon={<VideoIcon className="h-5 w-5 text-accent" />}
-                            title={t('dashboardGallery.videos', 'Videos')}
+                                                        title={t('dashboardGallery.videos', 'Videos')}
                             usage={`${videosUsed}/${STANDARD_VIDEO_LIMIT}`}
                           />
 
@@ -2854,7 +2849,7 @@ const Dashboard = () => {
                               return (
                                 <div key={item.id} className="relative group">
                                   <div
-                                    className="aspect-square rounded-lg overflow-hidden border-2 border-accent/20 hover:border-accent transition-colors bg-black/80 flex items-center justify-center cursor-pointer relative"
+                                    className="aspect-square rounded-lg overflow-hidden bg-black/80 flex items-center justify-center cursor-pointer relative"
                                     onClick={() => setMediaPreview({ url: item.url, type: 'video' })}
                                     title={hidden ? "Hidden from public view because your current subscription does not support this gallery slot. Upgrade your subscription to make this media visible again." : info ? providerLabel(info.provider) : undefined}
                                   >
@@ -2899,9 +2894,10 @@ const Dashboard = () => {
                                 aria-label={t('dashboardGallery.videos', 'Videos')}
                                 onClick={() => setShowGalleryDialog(true)}
                                 disabled={isSaving}
-                                className="aspect-square rounded-lg border-2 border-dashed border-accent/40 hover:border-accent hover:bg-accent/5 transition-colors flex items-center justify-center"
+                                className="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg bg-foreground/[0.05] text-muted-foreground transition-colors hover:bg-foreground/[0.1] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
                               >
-                                <Plus className="h-8 w-8 text-accent" />
+                                <Plus className="h-7 w-7" />
+                                <span className="text-sm font-medium">Add video</span>
                               </button>
                             )}
                           </div>
