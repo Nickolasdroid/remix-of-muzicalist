@@ -1709,25 +1709,15 @@ const Dashboard = () => {
     <>
                           {/* Availability: same card visitors see; a day opens the calendar */}
                           <div className="rounded-lg bg-foreground/[0.05] p-5">
-                            <SectionHeaderWithUsage title="Availability" size="sm" className="mb-2" />
-                            <Calendar
-                              mode="single"
+                            <SectionHeaderWithUsage title="Availability" size="sm" className="mb-4" />
+                            <ArtistAvailabilityCalendar
+                              large
                               selected={undefined}
-                              onSelect={() => navigate('/calendar')}
-                              className="-mx-3 p-0"
-                              classNames={{ day_today: "font-bold underline decoration-foreground/70 decoration-2 underline-offset-4" }}
-                              modifiers={{
-                                busy: calendarEvents.filter((e) => (e.status === 'busy' || e.status === 'booked') && isDayFullyBooked(parseSlotsFromNotes(e.notes))).map((e) => parseYMDToLocalDate(e.event_date)),
-                                partial: calendarEvents.filter((e) => (e.status === 'busy' || e.status === 'booked') && !isDayFullyBooked(parseSlotsFromNotes(e.notes))).map((e) => parseYMDToLocalDate(e.event_date)),
-                                blocked: calendarEvents.filter((e) => e.status === 'blocked' || e.status === 'unavailable').map((e) => parseYMDToLocalDate(e.event_date)),
-                              }}
-                              modifiersClassNames={{
-                                busy: "bg-destructive/70 text-destructive-foreground hover:bg-destructive/70",
-                                partial: "bg-orange-600/80 text-white hover:bg-orange-600/80",
-                                blocked: "bg-[#535353] text-foreground/80 hover:bg-[#535353]",
-                              }}
+                              onSelect={(d) => { if (d) navigate('/calendar'); }}
+                              busyDates={calendarEvents.filter((e) => (e.status === 'busy' || e.status === 'booked') && isDayFullyBooked(parseSlotsFromNotes(e.notes))).map((e) => parseYMDToLocalDate(e.event_date))}
+                              partialDates={calendarEvents.filter((e) => (e.status === 'busy' || e.status === 'booked') && !isDayFullyBooked(parseSlotsFromNotes(e.notes))).map((e) => parseYMDToLocalDate(e.event_date))}
+                              blockedDates={calendarEvents.filter((e) => e.status === 'blocked' || e.status === 'unavailable').map((e) => parseYMDToLocalDate(e.event_date))}
                             />
-                            <CompactCalendarLegend />
                             <p className="mt-1 text-xs text-muted-foreground/80">Pick a day to manage it in your calendar.</p>
                           </div>
 
