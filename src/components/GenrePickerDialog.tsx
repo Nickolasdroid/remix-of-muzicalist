@@ -25,8 +25,8 @@ export default function GenrePickerDialog({ availableGenres, onSelect, isAtLimit
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Badge variant="outline" className="border-accent/50 text-accent px-3 py-1 cursor-pointer hover:bg-accent/10 transition-colors">
-          <Plus className="h-3 w-3 mr-1" />
+        <Badge variant="outline" className="h-8 cursor-pointer rounded-full border border-foreground/25 bg-transparent px-3.5 text-sm font-medium text-foreground transition-colors hover:border-foreground">
+          <Plus className="mr-1.5 h-3.5 w-3.5" />
           Show all ({availableGenres.length})
         </Badge>
       </DialogTrigger>
@@ -40,7 +40,7 @@ export default function GenrePickerDialog({ availableGenres, onSelect, isAtLimit
             placeholder="Search genres..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="pl-9"
+            className="h-10 rounded-full border-0 bg-foreground/[0.07] pl-9 focus-visible:ring-1 focus-visible:ring-foreground/40 focus-visible:ring-offset-0"
           />
         </div>
         <ScrollArea className="h-[300px] pr-2">
@@ -50,14 +50,14 @@ export default function GenrePickerDialog({ availableGenres, onSelect, isAtLimit
                 key={genre}
                 variant="outline"
                 className={cn(
-                  "border-muted-foreground/30 text-muted-foreground px-3 py-1 transition-colors",
-                  isAtLimit ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:border-accent hover:text-accent"
+                  "h-8 rounded-full border-0 bg-foreground/[0.07] px-3.5 text-sm font-normal text-foreground transition-colors",
+                  isAtLimit ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:bg-foreground/[0.12]"
                 )}
                 onClick={() => {
                   if (!isAtLimit) onSelect(genre);
                 }}
               >
-                <Plus className="h-3 w-3 mr-1" />
+                <Plus className="mr-1.5 h-3.5 w-3.5" />
                 {genreLabel(genre)}
               </Badge>
             ))}

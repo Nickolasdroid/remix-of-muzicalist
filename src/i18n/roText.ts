@@ -8,6 +8,7 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "You can choose up to 5 genres. Remove one to add another.": "Poți alege cel mult 5 genuri. Scoate unul ca să adaugi altul.",
   "Add video": "Adaugă videoclip",
   "Recent searches": "Căutări recente",
   "Top result": "Cel mai bun rezultat",

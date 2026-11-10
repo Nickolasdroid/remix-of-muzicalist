@@ -103,6 +103,7 @@ const capitalizeFirst = (v: string) => (v ? v.charAt(0).toUpperCase() + v.slice(
 /** Inline profile editors: filled grey fields, a quiet Cancel and a gold Save, no icons. */
 const EDIT_FIELD = "rounded-lg border-0 bg-foreground/[0.07] text-base text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-foreground/40 focus-visible:ring-offset-0";
 const EDIT_CANCEL_BTN = "h-9 rounded-full px-4 text-sm font-bold text-muted-foreground hover:bg-transparent hover:text-foreground";
+const GENRE_CHIP = "h-8 rounded-full border-0 px-3.5 text-sm font-normal text-foreground transition-colors";
 const EDIT_SAVE_BTN = "h-9 rounded-full bg-accent px-5 text-sm font-bold text-accent-foreground hover:bg-accent hover:scale-[1.03] transition-transform";
 
 const Dashboard = () => {
@@ -2243,7 +2244,7 @@ const Dashboard = () => {
                             {editingField === 'genres' ? <div className="space-y-3">
                                 {/* Selected genres */}
                                 <div className="flex flex-wrap gap-2 min-h-[32px]">
-                                  {formData.musicGenres?.split(',').filter((g) => g.trim()).map((genre: string) => <Badge key={genre.trim()} variant="default" className="bg-accent text-accent-foreground px-3 py-1 cursor-pointer hover:bg-accent/80" onClick={() => {
+                                  {formData.musicGenres?.split(',').filter((g) => g.trim()).map((genre: string) => <Badge key={genre.trim()} variant="default" className={`${GENRE_CHIP} cursor-pointer bg-foreground/[0.24] font-medium hover:bg-foreground/[0.3]`} onClick={() => {
                         const genres = formData.musicGenres.split(',').map((g) => g.trim()).filter((g) => g);
                         const newGenres = genres.filter((g) => g !== genre.trim());
                         setFormData({
@@ -2252,7 +2253,7 @@ const Dashboard = () => {
                         });
                       }}>
                                       {genreLabel(genre.trim())}
-                                      <X className="h-3 w-3 ml-1" />
+                                      <X className="ml-1.5 h-3.5 w-3.5" />
                                     </Badge>)}
                                 </div>
                                 
@@ -2267,21 +2268,21 @@ const Dashboard = () => {
                       const hasMore = availableGenres.length > VISIBLE_COUNT;
 
                       const genreBadge = (genre: string) =>
-                      <Badge key={genre} variant="outline" className={cn("border-muted-foreground/30 text-muted-foreground px-3 py-1 transition-colors", isAtLimit ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:border-accent hover:text-accent")} onClick={() => {
+                      <Badge key={genre} variant="outline" className={cn(GENRE_CHIP, "bg-foreground/[0.07]", isAtLimit ? "opacity-40 cursor-not-allowed" : "cursor-pointer hover:bg-foreground/[0.12]")} onClick={() => {
                         if (isAtLimit) return;
                         const currentGenres = formData.musicGenres?.split(',').map((g) => g.trim()).filter((g) => g) || [];
                         if (!currentGenres.includes(genre)) {
                           setFormData({ ...formData, musicGenres: [...currentGenres, genre].join(', ') });
                         }
                       }}>
-                                      <Plus className="h-3 w-3 mr-1" />
+                                      <Plus className="mr-1.5 h-3.5 w-3.5" />
                                       {genreLabel(genre)}
                                     </Badge>;
 
 
                       return (
                         <div className="space-y-2">
-                                      <Label className="text-sm text-muted-foreground">Click to add genres:</Label>
+                                      <Label key={isAtLimit ? "limit" : "add"} className="text-sm text-muted-foreground">{isAtLimit ? "You can choose up to 5 genres. Remove one to add another." : "Click to add genres:"}</Label>
                                       <div className="flex flex-wrap gap-2">
                                         {visibleGenres.map((genre) => genreBadge(genre))}
                                         {hasMore &&
