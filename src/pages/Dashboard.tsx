@@ -2945,7 +2945,7 @@ const Dashboard = () => {
                                 if (isPastDate) {
                                   // Read-only view for past dates
                                   return <div>
-                                    <h4 className="text-lg font-bold text-foreground mb-3">
+                                    <h4 className="mb-4 text-2xl font-bold tracking-[-0.01em] text-foreground md:mb-3 md:text-lg">
                                       {capitalizeFirst(selectedDate.toLocaleDateString(i18n.language || 'ro', {
                                         weekday: 'long',
                                         year: 'numeric',
@@ -2984,7 +2984,7 @@ const Dashboard = () => {
                                 
                                 // Editable view for today and future dates
                                 return <div>
-                                  <h4 className="text-lg font-bold text-foreground mb-3">
+                                  <h4 className="mb-4 text-2xl font-bold tracking-[-0.01em] text-foreground md:mb-3 md:text-lg">
                                     {capitalizeFirst(selectedDate.toLocaleDateString(i18n.language || 'ro', {
                           weekday: 'long',
                           year: 'numeric',
@@ -2992,15 +2992,15 @@ const Dashboard = () => {
                           day: 'numeric'
                         }))}
                                   </h4>
-                                  <div className="space-y-3">
+                                  <div className="space-y-4">
                                     <div>
-                                      <Label>Status</Label>
+                                      <Label className="text-sm font-normal text-muted-foreground">Status</Label>
                                       {(() => {
                             const currentEvent = getEventForDate(selectedDate);
                             const isBooked = currentEvent?.status === 'busy' || currentEvent?.status === 'booked';
                             const showAsBooked = isBooked && !userChangedStatus;
-                            const chip = (selected: boolean) => `h-9 rounded-full px-4 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${selected ? 'bg-foreground/[0.24] font-medium text-foreground' : 'bg-foreground/[0.07] text-foreground hover:bg-foreground/[0.12]'}`;
-                            return <div className="mt-1.5 flex flex-wrap gap-2" role="radiogroup" aria-label="Status">
+                            const chip = (selected: boolean) => `h-10 rounded-full px-4 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${selected ? 'bg-foreground/[0.24] font-medium text-foreground' : 'bg-foreground/[0.07] text-foreground hover:bg-foreground/[0.12]'}`;
+                            return <div className="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-label="Status">
                                             {showAsBooked && <span role="radio" aria-checked="true" className="inline-flex h-9 items-center rounded-full bg-destructive/20 px-4 text-sm font-medium text-destructive">Booked</span>}
                                             {(['available', 'blocked'] as const).map((v) => (
                                               <button
@@ -3068,15 +3068,15 @@ const Dashboard = () => {
                             }} />;
                           }
                           return <div>
-                                          <Label>Notes (optional)</Label>
-                                          <Textarea value={eventNotes} onChange={(e) => setEventNotes(e.target.value)} placeholder="Event details..." rows={3} />
+                                          <Label className="text-sm font-normal text-muted-foreground">Notes (optional)</Label>
+                                          <Textarea value={eventNotes} onChange={(e) => setEventNotes(e.target.value)} placeholder="Event details..." rows={3} className={`mt-1.5 min-h-[88px] resize-none ${EDIT_FIELD}`} />
                                         </div>;
                         })()}
                                     <div className="flex gap-2">
-                                      <Button onClick={handleSaveCalendarEvent} disabled={isSaving} className="h-11 flex-1 rounded-full bg-accent font-bold text-accent-foreground hover:bg-accent/90">
+                                      <Button onClick={handleSaveCalendarEvent} disabled={isSaving} className="h-12 flex-1 rounded-full bg-accent text-base font-bold text-accent-foreground hover:bg-accent/90">
                                         {isSaving ? "Saving..." : "Save"}
                                       </Button>
-                                      {getEventForDate(selectedDate) && <Button variant="outline" onClick={handleDeleteCalendarEvent} disabled={isSaving} aria-label="Delete" className="h-11 w-11 rounded-full border-foreground/25 bg-transparent p-0 hover:border-foreground hover:bg-transparent">
+                                      {getEventForDate(selectedDate) && <Button variant="outline" onClick={handleDeleteCalendarEvent} disabled={isSaving} aria-label="Delete" className="h-12 w-12 rounded-full border-foreground/25 bg-transparent p-0 hover:border-foreground hover:bg-transparent">
                                         <Trash2 className="h-4 w-4" />
                                       </Button>}
                                     </div>
@@ -3086,7 +3086,7 @@ const Dashboard = () => {
 
                               if (isMobile) {
                                 return (
-                                  <Dialog open={!!selectedDate} onOpenChange={(open) => {
+                                  <Drawer shouldScaleBackground={false} open={!!selectedDate} onOpenChange={(open) => {
                                     if (!open) {
                                       setSelectedDate(undefined);
                                       setUserChangedStatus(false);
@@ -3094,13 +3094,13 @@ const Dashboard = () => {
                                       setEventNotes("");
                                     }
                                   }}>
-                                    <DialogContent className="max-w-md rounded-lg p-4">
-                                      <DialogHeader className="sr-only">
-                                        <DialogTitle>Date details</DialogTitle>
-                                      </DialogHeader>
+                                    <DrawerContent className="px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-5">
+                                      <DrawerHeader className="sr-only">
+                                        <DrawerTitle>Date details</DrawerTitle>
+                                      </DrawerHeader>
                                       {detailsNode}
-                                    </DialogContent>
-                                  </Dialog>
+                                    </DrawerContent>
+                                  </Drawer>
                                 );
                               }
 
