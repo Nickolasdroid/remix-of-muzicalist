@@ -46,6 +46,10 @@ const displayName = (p: ProfileRow) =>
  * Own profile: remove followers, unfollow. Other profiles: follow / unfollow artists.
  * When the open list is short, suggested artists from the viewer's area are shown below.
  */
+/** Follow is an outlined pill, Following / Remove a quiet grey one (gold stays for the main actions). */
+const OUTLINE_PILL = "h-8 rounded-full border border-foreground/40 bg-transparent px-4 text-sm font-bold text-foreground hover:border-foreground hover:bg-transparent hover:scale-[1.04] transition-transform";
+const FILLED_PILL = "h-8 rounded-full bg-foreground/[0.07] px-4 text-sm font-bold text-foreground hover:bg-foreground/[0.12]";
+
 const Connections = () => {
   const { profileId } = useParams<{ profileId: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -175,18 +179,18 @@ const Connections = () => {
     if (!me || row.id === me) return null;
     if (isOwn && tab === "followers" && !suggested) {
       return (
-        <Button size="sm" variant="outline" className="h-8 rounded-lg px-3" onClick={() => setConfirm({ kind: "remove", row })}>
+        <Button size="sm" variant="ghost" className={FILLED_PILL} onClick={() => setConfirm({ kind: "remove", row })}>
           Remove
         </Button>
       );
     }
     if (!row.specialization) return null; // only artists can be followed
     return myFollowing.has(row.id) ? (
-      <Button size="sm" variant="outline" className="h-8 rounded-lg px-3" onClick={() => setConfirm({ kind: "unfollow", row })}>
+      <Button size="sm" variant="ghost" className={FILLED_PILL} onClick={() => setConfirm({ kind: "unfollow", row })}>
         Following
       </Button>
     ) : (
-      <Button size="sm" className="h-8 rounded-lg px-3 bg-accent text-accent-foreground hover:bg-accent/90" onClick={() => follow(row)}>
+      <Button size="sm" variant="ghost" className={OUTLINE_PILL} onClick={() => follow(row)}>
         Follow
       </Button>
     );
@@ -201,17 +205,17 @@ const Connections = () => {
     const name = displayName(p);
     const sub = [p.specialization ? translateSpecialization(p.specialization) : null, p.county].filter(Boolean).join(" · ");
     return (
-      <li key={p.id} className="flex items-center gap-3 px-4 py-2.5">
+      <li key={p.id} className="mx-2 flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-foreground/[0.07]">
         <Link to={`/artist/${p.slug || p.id}`} className="flex min-w-0 flex-1 items-center gap-3">
-          <Avatar className="h-11 w-11">
+          <Avatar className="h-12 w-12">
             {p.avatar_url ? <AvatarImage src={p.avatar_url} alt={name} /> : null}
             <AvatarFallback>
               <User className="h-5 w-5" />
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-foreground notranslate" translate="no">{name}</p>
-            {sub && <p className="truncate text-xs text-muted-foreground">{sub}</p>}
+            <p className="truncate text-base font-medium text-foreground notranslate" translate="no">{name}</p>
+            {sub && <p className="truncate text-sm text-muted-foreground">{sub}</p>}
           </div>
         </Link>
         <div className="shrink-0">{actionFor(p, suggested)}</div>
@@ -226,25 +230,26 @@ const Connections = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background md:ml-[316px] lg:ml-[356px]">
+    <div className="min-h-screen bg-black">
       <Navigation mobileTitle={owner ? displayName(owner) : " "} onMobileBack={() => goBack(navigate, "/feed")} hideMobileNotifications />
-      <main className="mx-auto max-w-xl pt-14 md:pt-6 pb-24 md:pb-10">
-        <h1 className="hidden md:block px-4 pb-4 text-2xl font-display font-bold text-foreground notranslate" translate="no">
+      <div className="md:ml-[316px] md:py-2 md:pr-2 lg:ml-[356px]">
+      <main className="min-h-screen bg-background pb-24 pt-14 md:min-h-[calc(100vh-80px)] md:rounded-lg md:pb-10 md:pt-10">
+      <div className="mx-auto max-w-xl">
+        <h1 className="hidden md:block px-4 pb-2 text-5xl font-bold tracking-[-0.02em] text-foreground notranslate" translate="no">
           {owner ? displayName(owner) : ""}
         </h1>
 
-        <div role="tablist" className="sticky top-14 md:top-0 z-10 grid grid-cols-2 border-b border-border bg-background">
+        <div role="tablist" className="sticky top-14 md:top-16 z-10 flex gap-2 bg-background px-4 py-3">
           {(["followers", "following"] as Tab[]).map((t) => (
             <button
               key={t}
               role="tab"
               aria-selected={tab === t}
               onClick={() => setTab(t)}
-              className={`relative py-3 text-sm font-semibold transition-colors ${tab === t ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              className={`h-8 rounded-full px-3.5 text-sm text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${tab === t ? "bg-foreground/[0.24] font-medium" : "bg-foreground/[0.07] hover:bg-foreground/[0.12]"}`}
             >
               <span className="tabular-nums">{loading ? "–" : lists[t].length}</span>{" "}
               <span>{t === "following" ? "Following" : lists.followers.length === 1 && !loading ? "Follower" : "Followers"}</span>
-              {tab === t && <span className="absolute inset-x-8 bottom-0 h-0.5 rounded-full bg-accent" aria-hidden="true" />}
             </button>
           ))}
         </div>
@@ -256,26 +261,28 @@ const Connections = () => {
         ) : (
           <>
             {current.length > 0 ? (
-              <ul className="py-2">{current.map((p) => renderRow(p))}</ul>
+              <ul className="py-1">{current.map((p) => renderRow(p))}</ul>
             ) : (
               <div className="flex flex-col items-center px-6 pt-12 pb-6 text-center">
-                <div className="mb-3 rounded-2xl bg-accent/10 p-3">
-                  <Users className="h-6 w-6 text-accent" aria-hidden="true" />
+                <div className="mb-3 rounded-full bg-foreground/[0.07] p-3">
+                  <Users className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
                 </div>
                 <p className="max-w-xs text-sm text-muted-foreground">{emptyText}</p>
               </div>
             )}
 
             {suggestions.length > 0 && (
-              <section className="mt-4 border-t border-border pt-4">
-                <h2 className="px-4 pb-1 text-sm font-semibold text-foreground">Suggested artists</h2>
-                <p className="px-4 pb-2 text-xs text-muted-foreground">Artists near you that you don't follow yet.</p>
+              <section className="mt-6">
+                <h2 className="px-4 text-xl font-bold tracking-[-0.01em] text-foreground">Suggested artists</h2>
+                <p className="px-4 pb-3 pt-0.5 text-sm text-muted-foreground">Artists near you that you don't follow yet.</p>
                 <ul>{suggestions.map((p) => renderRow(p, true))}</ul>
               </section>
             )}
           </>
         )}
+      </div>
       </main>
+      </div>
 
       <AlertDialog open={!!confirm} onOpenChange={(o) => !o && setConfirm(null)}>
         {confirm && (
