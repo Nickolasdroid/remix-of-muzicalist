@@ -218,6 +218,9 @@ const Dashboard = () => {
       setPostsKind("collab");
     } else if (section) {
       setProfileSection(section);
+    } else {
+      // Back on the profile from the Calendar page: the calendar isn't one of the profile tabs
+      setProfileSection((prev) => (prev === "calendar" ? (isAdmin ? "posts" : "details") : prev));
     }
     if (searchParams.get('new') === '1') {
       if (section === 'posts') setShowPostDialog(true);
@@ -237,7 +240,7 @@ const Dashboard = () => {
     if (commentsId && (commentsType === 'post' || commentsType === 'announcement')) {
       setCommentsTarget({ id: commentsId, type: commentsType });
     }
-  }, [searchParams]);
+  }, [searchParams, calendarOnly]);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
   const [crop, setCrop] = useState({
     x: 0,
