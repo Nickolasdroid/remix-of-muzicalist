@@ -514,7 +514,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       )}
 
       {/* Mobile: Top Header Bar */}
-      <nav data-no-translate={skipAutoTranslate ? true : undefined} className={`fixed top-0 left-0 right-0 z-50 md:hidden ${user ? 'bg-background' : 'bg-black'} ${hideMobileHeader ? 'hidden' : ''}`}>
+      <nav data-no-translate={skipAutoTranslate ? true : undefined} className={`fixed top-0 left-0 right-0 z-50 md:hidden bg-background ${hideMobileHeader ? 'hidden' : ''}`}>
         <div className={`flex items-center justify-between h-14 ${user ? 'px-4' : 'gap-2 px-2 min-[375px]:px-4'}`}>
           {/* Left: Back button (when mobileTitle provided) or Menu Button (logged in) or Logo (logged out) */}
           {showMobileBack ? (
@@ -688,7 +688,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                   </span>
                 )}
               </button>
-            ) : (
+            ) : showMobileBack || mobileTitle ? null : (
               <>
                 <Link to="/register" className="rounded-full px-2.5 py-2 text-sm font-bold text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60">
                   {t('navigation.registerMobile')}

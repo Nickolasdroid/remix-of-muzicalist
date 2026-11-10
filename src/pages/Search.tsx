@@ -187,7 +187,7 @@ const Search = () => {
         placeholder={t("navigation.searchArtists", "Which artist are you looking for?")}
         aria-label="Search artists"
         autoFocus={!params.get("q") && typeof window !== "undefined" && window.innerWidth < 768}
-        className="h-12 w-full rounded-full border-0 bg-foreground/[0.1] pl-12 pr-11 text-base text-foreground placeholder:text-muted-foreground focus:bg-foreground/[0.14] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 [&::-webkit-search-cancel-button]:hidden"
+        className="h-10 w-full rounded-full border-0 bg-foreground/[0.1] pl-11 pr-11 text-base text-foreground placeholder:text-muted-foreground focus:bg-foreground/[0.14] focus:outline-none [&::-webkit-search-cancel-button]:hidden"
       />
       {query && (
         <button
@@ -207,7 +207,7 @@ const Search = () => {
   );
 
   const content = (
-    <div className="min-h-screen min-w-0 flex-1 bg-background px-4 pb-24 pt-[4.5rem] md:min-h-[calc(100vh-80px)] md:rounded-lg md:px-8 md:pb-12 md:pt-4">
+    <div className="min-h-screen min-w-0 flex-1 bg-background px-4 pb-24 pt-16 md:min-h-[calc(100vh-80px)] md:rounded-lg md:px-8 md:pb-12 md:pt-4">
       <div className="mx-auto max-w-5xl">
         <h1 className="sr-only">Search</h1>
 
@@ -363,7 +363,7 @@ const Search = () => {
       <Navigation hideMobileHeader={true} />
 
       {/* Phone: back arrow and the search field on top */}
-      <div className="fixed left-0 right-0 top-0 z-50 flex h-16 items-center gap-2 bg-black px-3 md:hidden">
+      <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center gap-2 bg-background px-3 md:hidden">
         <button type="button" onClick={() => goBack(navigate, signedIn ? "/feed" : "/")} aria-label="Back" className="shrink-0 p-2 text-foreground">
           <ArrowLeft className="h-6 w-6" />
         </button>
