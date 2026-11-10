@@ -172,10 +172,10 @@ export const BookingRequestFields = ({
   return (
     <form onSubmit={onSubmit} className={className ?? "space-y-4"}>
       {/* When */}
-      <div className="rounded-xl bg-card px-3.5 py-3 space-y-3">
+      <div className="rounded-lg bg-foreground/[0.06] p-4 space-y-3">
         <div className="flex gap-3 items-center">
-          <CalendarDays className="h-[18px] w-[18px] text-accent shrink-0" />
-          <p className="text-[15px] text-foreground notranslate" translate="no">
+          <CalendarDays className="h-5 w-5 text-muted-foreground shrink-0" />
+          <p className="text-base font-bold text-foreground notranslate" translate="no">
             {longDate}
             {multiDay && <> – {form.endDate!.toLocaleDateString(locale, { day: "numeric", month: "long" })}</>}
           </p>
@@ -195,7 +195,7 @@ export const BookingRequestFields = ({
 
         <div className="grid grid-cols-2 gap-2">
           <div className="space-y-1">
-            <Label htmlFor="startTime" className="flex h-5 items-center gap-1 text-xs text-muted-foreground font-normal">
+            <Label htmlFor="startTime" className="flex h-5 items-center gap-1 text-sm text-muted-foreground font-normal">
               <span>{multiDay ? "Starts" : "From"}</span>
               {multiDay && (
                 <span className="notranslate text-foreground/80" translate="no">· {dayLabel(date)}</span>
@@ -206,17 +206,18 @@ export const BookingRequestFields = ({
               value={form.startTime}
               onChange={(v) => setForm({ ...form, startTime: v })}
               placeholder="--:--"
+              triggerClassName="w-full h-11 rounded-lg border-0 bg-foreground/[0.08] text-base focus:ring-1 focus:ring-foreground/40 focus:ring-offset-0"
             />
           </div>
           <div className="space-y-1">
-            <Label htmlFor="endTime" className="flex h-5 items-center gap-1 text-xs text-muted-foreground font-normal">
+            <Label htmlFor="endTime" className="flex h-5 items-center gap-1 text-sm text-muted-foreground font-normal">
               <span>{multiDay ? "Ends" : "Until"}</span>
               {multiDay && (
                 <Popover open={multiDayOpen} onOpenChange={setMultiDayOpen}>
                   <PopoverTrigger asChild>
                     <button
                       type="button"
-                      className="notranslate rounded px-1 text-accent hover:bg-accent/10"
+                      className="notranslate rounded px-1 font-medium text-foreground underline-offset-2 hover:underline"
                       translate="no"
                       aria-label="Change the end day"
                     >
@@ -232,6 +233,7 @@ export const BookingRequestFields = ({
               value={form.endTime}
               onChange={(v) => setForm({ ...form, endTime: v })}
               placeholder="--:--"
+              triggerClassName="w-full h-11 rounded-lg border-0 bg-foreground/[0.08] text-base focus:ring-1 focus:ring-foreground/40 focus:ring-offset-0"
             />
           </div>
         </div>
@@ -260,9 +262,9 @@ export const BookingRequestFields = ({
         {multiDay ? (
           // A multi-day event runs continuously from the start time on the first day
           // to the end time on the last day; every day in between is fully booked.
-          <div className="rounded-lg border border-accent/30 bg-accent/[0.07] px-3 py-2.5 text-xs">
+          <div className="rounded-lg bg-foreground/[0.08] px-3 py-2.5 text-xs">
             <div className="flex items-center gap-2">
-              <CalendarRange className="h-3.5 w-3.5 shrink-0 text-accent" />
+              <CalendarRange className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
               <span className="font-semibold text-foreground">
                 <span>Multi-day event</span>
                 <span className="notranslate" translate="no"> · {dayCount}</span> <span>days</span>
@@ -299,7 +301,7 @@ export const BookingRequestFields = ({
 
       {/* Event type */}
       <div className="space-y-1.5">
-        <Label htmlFor="eventType">Event type</Label>
+        <Label htmlFor="eventType" className="text-sm font-normal text-muted-foreground">Event type</Label>
         <Select
           value={selectedType}
           onValueChange={(v) => {
@@ -312,7 +314,7 @@ export const BookingRequestFields = ({
             }
           }}
         >
-          <SelectTrigger id="eventType">
+          <SelectTrigger id="eventType" className="h-12 rounded-lg border-0 bg-foreground/[0.07] text-base focus:ring-1 focus:ring-foreground/40 focus:ring-offset-0 focus-visible:ring-1 focus-visible:ring-foreground/40 focus-visible:ring-offset-0">
             <SelectValue placeholder="Choose the type of event" />
           </SelectTrigger>
           <SelectContent className="max-h-80">
@@ -340,6 +342,7 @@ export const BookingRequestFields = ({
           <Input
             autoFocus
             maxLength={80}
+            className="h-12 rounded-lg border-0 bg-foreground/[0.07] text-base focus:ring-1 focus:ring-foreground/40 focus:ring-offset-0 focus-visible:ring-1 focus-visible:ring-foreground/40 focus-visible:ring-offset-0"
             placeholder="Describe the event (e.g. Company anniversary)"
             value={form.eventType}
             onChange={(e) => setForm({ ...form, eventType: e.target.value })}
@@ -349,7 +352,7 @@ export const BookingRequestFields = ({
 
       {/* Details */}
       <div className="space-y-1.5">
-        <Label htmlFor="message">Details (optional)</Label>
+        <Label htmlFor="message" className="text-sm font-normal text-muted-foreground">Details (optional)</Label>
         <Textarea
           id="message"
           rows={3}
@@ -357,11 +360,11 @@ export const BookingRequestFields = ({
           placeholder="Location, number of guests, music you'd like, budget…"
           value={form.message}
           onChange={(e) => setForm({ ...form, message: e.target.value })}
-          className="resize-none"
+          className="min-h-[96px] resize-none rounded-lg border-0 bg-foreground/[0.07] text-base focus-visible:ring-1 focus-visible:ring-foreground/40 focus-visible:ring-offset-0"
         />
       </div>
 
-      <div className="flex items-start gap-2.5 rounded-lg bg-card px-3 py-2.5 text-sm text-muted-foreground">
+      <div className="flex items-start gap-2.5 px-1 text-sm text-muted-foreground">
         <Info className="h-4 w-4 mt-0.5 shrink-0" />
         <span>The artist replies with a price offer. Contact details are shared only after you accept it.</span>
       </div>
@@ -369,7 +372,7 @@ export const BookingRequestFields = ({
       <Button
         type="submit"
         disabled={submitting || timesMissing || !!clash || !form.eventType.trim()}
-        className="w-full rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
+        className="h-12 w-full rounded-full bg-accent text-base font-bold text-accent-foreground hover:bg-accent/90"
       >
         {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
         Send booking request
@@ -408,12 +411,12 @@ const BookingRequestDialog = ({
         <div className="flex items-center gap-3 px-5 pt-5 pb-4 pr-12">
           <Avatar className="h-11 w-11">
             {artistAvatarUrl && <AvatarImage src={artistAvatarUrl} alt={artistName} />}
-            <AvatarFallback className="bg-accent/10 text-accent font-semibold">
+            <AvatarFallback className="bg-foreground/10 text-foreground font-semibold">
               {(artistName || "?").charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
-            <DialogTitle className="text-[17px] font-semibold leading-tight truncate notranslate" translate="no">
+            <DialogTitle className="text-lg font-bold leading-tight truncate notranslate" translate="no">
               {artistName}
             </DialogTitle>
             {artistSubtitle && (
