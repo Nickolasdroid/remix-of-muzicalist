@@ -27,6 +27,10 @@ interface Props {
   onCountChange?: (count: number) => void;
   /** View mode: opens the editor (shows the "+ Add" chip) */
   onAdd?: () => void;
+  /** View mode: tapping a price opens it in the editor */
+  onEditEntry?: (id: string) => void;
+  /** Editor: start with this price open for editing */
+  initialEditId?: string | null;
 }
 
 const MAX_AMOUNT = 9999999;
@@ -34,17 +38,23 @@ const MAX_AMOUNT = 9999999;
 const formatAmount = (n: number, lang: string) =>
   Number(n).toLocaleString(lang.startsWith("ro") ? "ro-RO" : "en-GB", { maximumFractionDigits: 2 });
 
-/** Gold filled tag: "Wedding  3.500 RON" (same look as the announcement price). */
-const PriceChip = ({ entry, lang }: { entry: PricingEntry; lang: string }) => (
-  <span className="inline-flex items-baseline gap-1.5 rounded-full bg-accent/15 px-3 py-1.5 leading-none">
-    <span className="text-[12.5px] font-medium text-accent/80">{entry.event_type}</span>
-    <span className="text-[13.5px] font-bold text-accent notranslate tabular-nums" translate="no">
+/** Grey tag like the genres: "Wedding  3.500 RON", price in bold. */
+const chipClass = "inline-flex h-9 items-center gap-1.5 rounded-full bg-foreground/[0.07] px-3.5 leading-none";
+const PriceChipBody = ({ entry, lang }: { entry: PricingEntry; lang: string }) => (
+  <>
+    <span className="text-sm text-muted-foreground">{entry.event_type}</span>
+    <span className="text-sm font-bold text-foreground notranslate tabular-nums" translate="no">
       {formatAmount(entry.amount, lang)} {entry.currency}
     </span>
+  </>
+);
+const PriceChip = ({ entry, lang }: { entry: PricingEntry; lang: string }) => (
+  <span className={chipClass}>
+    <PriceChipBody entry={entry} lang={lang} />
   </span>
 );
 
-export default function PricingEntriesEditor({ profileId, country, editable, maxEntries, onCountChange, onAdd }: Props) {
+export default function PricingEntriesEditor({ profileId, country, editable, maxEntries, onCountChange, onAdd, onEditEntry, initialEditId }: Props) {
   const { toast } = useToast();
   const { i18n } = useTranslation();
   const lang = i18n.language || i18n.resolvedLanguage || "ro";
@@ -74,12 +84,18 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
         .eq("profile_id", profileId)
         .order("created_at", { ascending: true });
       if (!alive) return;
-      if (!error && data) setEntries(data as unknown as PricingEntry[]);
+      if (!error && data) {
+        const list = data as unknown as PricingEntry[];
+        setEntries(list);
+        const target = initialEditId ? list.find((x) => x.id === initialEditId) : null;
+        if (target) startEdit(target);
+      }
       setLoading(false);
     })();
     return () => {
       alive = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profileId]);
 
   useEffect(() => {
@@ -169,9 +185,21 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
   if (!editable) {
     return (
       <div className="flex flex-wrap gap-2">
-        {entries.map((e) => (
-          <PriceChip key={e.id} entry={e} lang={lang} />
-        ))}
+        {entries.map((e) =>
+          onEditEntry ? (
+            <button
+              key={e.id}
+              type="button"
+              onClick={() => onEditEntry(e.id)}
+              aria-label="Edit price"
+              className={`${chipClass} transition-colors hover:bg-foreground/[0.12] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60`}
+            >
+              <PriceChipBody entry={e} lang={lang} />
+            </button>
+          ) : (
+            <PriceChip key={e.id} entry={e} lang={lang} />
+          ),
+        )}
         {onAdd && !atLimit && (
           <button
             type="button"

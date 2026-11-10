@@ -121,6 +121,7 @@ const Dashboard = () => {
   const [editingField, setEditingField] = useState<string | null>(null);
   const [pricingCount, setPricingCount] = useState(0);
   const [pricingDialogOpen, setPricingDialogOpen] = useState(false);
+  const [pricingEditId, setPricingEditId] = useState<string | null>(null);
   const [pricingRefreshKey, setPricingRefreshKey] = useState(0);
   const [acceptedEventsCount, setAcceptedEventsCount] = useState(0);
   const [responseRate, setResponseRate] = useState<number | null>(null);
@@ -1831,7 +1832,7 @@ const Dashboard = () => {
                                   title="Collaborations"
                                   size="sm"
                                 />
-                                {editingField !== 'collabStatus' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('collabStatus')}>
+                                {editingField !== 'collabStatus' && <Button size="sm" variant="ghost" aria-label="Edit" className="h-8 w-8 rounded-full p-0 text-muted-foreground transition-colors hover:bg-transparent hover:text-foreground" onClick={() => startEditing('collabStatus')}>
                                     <Edit2 className="h-4 w-4" />
                                   </Button>}
                               </div>
@@ -1881,7 +1882,7 @@ const Dashboard = () => {
                                   size="sm"
                                 />
 
-                                {editingField !== 'bandMembers' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bandMembers')}>
+                                {editingField !== 'bandMembers' && <Button size="sm" variant="ghost" aria-label="Edit" className="h-8 w-8 rounded-full p-0 text-muted-foreground transition-colors hover:bg-transparent hover:text-foreground" onClick={() => startEditing('bandMembers')}>
                                     <Edit2 className="h-4 w-4" />
                                   </Button>}
                               </div>
@@ -2205,7 +2206,7 @@ const Dashboard = () => {
                               icon={<User className="h-5 w-5 text-accent" />}
                               title="About"
                             />
-                            {editingField !== 'bio' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('bio')}>
+                            {editingField !== 'bio' && !!formData.bio?.trim() && <Button size="sm" variant="ghost" aria-label="Edit" className="h-8 w-8 rounded-full p-0 text-muted-foreground transition-colors hover:bg-transparent hover:text-foreground" onClick={() => startEditing('bio')}>
                                 <Edit2 className="h-4 w-4" />
                               </Button>}
                           </div>
@@ -2249,7 +2250,7 @@ const Dashboard = () => {
                                 title="Music Genres"
                               />
 
-                              {editingField !== 'genres' && <Button size="sm" variant="ghost" className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent" onClick={() => startEditing('genres')}>
+                              {editingField !== 'genres' && !!formData.musicGenres?.trim() && <Button size="sm" variant="ghost" aria-label="Edit" className="h-8 w-8 rounded-full p-0 text-muted-foreground transition-colors hover:bg-transparent hover:text-foreground" onClick={() => startEditing('genres')}>
                                   <Edit2 className="h-4 w-4" />
                                 </Button>}
                             </div>
@@ -2340,21 +2341,11 @@ const Dashboard = () => {
                           <div className="group">
                             <div className="flex items-center justify-between mb-3">
                               <SectionHeaderWithUsage
-                                icon={<DollarSign className="h-5 w-5 text-accent" />}
                                 title="Estimated Prices"
                                 usage={canSetEstimatedPrice(currentPlan) ? `${pricingCount}/${getEstimatedPriceLimit(currentPlan)}` : undefined}
                               />
 
-                              {canSetEstimatedPrice(currentPlan) && pricingCount > 0 && (
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  className="h-8 w-8 p-0 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-accent"
-                                  onClick={() => setPricingDialogOpen(true)}
-                                >
-                                  <Edit2 className="h-4 w-4" />
-                                </Button>
-                              )}
+
                             </div>
                             {!canSetEstimatedPrice(currentPlan) ? (
                               <div className="flex items-center gap-2 text-muted-foreground text-sm">
@@ -2370,7 +2361,8 @@ const Dashboard = () => {
                                   editable={false}
                                   maxEntries={getEstimatedPriceLimit(currentPlan)}
                                   onCountChange={setPricingCount}
-                                  onAdd={() => setPricingDialogOpen(true)}
+                                  onAdd={() => { setPricingEditId(null); setPricingDialogOpen(true); }}
+                                  onEditEntry={(id) => { setPricingEditId(id); setPricingDialogOpen(true); }}
                                 />
                                 <Dialog
                                   open={pricingDialogOpen}
@@ -2387,6 +2379,7 @@ const Dashboard = () => {
                                       country={profile?.country}
                                       editable={true}
                                       maxEntries={getEstimatedPriceLimit(currentPlan)}
+                                      initialEditId={pricingEditId}
                                     />
                                   </DialogContent>
                                 </Dialog>
