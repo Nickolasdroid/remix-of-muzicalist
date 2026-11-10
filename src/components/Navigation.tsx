@@ -711,14 +711,14 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
               <Link
                 key={item.label}
                 to={item.to}
-                className={`flex flex-col items-center justify-center flex-1 py-2 transition-colors relative ${
+                className={`relative flex flex-1 flex-col items-center justify-center gap-1 py-1.5 text-[11px] font-medium transition-colors ${
                   (isActive(item.to.split('?')[0]) || (item.to === '/feed' && location.pathname === '/' && user))
                     ? 'text-foreground'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 <div className="relative">
-                  <item.icon className="h-6 w-6" />
+                  <item.icon className="h-6 w-6" strokeWidth={(isActive(item.to.split('?')[0]) || (item.to === '/feed' && location.pathname === '/' && user)) ? 2.4 : 2} />
                   {item.showBadge && unreadCount > 0 && (
                     <span className="absolute -top-1 -right-2 flex items-center justify-center min-w-[16px] h-4 px-1 bg-destructive text-destructive-foreground text-[10px] font-semibold rounded-full">
                       {unreadCount > 9 ? '9+' : unreadCount}
@@ -730,6 +730,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                     </span>
                   ) : null}
                 </div>
+                <span className="max-w-full truncate px-0.5">{item.label}</span>
               </Link>
             ))}
           </div>
