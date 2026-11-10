@@ -2784,7 +2784,7 @@ const Dashboard = () => {
                           />
 
 
-                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
+                          <div className="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3">
                             {galleryItems.filter((item) => item.type === 'image').map((item, idx, arr) => {
                               const hidden = galleryHiddenIds.has(item.id);
                               return (
@@ -2829,8 +2829,8 @@ const Dashboard = () => {
                                 disabled={isSaving}
                                 className="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg bg-foreground/[0.05] text-muted-foreground transition-colors hover:bg-foreground/[0.1] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
                               >
-                                <Plus className="h-7 w-7" />
-                                <span className="text-sm font-medium">Add photo</span>
+                                <Plus className="h-6 w-6" />
+                                <span className="px-1 text-center text-xs font-medium leading-tight">Add photo</span>
                               </button>
                             )}
                           </div>
@@ -2842,7 +2842,7 @@ const Dashboard = () => {
                             usage={`${videosUsed}/${STANDARD_VIDEO_LIMIT}`}
                           />
 
-                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
+                          <div className="grid grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-2 md:gap-3">
                             {galleryItems.filter((item) => item.type === 'video').map((item, idx, arr) => {
                               const hidden = galleryHiddenIds.has(item.id);
                               const info = getEmbedInfo(item.url);
@@ -2896,8 +2896,8 @@ const Dashboard = () => {
                                 disabled={isSaving}
                                 className="flex aspect-square flex-col items-center justify-center gap-2 rounded-lg bg-foreground/[0.05] text-muted-foreground transition-colors hover:bg-foreground/[0.1] hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
                               >
-                                <Plus className="h-7 w-7" />
-                                <span className="text-sm font-medium">Add video</span>
+                                <Plus className="h-6 w-6" />
+                                <span className="px-1 text-center text-xs font-medium leading-tight">Add video</span>
                               </button>
                             )}
                           </div>
