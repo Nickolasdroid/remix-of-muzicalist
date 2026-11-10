@@ -3,12 +3,12 @@ import { usePageTitle } from "@/hooks/usePageTitle";
 import { goBack } from "@/lib/backNavigation";
 import { trackActivityEvent } from "@/lib/activityTracker";
 import { useNavigate, useParams, useSearchParams, Link } from "react-router-dom";
-import { ArrowLeft, Calendar as CalendarIcon } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
+import { ArtistAvailabilityCalendar } from "@/components/ArtistAvailabilityCalendar";
 import { useToast } from "@/hooks/use-toast";
 import { parseYMDToLocalDate, formatLocalDateToYMD } from "@/lib/utils";
 import { isDayFullyBooked } from "@/lib/calendarSlots";
@@ -243,57 +243,28 @@ const BookArtist = () => {
           </Link>
           <div className="min-w-0">
             <p className="text-xs text-muted-foreground">Booking request</p>
-            <Link to={`/artist/${artist.id}`} className="block truncate text-xl font-display font-bold hover:text-accent notranslate" data-user-content="true" data-no-translate="true" translate="no">
+            <Link to={`/artist/${artist.id}`} className="block truncate text-2xl font-bold tracking-[-0.01em] hover:underline notranslate" data-user-content="true" data-no-translate="true" translate="no">
               {artist.stage_name}
             </Link>
           </div>
         </div>
 
-        {/* Calendar Section */}
-        <div className="rounded-2xl border border-border bg-card p-4 sm:p-5 mb-4">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <CalendarIcon className="h-5 w-5 text-accent" />
-            Choose the date
-          </h2>
-          <p className="mt-0.5 mb-4 text-sm text-muted-foreground">Days without a color are free.</p>
-
-          <div className="flex flex-col items-center gap-4">
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              defaultMonth={selectedDate}
-              onSelect={setSelectedDate}
-              className="rounded-xl border border-border pointer-events-auto"
-              classNames={{
-                // Selected day in white (gold is already "partially booked"); today only underlined
-                day_selected:
-                  "bg-foreground text-background font-semibold hover:bg-foreground hover:text-background focus:bg-foreground focus:text-background",
-                day_today: "font-semibold underline decoration-accent decoration-2 underline-offset-4",
-              }}
-              modifiers={{
-                busy: busyDates.filter((d) => !hasFreeHours(d)),
-                partial: busyDates.filter((d) => hasFreeHours(d)),
-                blocked: blockedDates,
-              }}
-              modifiersClassNames={{
-                partial: "bg-amber-500/80 text-black hover:bg-amber-500/80 hover:text-black",
-                busy: "bg-destructive text-destructive-foreground hover:bg-destructive hover:text-destructive-foreground opacity-70",
-                blocked: "bg-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground opacity-80",
-              }}
-              disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-            />
-
-            <div className="flex w-full flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-              <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-500/80" />Partially booked</div>
-              <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-destructive/70" />Booked</div>
-              <div className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-muted/80" />Unavailable</div>
-            </div>
-
-          </div>
+        {/* Calendar Section: the same calendar as on the profile and in the artist's dashboard */}
+        <div className="mb-4 rounded-lg bg-foreground/[0.05] p-4 md:p-6">
+          <h2 className="mb-4 text-xl font-bold tracking-[-0.01em] text-foreground">Choose the date</h2>
+          <ArtistAvailabilityCalendar
+            large
+            selected={selectedDate}
+            onSelect={setSelectedDate}
+            busyDates={busyDates.filter((d) => !hasFreeHours(d))}
+            partialDates={busyDates.filter((d) => hasFreeHours(d))}
+            blockedDates={blockedDates}
+            disablePastDates
+          />
         </div>
 
         {/* Booking form */}
-        {selectedDate && <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">
+        {selectedDate && <div className="rounded-lg bg-foreground/[0.05] p-4 md:p-6">
           {selectedBlocked ? (
             <p className="text-sm text-muted-foreground">The artist has marked this day as unavailable. Choose another date.</p>
           ) : selectedFullyBooked ? (
