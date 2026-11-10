@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import { recordCategoryInterest } from "@/lib/visitorTaste";
 import SEO from "@/components/SEO";
 import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -191,6 +192,11 @@ interface Artist {
 
 const CategoryArtists = () => {
   const { category } = useParams<{ category: string }>();
+  // Remember the category for "Recommended artists" on the home page
+  useEffect(() => {
+    const spec = ({ Singers: "Singer", Instrumentalists: "Instrumentalist", DJs: "DJ", Bands: "Band" } as Record<string, string>)[category ?? ""];
+    if (spec) recordCategoryInterest(spec);
+  }, [category]);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [artists, setArtists] = useState<Artist[]>([]);

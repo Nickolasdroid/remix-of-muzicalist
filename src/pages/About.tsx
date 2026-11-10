@@ -11,6 +11,8 @@ import { useHomeArtists, type HomeArtist } from "@/hooks/useHomeArtists";
 import { getThumbUrl } from "@/lib/imageUrl";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import { cn } from "@/lib/utils";
+import { getPlanPriority } from "@/lib/planLimits";
+import { getTaste, recordCategoryInterest, tasteScore } from "@/lib/visitorTaste";
 import singerImg from "@/assets/singer-silhouette.png";
 import instrumentalistImg from "@/assets/instrumentalist-silhouette.png";
 import djImg from "@/assets/dj-silhouette.png";
@@ -34,12 +36,14 @@ const Shelf = ({
   artists,
   round = false,
   showRating = false,
+  limit = SHELF_SIZE,
 }: {
   title: string;
   showAllHref: string;
   artists: HomeArtist[];
   round?: boolean;
   showRating?: boolean;
+  limit?: number;
 }) => {
   const { t } = useTranslation();
   if (artists.length === 0) return null;
@@ -52,7 +56,7 @@ const Shelf = ({
         </Link>
       </div>
       <div className="-mx-1 flex overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {artists.slice(0, SHELF_SIZE).map((a) => (
+        {artists.slice(0, limit).map((a) => (
           <Link
             key={a.id}
             to={`/artist/${a.id}`}
@@ -97,6 +101,20 @@ const Shelf = ({
 };
 
 /**
+ * Everyone in the list, the best matches for this visitor first. Interest is split into
+ * three levels (strong / some / none) and the plan order (Premium first, the placement
+ * the plans promise) still applies inside each level. With no history: plan order only.
+ */
+const recommend = (list: HomeArtist[], taste: ReturnType<typeof getTaste>): HomeArtist[] => {
+  const scored = list.map((a, i) => ({ a, i, s: tasteScore(taste, a) }));
+  const max = Math.max(0, ...scored.map((x) => x.s));
+  const level = (s: number) => (max > 0 && s >= max * 0.5 ? 2 : s > 0 ? 1 : 0);
+  return scored
+    .sort((x, y) => level(y.s) - level(x.s) || getPlanPriority(y.a.plan) - getPlanPriority(x.a.plan) || y.s - x.s || x.i - y.i)
+    .map((x) => x.a);
+};
+
+/**
  * Public home page for visitors without an account: one dark panel with filter chips
  * and rows of artists, a "browse categories" grid and a sign-up bar at the bottom.
  */
@@ -104,18 +122,19 @@ const About = () => {
   const { t } = useTranslation();
   const all = useHomeArtists();
   const [category, setCategory] = useState<Category | null>(null);
+  // Read once per visit, so the order doesn't jump while browsing the page
+  const [taste] = useState(getTaste);
 
   const { recommended, topRated, newest } = useMemo(() => {
     const list = (all || []).filter((a) => !category || a.specialization === category);
     return {
-      // Plan order (Premium first) is the placement the plans promise
-      recommended: list,
+      recommended: recommend(list, taste),
       topRated: list
         .filter((a) => a.rating !== null)
         .sort((x, y) => y.rating! - x.rating! || y.reviewCount - x.reviewCount),
       newest: [...list].sort((x, y) => (y.created_at || "").localeCompare(x.created_at || "")),
     };
-  }, [all, category]);
+  }, [all, category, taste]);
 
   const active = CATEGORIES.find((c) => c.value === category);
   const showAllHref = active ? active.href : "/artists";
@@ -143,7 +162,10 @@ const About = () => {
                   type="button"
                   role="tab"
                   aria-selected={selected}
-                  onClick={() => setCategory(chip.value)}
+                  onClick={() => {
+                    setCategory(chip.value);
+                    if (chip.value) recordCategoryInterest(chip.value);
+                  }}
                   className={cn(
                     "h-8 shrink-0 rounded-full px-3.5 font-figtree text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60",
                     selected ? "bg-white/[0.24] font-medium text-white" : "bg-white/[0.07] text-white hover:bg-white/[0.12]",
@@ -166,7 +188,7 @@ const About = () => {
             </div>
           ) : (
             <>
-              <Shelf title="Recommended artists" showAllHref={showAllHref} artists={recommended} round />
+              <Shelf title="Recommended artists" showAllHref={showAllHref} artists={recommended} round limit={Infinity} />
               <Shelf title="Top rated" showAllHref="/leaderboard" artists={topRated} showRating />
               <Shelf title="New on Muzicalist" showAllHref={showAllHref} artists={newest} />
             </>

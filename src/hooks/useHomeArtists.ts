@@ -10,13 +10,14 @@ export interface HomeArtist {
   county: string | null;
   country: string | null;
   plan: string;
+  music_genres: string | null;
   created_at: string;
   rating: number | null;
   reviewCount: number;
 }
 
-/** Artists shown on the public home page (hero photos and the "Discover artists" row). */
-export function useHomeArtists(limit = 60) {
+/** All artists on the platform, for the rows on the public home page. */
+export function useHomeArtists(limit = 1000) {
   const [artists, setArtists] = useState<HomeArtist[] | null>(null);
 
   useEffect(() => {
@@ -24,7 +25,7 @@ export function useHomeArtists(limit = 60) {
     (async () => {
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, stage_name, avatar_url, specialization, county, country, plan, created_at")
+        .select("id, stage_name, avatar_url, specialization, county, country, plan, created_at, music_genres")
         .not("specialization", "is", null)
         .limit(limit);
       if (cancelled) return;
