@@ -123,7 +123,6 @@ const BlockedUsersPanel = () => {
         </p>
       </div>
 
-      <Separator />
 
       <div className="max-w-3xl">
         {loading ? (
@@ -131,7 +130,7 @@ const BlockedUsersPanel = () => {
             <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
           </div>
         ) : rows.length === 0 ? (
-          <div className="rounded-lg border border-border bg-card/40 py-12 px-6 text-center">
+          <div className="rounded-lg bg-foreground/[0.05] py-12 px-6 text-center">
             <UserX className="h-8 w-8 mx-auto text-muted-foreground/60" />
             <p className="mt-3 text-sm font-medium text-foreground">
               {t("settings.blocked.emptyTitle", "You're not blocking anyone")}
@@ -144,10 +143,10 @@ const BlockedUsersPanel = () => {
             </p>
           </div>
         ) : (
-          <div className="rounded-lg border border-border divide-y divide-border overflow-hidden">
+          <div className="-mx-2 flex flex-col">
             {rows.map((r) => (
-              <div key={r.id} className="flex items-center gap-3 p-3 sm:p-4">
-                <Avatar className="h-10 w-10 shrink-0">
+              <div key={r.id} className="flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-foreground/[0.07]">
+                <Avatar className="h-12 w-12 shrink-0">
                   <AvatarImage src={r.avatar_url || undefined} alt={r.name} />
                   <AvatarFallback>{r.name.charAt(0).toUpperCase()}</AvatarFallback>
                 </Avatar>
@@ -159,8 +158,8 @@ const BlockedUsersPanel = () => {
                 </div>
                 <Button
                   size="sm"
-                  variant="outline"
-                  className="shrink-0"
+                  variant="ghost"
+                  className="h-8 shrink-0 rounded-full bg-foreground/[0.07] px-4 font-bold hover:bg-foreground/[0.12]"
                   disabled={working === r.id}
                   onClick={() => unblock(r.id)}
                 >

@@ -88,35 +88,33 @@ const ManageSubscriptionCard = () => {
   if (plan === "Free" || !hasCustomer) {
     const freePlan = subscriptionPlans.find((p) => p.id === "Free");
     return (
-      <div className="rounded-lg border border-border bg-card p-5">
+      <div className="rounded-lg bg-foreground/[0.05] p-5">
         <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="h-4 w-4 text-accent" />
-          <h2 className="text-base font-semibold text-foreground">Current plan</h2>
+                    <h2 className="text-sm font-bold text-muted-foreground">Current plan</h2>
         </div>
 
-        <div className="rounded-lg border border-border/60 bg-muted/30 p-4 mb-4">
+        <div className="mb-4">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
-              <p className="text-xl font-semibold text-foreground">{freePlan?.name ?? "Free"} Plan</p>
+              <p className="text-2xl font-bold tracking-[-0.01em] text-foreground">{freePlan?.name ?? "Free"}</p>
               <p className="text-sm text-muted-foreground mt-0.5">No billing — free forever</p>
             </div>
-            <Badge variant="outline" className="border-accent/30 text-accent bg-accent/10">
+            <Badge variant="outline" className="rounded-full border-0 bg-foreground/[0.1] text-foreground">
               Active
             </Badge>
           </div>
         </div>
 
-        <div className="rounded-lg border border-accent/20 bg-accent/5 p-4 mb-4">
-          <p className="text-sm text-foreground leading-relaxed">
+        <div className="mb-5">
+          <p className="text-sm text-muted-foreground leading-relaxed">
             You are currently on the <span className="font-semibold">Free plan</span>. Upgrade for more posts each month, a bigger gallery, stories, estimated prices on your profile and better placement in the feed and in search.
           </p>
         </div>
 
         <Button
           onClick={() => navigate("/plans")}
-          className="rounded-lg bg-accent text-accent-foreground hover:bg-accent/90"
+          className="h-11 rounded-full bg-accent px-6 font-bold text-accent-foreground hover:bg-accent hover:scale-[1.02] transition-transform"
         >
-          <ArrowRight className="h-4 w-4 mr-2" />
           Upgrade plan
         </Button>
       </div>
@@ -156,21 +154,20 @@ const ManageSubscriptionCard = () => {
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="rounded-lg bg-foreground/[0.05] p-5">
       <div className="flex items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
-          <CreditCard className="h-4 w-4 text-accent" />
-          <h2 className="text-base font-semibold text-foreground">Current plan</h2>
+                    <h2 className="text-sm font-bold text-muted-foreground">Current plan</h2>
         </div>
         <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${toneClasses[statusMeta.tone]}`}>
           {statusMeta.label}
         </span>
       </div>
 
-      <div className="rounded-lg border border-border/60 bg-muted/30 p-4 mb-4">
+      <div className="mb-4">
         <div className="flex items-baseline justify-between gap-3 flex-wrap">
           <div>
-            <p className="text-xl font-semibold text-foreground">{planDef?.name ?? plan} Plan</p>
+            <p className="text-2xl font-bold tracking-[-0.01em] text-foreground">{planDef?.name ?? plan}</p>
             {priceLabel && (
               <p className="text-sm text-muted-foreground mt-0.5 flex items-center gap-1.5">
                 <Tag className="h-3.5 w-3.5" />

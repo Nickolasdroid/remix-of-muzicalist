@@ -180,7 +180,7 @@ const ContractDetailsForm = forwardRef<ContractDetailsFormHandle, ContractDetail
 
     return (
       <div className="space-y-4">
-        <div className="flex items-start gap-2 rounded-lg bg-secondary/50 p-3 text-xs text-muted-foreground">
+        <div className="flex items-start gap-2 rounded-lg bg-foreground/[0.05] p-3 text-xs text-muted-foreground">
           <Lock className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
           <span>
             Only you can see these details. They are added to a contract only when a booking is confirmed, and only
@@ -293,14 +293,14 @@ const ContractDetailsForm = forwardRef<ContractDetailsFormHandle, ContractDetail
         )}
 
         {company && (
-          <div className="flex items-center justify-between gap-3 rounded-lg border border-border/50 p-3">
+          <div className="flex items-center justify-between gap-3 rounded-lg bg-foreground/[0.05] p-3.5">
             <Label htmlFor="cd-vat" className="font-normal">Registered for VAT</Label>
             <Switch id="cd-vat" checked={!!form.vat_payer} onCheckedChange={(val) => set("vat_payer", val)} />
           </div>
         )}
 
         {showSaveButton && (
-          <Button onClick={save} disabled={saving} className="rounded-lg bg-accent text-accent-foreground hover:bg-accent/90">
+          <Button onClick={save} disabled={saving} className="h-12 rounded-full bg-accent px-8 text-base font-bold text-accent-foreground hover:bg-accent hover:scale-[1.02] transition-transform">
             {saving && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
             Save contract details
           </Button>

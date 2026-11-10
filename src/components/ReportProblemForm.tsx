@@ -112,7 +112,7 @@ const ReportProblemForm = ({ onSubmitted, compact }: Props) => {
         <Button
           onClick={handleSubmit}
           disabled={submitting}
-          className="bg-accent text-accent-foreground hover:bg-accent/90"
+          className="h-11 rounded-full bg-accent px-6 font-bold text-accent-foreground hover:bg-accent hover:scale-[1.02] transition-transform"
         >
           {submitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
           Send report
@@ -122,7 +122,7 @@ const ReportProblemForm = ({ onSubmitted, compact }: Props) => {
           type="button"
           variant="outline"
           onClick={() => fileInputRef.current?.click()}
-          className="border-foreground/25 bg-transparent font-bold hover:border-foreground hover:bg-transparent"
+          className="h-11 rounded-full border-foreground/25 bg-transparent px-5 font-bold hover:border-foreground hover:bg-transparent"
         >
           <Paperclip className="h-4 w-4 mr-2" />
           Attach file

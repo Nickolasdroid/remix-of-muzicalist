@@ -212,7 +212,7 @@ const VerificationCard = ({ profileId }: Props) => {
           desc: rejectionNote || "Your last submission was rejected. Please submit clearer documents.",
           badge: <Badge variant="destructive" className="rounded-lg">Rejected</Badge>,
           cta: (
-            <Button size="sm" className="rounded-lg" onClick={() => setOpen(true)}>
+            <Button size="sm" className="h-9 rounded-full px-4 font-bold" onClick={() => setOpen(true)}>
               <Upload className="h-4 w-4 mr-1.5" /> Resubmit
             </Button>
           ),
@@ -224,7 +224,7 @@ const VerificationCard = ({ profileId }: Props) => {
           desc: "Confirm your identity with an ID document and a selfie. Verified artists earn trust and a badge on their profile.",
           badge: null,
           cta: (
-            <Button size="sm" className="rounded-lg" onClick={() => setOpen(true)}>
+            <Button size="sm" className="h-9 rounded-full px-4 font-bold" onClick={() => setOpen(true)}>
               <ShieldCheck className="h-4 w-4 mr-1.5" /> Start verification
             </Button>
           ),
@@ -234,7 +234,7 @@ const VerificationCard = ({ profileId }: Props) => {
 
   return (
     <>
-      <div className="mx-4 md:mx-0 mt-3 md:mt-4 rounded-xl border border-border bg-secondary/40 p-3 md:p-4">
+      <div className="mx-4 md:mx-0 mt-3 md:mt-4 rounded-lg bg-foreground/[0.05] p-4">
         <div className="flex items-start gap-3">
           <div className="mt-0.5">{statusUI.icon}</div>
           <div className="flex-1 min-w-0">

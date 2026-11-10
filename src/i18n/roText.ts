@@ -8,6 +8,17 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "Nobody can mention or tag you.": "Nimeni nu te poate menționa sau eticheta.",
+  "No one": "Nimeni",
+  "Only people you follow can mention or tag you.": "Doar persoanele pe care le urmărești te pot menționa sau eticheta.",
+  "People I follow": "Persoane pe care le urmăresc",
+  "Only artists can mention or tag you.": "Doar artiștii te pot menționa sau eticheta.",
+  "Anyone can mention or tag you.": "Oricine te poate menționa sau eticheta.",
+  "Who can mention or tag you?": "Cine te poate menționa sau eticheta?",
+  "Decide who is allowed to mention or tag you in posts, announcements and comments": "Alege cine te poate menționa sau eticheta în postări, anunțuri și comentarii",
+  "Manage the users and artists you've blocked. Blocked profiles can't view your profile, message you, or interact with your content.": "Gestionează utilizatorii și artiștii pe care i-ai blocat. Profilurile blocate nu îți pot vedea profilul, nu îți pot scrie și nu pot interacționa cu conținutul tău.",
+  "You haven't blocked any users or artists yet.": "Încă nu ai blocat niciun utilizator sau artist.",
+  "You're not blocking anyone": "Nu blochezi pe nimeni",
   "You can choose up to 5 genres. Remove one to add another.": "Poți alege cel mult 5 genuri. Scoate unul ca să adaugi altul.",
   "Add video": "Adaugă videoclip",
   "Recent searches": "Căutări recente",

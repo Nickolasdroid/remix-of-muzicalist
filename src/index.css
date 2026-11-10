@@ -277,3 +277,20 @@ html:not(.dark) .name-overlay-outline *:not(svg):not(svg *) {
 @media (max-width: 767px) {
   body.has-guest-tabbar { padding-bottom: calc(64px + env(safe-area-inset-bottom)); }
 }
+
+/* Settings pages: every field is a filled grey box, no outline (Spotify style) */
+.settings-content input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="range"]),
+.settings-content textarea,
+.settings-content button[role="combobox"] {
+  border-color: transparent;
+  background-color: hsl(var(--foreground) / 0.07);
+  border-radius: 0.5rem;
+}
+.settings-content input:focus-visible,
+.settings-content textarea:focus-visible,
+.settings-content button[role="combobox"]:focus-visible {
+  outline: none;
+  --tw-ring-offset-width: 0px;
+  box-shadow: 0 0 0 1px hsl(var(--foreground) / 0.4);
+}
+.settings-content input:disabled { opacity: 1; color: hsl(var(--muted-foreground)); }

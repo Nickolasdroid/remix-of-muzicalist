@@ -64,7 +64,7 @@ export default function PaymentMethodCard() {
     : null;
 
   return (
-    <div className="rounded-lg border border-border bg-card p-5">
+    <div className="rounded-lg bg-foreground/[0.05] p-5">
       <div className="flex items-center justify-between gap-3 mb-4">
         <div className="flex items-center gap-2">
           <CreditCard className="h-4 w-4 text-accent" />
@@ -73,9 +73,9 @@ export default function PaymentMethodCard() {
       </div>
 
       {card ? (
-        <div className="flex items-center justify-between gap-4 rounded-lg border border-border/60 bg-muted/30 p-4 flex-wrap">
+        <div className="flex items-center justify-between gap-4 rounded-lg bg-foreground/[0.05] p-4 flex-wrap">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="flex h-10 w-14 items-center justify-center rounded-md bg-gradient-to-br from-accent/20 to-accent/5 border border-border/60">
+            <div className="flex h-10 w-14 items-center justify-center rounded-md bg-foreground/[0.1]">
               <CreditCard className="h-5 w-5 text-accent" />
             </div>
             <div className="min-w-0">
@@ -88,15 +88,15 @@ export default function PaymentMethodCard() {
               </p>
             </div>
           </div>
-          <Button variant="outline" onClick={handleUpdate} disabled={opening} className="rounded-lg">
+          <Button variant="outline" onClick={handleUpdate} disabled={opening} className="h-9 rounded-full border-foreground/25 bg-transparent px-4 font-bold hover:border-foreground hover:bg-transparent">
             {opening ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Pencil className="h-4 w-4 mr-2" />}
             {opening ? "Opening…" : "Update card"}
           </Button>
         </div>
       ) : (
-        <div className="flex items-center justify-between gap-4 rounded-lg border border-dashed border-border/60 bg-muted/20 p-4 flex-wrap">
+        <div className="flex items-center justify-between gap-4 rounded-lg bg-foreground/[0.05] p-4 flex-wrap">
           <p className="text-sm text-muted-foreground">No card on file.</p>
-          <Button variant="outline" onClick={handleUpdate} disabled={opening} className="rounded-lg">
+          <Button variant="outline" onClick={handleUpdate} disabled={opening} className="h-9 rounded-full border-foreground/25 bg-transparent px-4 font-bold hover:border-foreground hover:bg-transparent">
             {opening ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <CreditCard className="h-4 w-4 mr-2" />}
             {opening ? "Opening…" : "Add payment method"}
           </Button>

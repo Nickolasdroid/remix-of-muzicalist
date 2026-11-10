@@ -519,7 +519,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
           {/* Left: Back button (when mobileTitle provided) or Menu Button (logged in) or Logo (logged out) */}
           {showMobileBack ? (
             <button
-              className="-ml-1 p-2 text-foreground/80 hover:text-accent transition-colors"
+              className="-ml-1 p-2 text-foreground/80 hover:text-foreground transition-colors"
               aria-label={t('common.back', 'Back')}
               onClick={handleMobileBack}
             >
@@ -528,7 +528,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
           ) : user ? (
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
-              <button className="p-2 text-foreground/80 hover:text-accent transition-colors">
+              <button className="p-2 text-foreground/80 hover:text-foreground transition-colors">
                 <Menu className="h-6 w-6" />
               </button>
             </SheetTrigger>
@@ -679,7 +679,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 onClick={() => navigate('/notifications')}
                 onMouseEnter={() => preloadForPath('/notifications')}
                 onFocus={() => preloadForPath('/notifications')}
-                className="p-2 text-foreground/80 hover:text-accent transition-colors relative"
+                className="p-2 text-foreground/80 hover:text-foreground transition-colors relative"
               >
                 <Bell className="h-6 w-6" />
                 {unreadNotifications > 0 && (

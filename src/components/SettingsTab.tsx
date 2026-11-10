@@ -75,6 +75,14 @@ interface SettingsTabProps {
   accountType?: "user" | "artist";
 }
 
+/** Shared look for the settings pages: filled grey fields, grey option rows, pill buttons. */
+const SET_FIELD = "h-12 rounded-lg border-0 bg-foreground/[0.07] text-base text-foreground placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-foreground/40 focus-visible:ring-offset-0 disabled:cursor-not-allowed disabled:opacity-100 disabled:text-muted-foreground";
+const SET_OPTION = (active: boolean) =>
+  `flex items-start gap-3 rounded-lg p-3.5 cursor-pointer transition-colors ${active ? "bg-foreground/[0.12]" : "bg-foreground/[0.05] hover:bg-foreground/[0.08]"}`;
+const SET_PRIMARY_BTN = "h-12 rounded-full bg-accent px-8 text-base font-bold text-accent-foreground hover:bg-accent hover:scale-[1.02] transition-transform";
+const SET_OUTLINE_BTN = "h-11 rounded-full border border-foreground/25 bg-transparent px-6 text-sm font-bold text-foreground hover:border-foreground hover:bg-transparent";
+const SET_DANGER_BTN = "h-11 rounded-full bg-destructive px-6 text-sm font-bold text-destructive-foreground hover:bg-destructive/90";
+
 const SettingsTab = ({
   formData,
   handleLogout,
@@ -657,7 +665,7 @@ const SettingsTab = ({
       <Input 
         value={formData.email} 
         disabled 
-        className="bg-muted/50 text-sm" 
+        className={SET_FIELD} 
       />
       <p className="text-sm text-muted-foreground">Email cannot be changed</p>
     </div>
@@ -719,7 +727,7 @@ const SettingsTab = ({
                 setCurrentPasswordValid(null);
               }}
               placeholder="Current password"
-              className="h-12 rounded-lg pr-20"
+              className={`${SET_FIELD} pr-20`}
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
               {isCheckingCurrentPassword ? (
@@ -753,7 +761,7 @@ const SettingsTab = ({
             onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
             placeholder="New password"
             disabled={currentPasswordValid !== true}
-            className="h-12 rounded-lg pr-12 disabled:opacity-60"
+            className={`${SET_FIELD} pr-12 disabled:opacity-50`}
           />
           <button
             type="button"
@@ -771,7 +779,7 @@ const SettingsTab = ({
             onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
             placeholder="Re-enter new password"
             disabled={currentPasswordValid !== true}
-            className="h-12 rounded-lg pr-12 disabled:opacity-60"
+            className={`${SET_FIELD} pr-12 disabled:opacity-50`}
           />
           <button
             type="button"
@@ -786,7 +794,7 @@ const SettingsTab = ({
       <button
         type="button"
         onClick={() => navigate("/reset-password")}
-        className="text-sm font-semibold text-accent hover:underline"
+        className="text-sm font-bold text-foreground underline-offset-4 hover:underline"
       >
         Forgot password?
       </button>
@@ -794,7 +802,7 @@ const SettingsTab = ({
       <Button
         onClick={handleInstagramStyleChangePassword}
         disabled={isChangingPassword || currentPasswordValid !== true || !passwordData.newPassword || !passwordData.confirmPassword}
-        className="w-full h-12 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
+        className={`w-full ${SET_PRIMARY_BTN}`}
       >
         {isChangingPassword ? "Updating..." : "Change password"}
       </Button>
@@ -871,18 +879,18 @@ const SettingsTab = ({
       <div className="grid grid-cols-2 gap-2">
         <Button
           type="button"
-          variant={theme === "dark" ? "default" : "outline"}
+          variant="ghost"
           onClick={() => toggleTheme("dark")}
-          className="h-11 rounded-lg justify-center gap-2"
+          className={`h-11 justify-center gap-2 rounded-full text-sm font-medium text-foreground ${theme === "dark" ? "bg-foreground/[0.24] hover:bg-foreground/[0.24]" : "bg-foreground/[0.07] hover:bg-foreground/[0.12]"}`}
         >
           <Moon className="h-4 w-4" />
           Dark
         </Button>
         <Button
           type="button"
-          variant={theme === "light" ? "default" : "outline"}
+          variant="ghost"
           onClick={() => toggleTheme("light")}
-          className="h-11 rounded-lg justify-center gap-2"
+          className={`h-11 justify-center gap-2 rounded-full text-sm font-medium text-foreground ${theme === "light" ? "bg-foreground/[0.24] hover:bg-foreground/[0.24]" : "bg-foreground/[0.07] hover:bg-foreground/[0.12]"}`}
         >
           <Sun className="h-4 w-4" />
           Light
@@ -973,8 +981,6 @@ const SettingsTab = ({
         </p>
       </div>
 
-      <Separator />
-
       <div className="space-y-3">
         <Label className="text-sm font-medium">Allow comments from</Label>
         <RadioGroup
@@ -984,9 +990,7 @@ const SettingsTab = ({
         >
           <label
             htmlFor="comments-everyone"
-            className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
-              commentsAllowFrom === "everyone" ? "border-accent/50 bg-accent/5" : "border-border hover:border-muted-foreground/50"
-            }`}
+            className={SET_OPTION(commentsAllowFrom === "everyone")}
           >
             <RadioGroupItem value="everyone" id="comments-everyone" className="mt-0.5" />
             <div className="flex-1">
@@ -997,9 +1001,7 @@ const SettingsTab = ({
 
           <label
             htmlFor="comments-following"
-            className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
-              commentsAllowFrom === "following" ? "border-accent/50 bg-accent/5" : "border-border hover:border-muted-foreground/50"
-            }`}
+            className={SET_OPTION(commentsAllowFrom === "following")}
           >
             <RadioGroupItem value="following" id="comments-following" className="mt-0.5" />
             <div className="flex-1">
@@ -1010,9 +1012,7 @@ const SettingsTab = ({
 
           <label
             htmlFor="comments-off"
-            className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
-              commentsAllowFrom === "off" ? "border-accent/50 bg-accent/5" : "border-border hover:border-muted-foreground/50"
-            }`}
+            className={SET_OPTION(commentsAllowFrom === "off")}
           >
             <RadioGroupItem value="off" id="comments-off" className="mt-0.5" />
             <div className="flex-1">
@@ -1022,8 +1022,6 @@ const SettingsTab = ({
           </label>
         </RadioGroup>
       </div>
-
-      <Separator />
 
       <div className="flex items-center justify-between gap-4">
         <div className="flex-1">
@@ -1083,8 +1081,6 @@ const SettingsTab = ({
         </p>
       </div>
 
-      <Separator />
-
       <div className="space-y-1">
         {notificationItems.map((item, idx) => {
           const Icon = item.icon;
@@ -1103,7 +1099,7 @@ const SettingsTab = ({
                   onCheckedChange={(v) => applyNotificationPref(item.key, v)}
                 />
               </div>
-              {idx < notificationItems.length - 1 && <Separator />}
+              
             </div>
           );
         })}
@@ -1124,12 +1120,11 @@ const SettingsTab = ({
           Your email address is used for login and notifications
         </p>
       </div>
-      <Separator />
       <div className="space-y-2">
         <Input
           value={formData.email}
           disabled
-          className="bg-muted/50 text-sm"
+          className={SET_FIELD}
           style={{ width: `${Math.max(formData.email.length + 2, 20)}ch` }}
         />
         <p className="text-sm text-muted-foreground">Email cannot be changed</p>
@@ -1144,7 +1139,6 @@ const SettingsTab = ({
           Password must contain at least 6 characters and include a combination of numbers, letters, and special characters (!$@%).
         </p>
       </div>
-      <Separator />
       <div className="space-y-3 max-w-md">
         <div>
           <div className="relative">
@@ -1156,7 +1150,7 @@ const SettingsTab = ({
                 setCurrentPasswordValid(null);
               }}
               placeholder="Current password"
-              className="h-12 rounded-lg pr-20"
+              className={`${SET_FIELD} pr-20`}
             />
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
               {isCheckingCurrentPassword ? (
@@ -1189,7 +1183,7 @@ const SettingsTab = ({
             onChange={e => setPasswordData({ ...passwordData, newPassword: e.target.value })}
             placeholder="New password"
             disabled={currentPasswordValid !== true}
-            className="h-12 rounded-lg pr-12 disabled:opacity-60"
+            className={`${SET_FIELD} pr-12 disabled:opacity-50`}
           />
           <button
             type="button"
@@ -1206,7 +1200,7 @@ const SettingsTab = ({
             onChange={e => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
             placeholder="Re-enter new password"
             disabled={currentPasswordValid !== true}
-            className="h-12 rounded-lg pr-12 disabled:opacity-60"
+            className={`${SET_FIELD} pr-12 disabled:opacity-50`}
           />
           <button
             type="button"
@@ -1219,14 +1213,14 @@ const SettingsTab = ({
         <button
           type="button"
           onClick={() => navigate("/reset-password")}
-          className="text-sm font-semibold text-accent hover:underline"
+          className="text-sm font-bold text-foreground underline-offset-4 hover:underline"
         >
           Forgot password?
         </button>
         <Button
           onClick={handleInstagramStyleChangePassword}
           disabled={isChangingPassword || currentPasswordValid !== true || !passwordData.newPassword || !passwordData.confirmPassword}
-          className="w-full h-12 rounded-lg bg-accent text-accent-foreground hover:bg-accent/90 font-semibold"
+          className={`w-full ${SET_PRIMARY_BTN}`}
         >
           {isChangingPassword ? "Updating..." : "Change password"}
         </Button>
@@ -1241,7 +1235,6 @@ const SettingsTab = ({
           Choose your preferred language
         </p>
       </div>
-      <Separator />
       <div className="max-w-md">
         <Popover open={languagePopoverOpen} onOpenChange={setLanguagePopoverOpen}>
           <PopoverTrigger asChild>
@@ -1249,7 +1242,7 @@ const SettingsTab = ({
               variant="outline"
               role="combobox"
               aria-expanded={languagePopoverOpen}
-              className="w-full justify-between rounded-lg h-11"
+              className="h-12 w-full justify-between rounded-lg border-0 bg-foreground/[0.07] px-4 hover:bg-foreground/[0.1]"
             >
               <span className="flex items-center gap-2">
                 <span className="text-xl">{currentLanguage.flag}</span>
@@ -1259,14 +1252,14 @@ const SettingsTab = ({
             </Button>
           </PopoverTrigger>
           <PopoverContent align="start" className="w-[--radix-popover-trigger-width] p-0 rounded-lg">
-            <div className="p-2 border-b border-border">
+            <div className="p-2">
               <div className="relative">
                 <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input
                   value={languageSearch}
                   onChange={(e) => setLanguageSearch(e.target.value)}
                   placeholder="Search language…"
-                  className="pl-8 h-9 rounded-lg"
+                  className="h-9 rounded-full border-0 bg-foreground/[0.07] pl-8 focus-visible:ring-1 focus-visible:ring-foreground/40 focus-visible:ring-offset-0"
                   autoFocus
                 />
               </div>
@@ -1280,13 +1273,13 @@ const SettingsTab = ({
                     type="button"
                     onClick={() => requestLanguageChange(lang.code, lang.label)}
                     className={`w-full flex items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors ${
-                      isActive ? "bg-accent text-accent-foreground" : "hover:bg-muted"
+                      isActive ? "bg-foreground/[0.1] text-foreground" : "hover:bg-foreground/[0.07]"
                     }`}
                   >
                     <span className="text-xl">{lang.flag}</span>
                     <span className="flex-1 text-sm font-medium">{lang.label}</span>
                     <span className="text-xs text-muted-foreground">{lang.english}</span>
-                    {isActive && <CheckCircle className="h-4 w-4 ml-1" />}
+                    {isActive && <Check className="ml-1 h-4 w-4 text-foreground" />}
                   </button>
                 );
               })}
@@ -1307,22 +1300,21 @@ const SettingsTab = ({
           Choose between dark and light appearance
         </p>
       </div>
-      <Separator />
       <div className="grid grid-cols-2 gap-2 max-w-md">
         <Button
           type="button"
-          variant={theme === "dark" ? "default" : "outline"}
+          variant="ghost"
           onClick={() => toggleTheme("dark")}
-          className="h-11 rounded-lg justify-center gap-2"
+          className={`h-11 justify-center gap-2 rounded-full text-sm font-medium text-foreground ${theme === "dark" ? "bg-foreground/[0.24] hover:bg-foreground/[0.24]" : "bg-foreground/[0.07] hover:bg-foreground/[0.12]"}`}
         >
           <Moon className="h-4 w-4" />
           Dark
         </Button>
         <Button
           type="button"
-          variant={theme === "light" ? "default" : "outline"}
+          variant="ghost"
           onClick={() => toggleTheme("light")}
-          className="h-11 rounded-lg justify-center gap-2"
+          className={`h-11 justify-center gap-2 rounded-full text-sm font-medium text-foreground ${theme === "light" ? "bg-foreground/[0.24] hover:bg-foreground/[0.24]" : "bg-foreground/[0.07] hover:bg-foreground/[0.12]"}`}
         >
           <Sun className="h-4 w-4" />
           Light
@@ -1338,14 +1330,13 @@ const SettingsTab = ({
           Manage how Muzicalist promotes your profile
         </p>
       </div>
-      <Separator />
       <div className="flex items-center justify-between gap-4">
         <button
           type="button"
           onClick={() => setShowPromotionInfo(true)}
           className="text-left group flex-1"
         >
-          <Label className="text-sm font-medium cursor-pointer group-hover:text-accent">
+          <Label className="text-sm font-medium cursor-pointer underline-offset-4 group-hover:underline">
             Allow promotion on Muzicalist channels
           </Label>
         </button>
@@ -1359,7 +1350,6 @@ const SettingsTab = ({
       <div>
         <p className="text-sm text-muted-foreground">Send us feedback or report a problem</p>
       </div>
-      <Separator />
       <div className="max-w-2xl">
         <ReportProblemForm />
       </div>
@@ -1372,11 +1362,9 @@ const SettingsTab = ({
       <div>
         <p className="text-sm text-muted-foreground">Sign out of your account on this device</p>
       </div>
-      <Separator />
       <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
         <AlertDialogTrigger asChild>
-          <Button variant="outline">
-            <LogOut className="h-4 w-4 mr-2" />
+          <Button variant="ghost" className={SET_OUTLINE_BTN}>
             Sign Out
           </Button>
         </AlertDialogTrigger>
@@ -1403,11 +1391,9 @@ const SettingsTab = ({
       <div>
         <p className="text-sm text-muted-foreground">Permanently delete your account and all data</p>
       </div>
-      <Separator />
       <AlertDialog>
         <AlertDialogTrigger asChild>
-          <Button variant="destructive">
-            <Trash2 className="h-4 w-4 mr-2" />
+          <Button variant="ghost" className={SET_DANGER_BTN}>
             Delete Account
           </Button>
         </AlertDialogTrigger>
@@ -1513,7 +1499,6 @@ const SettingsTab = ({
             Verify your identity to earn a verified badge on your public profile and build trust with clients.
           </p>
         </div>
-        <Separator />
         <div className="max-w-3xl -mx-4 md:mx-0">
           {uid ? <VerificationCard profileId={uid} /> : null}
         </div>
@@ -1545,7 +1530,6 @@ const SettingsTab = ({
               Manage your billing details, invoices and subscription
             </p>
           </div>
-          <Separator />
           <div className="max-w-3xl">
             <BillingSection />
           </div>
@@ -1561,7 +1545,6 @@ const SettingsTab = ({
                 : "The details that appear on the contracts generated when you accept an artist's offer."}
             </p>
           </div>
-          <Separator />
           <div className="max-w-2xl">
             <ContractDetailsForm showSaveButton variant={accountType === "artist" ? "artist" : "organizer"} />
           </div>
@@ -1585,8 +1568,6 @@ const SettingsTab = ({
             </p>
           </div>
 
-          <Separator />
-
           <div className="space-y-3 max-w-3xl">
             <Label className="text-sm font-medium">Who can mention or tag you?</Label>
             <RadioGroup
@@ -1603,9 +1584,7 @@ const SettingsTab = ({
                 <label
                   key={opt.value}
                   htmlFor={`mentions-${opt.value}`}
-                  className={`flex items-start gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
-                    mentionsAllowFrom === opt.value ? "border-accent/50 bg-accent/5" : "border-border hover:border-muted-foreground/50"
-                  }`}
+                  className={SET_OPTION(mentionsAllowFrom === opt.value)}
                 >
                   <RadioGroupItem value={opt.value} id={`mentions-${opt.value}`} className="mt-0.5" />
                   <div className="flex-1 min-w-0">
@@ -1633,8 +1612,7 @@ const SettingsTab = ({
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Megaphone className="h-5 w-5 text-accent" />
-                Promotion on Muzicalist channels
+                                Promotion on Muzicalist channels
               </DialogTitle>
             </DialogHeader>
             <p className="text-sm text-muted-foreground leading-relaxed">
@@ -1683,13 +1661,12 @@ const ComingSoonPanel = ({
     <div>
       <p className="text-sm text-muted-foreground max-w-2xl">{description}</p>
     </div>
-    <Separator />
     {actionLabel && onAction ? (
-      <Button onClick={onAction} className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg">
+      <Button onClick={onAction} className={SET_PRIMARY_BTN}>
         {actionLabel}
       </Button>
     ) : (
-      <div className="rounded-lg border border-dashed border-border bg-muted/20 p-6 text-sm text-muted-foreground max-w-2xl">
+      <div className="max-w-2xl rounded-lg bg-foreground/[0.05] p-6 text-sm text-muted-foreground">
         We're working on this section. It will be available in an upcoming update.
       </div>
     )}
@@ -1736,48 +1713,47 @@ const EditProfilePanel = () => {
           Update your personal information. Email cannot be changed.
         </p>
       </div>
-      <Separator />
       <div className="max-w-xl space-y-5">
         <div className="space-y-2">
-          <Label htmlFor="ep-email">Email</Label>
-          <Input id="ep-email" type="email" value={email} disabled readOnly className="rounded-lg bg-muted/40 cursor-not-allowed" />
+          <Label className="text-sm font-bold" htmlFor="ep-email">Email</Label>
+          <Input id="ep-email" type="email" value={email} disabled readOnly className={SET_FIELD} />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="ep-phone">Phone</Label>
-          <Input id="ep-phone" type="tel" value={phone} disabled readOnly className="rounded-lg bg-muted/40 cursor-not-allowed" />
+          <Label className="text-sm font-bold" htmlFor="ep-phone">Phone</Label>
+          <Input id="ep-phone" type="tel" value={phone} disabled readOnly className={SET_FIELD} />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="ep-country">Country</Label>
+            <Label key="ep-country" className="text-sm font-bold" htmlFor="ep-country">Country</Label>
             <Input
               id="ep-country"
               value={country ? getCountryName(country) : ""}
               disabled
               readOnly
               placeholder="Not set"
-              className="rounded-lg bg-muted/40 cursor-not-allowed"
+              className={SET_FIELD}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="ep-county">Region</Label>
+            <Label className="text-sm font-bold" htmlFor="ep-county">Region</Label>
             <Input
               id="ep-county"
               value={county || ""}
               disabled
               readOnly
               placeholder="Not set"
-              className="rounded-lg bg-muted/40 cursor-not-allowed"
+              className={SET_FIELD}
             />
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="ep-first">First name</Label>
-            <Input id="ep-first" value={firstName} disabled readOnly className="rounded-lg bg-muted/40 cursor-not-allowed" />
+            <Label className="text-sm font-bold" htmlFor="ep-first">First name</Label>
+            <Input id="ep-first" value={firstName} disabled readOnly className={SET_FIELD} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="ep-last">Last name</Label>
-            <Input id="ep-last" value={lastName} disabled readOnly className="rounded-lg bg-muted/40 cursor-not-allowed" />
+            <Label className="text-sm font-bold" htmlFor="ep-last">Last name</Label>
+            <Input id="ep-last" value={lastName} disabled readOnly className={SET_FIELD} />
           </div>
         </div>
       </div>
@@ -1811,44 +1787,46 @@ const DesktopSettingsLayout = ({
         .filter((g) => g.items.length > 0)
     : groups;
 
+  const activeTitle = groups.flatMap((g) => g.items).find((it) => it.id === activeSection)?.label;
+
   // Mobile master/detail: show list when "main", show content otherwise
   const showNav = !isMobile || activeSection === "main";
   const showContent = !isMobile || activeSection !== "main";
 
   return (
-    <div className="w-full lg:fixed lg:inset-y-0 lg:left-[356px] lg:right-0 lg:z-20 bg-background">
+    <div className="w-full bg-background lg:fixed lg:w-auto lg:bottom-2 lg:left-[356px] lg:right-2 lg:top-[72px] lg:z-20 lg:overflow-hidden lg:rounded-lg">
       <div className="flex flex-col lg:flex-row gap-0 px-0 py-0 lg:h-full">
         {/* Settings navigation panel — Instagram-style, flush against main sidebar */}
         {showNav && (
-          <nav className="w-full lg:w-80 lg:shrink-0 lg:h-full lg:overflow-y-auto lg:border-r lg:border-border bg-background">
-            <div className="bg-transparent px-0 pt-2 pb-0 lg:p-5">
-              <h1 className="hidden lg:block text-2xl lg:text-lg font-semibold text-foreground px-4 lg:px-1 mb-3">{t('navigation.settings')}</h1>
-              <div className="relative mb-3 lg:mb-4 px-4 lg:px-0">
-                <Search className="absolute left-7 lg:left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <nav className="w-full bg-background lg:h-full lg:w-80 lg:shrink-0 lg:overflow-y-auto lg:[scrollbar-width:thin]">
+            <div className="bg-transparent px-0 pt-2 pb-6 lg:px-3 lg:py-6">
+              <h1 className="hidden lg:block px-3 mb-4 text-2xl font-bold tracking-[-0.01em] text-foreground">{t('navigation.settings')}</h1>
+              <div className="relative mb-4 px-4 lg:px-0">
+                <Search className="absolute left-8 lg:left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                 <Input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search settings…"
-                  className="pl-9 h-10 rounded-lg bg-background/50 border-border focus-visible:ring-accent"
+                  className="h-10 rounded-full border-0 bg-foreground/[0.07] pl-10 text-sm focus-visible:ring-1 focus-visible:ring-foreground/40 focus-visible:ring-offset-0"
                 />
               </div>
-              <div className="flex flex-col gap-3 lg:gap-4">
+              <div className="flex flex-col gap-5">
                 {filteredGroups.map((group) => (
                   <div key={group.title}>
-                    <h3 className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-4 lg:px-2 pb-1.5 lg:pb-1.5">
+                    <h3 className="px-4 pb-1 text-base font-bold text-foreground lg:px-3 lg:text-sm">
                       {group.title}
                     </h3>
                     <ul className="space-y-0 lg:space-y-0.5">
                       {group.items.map((item) => {
                         const Icon = item.icon;
                         const isActive = !isMobile && activeSection === item.id;
-                        const baseTransition = "transition-all duration-200 ease-out";
+                        const baseTransition = "transition-colors";
                         const activeCls = item.destructive
-                          ? "bg-destructive/10 text-destructive ring-1 ring-destructive/30"
-                          : "bg-accent/15 text-accent ring-1 ring-accent/30 shadow-[0_0_0_1px_hsl(var(--accent)/0.05)]";
+                          ? "bg-foreground/[0.1] text-destructive"
+                          : "bg-foreground/[0.1] text-foreground";
                         const idleCls = item.destructive
-                          ? "text-destructive/80 hover:bg-destructive/5 hover:text-destructive active:bg-destructive/10"
-                          : "text-muted-foreground hover:bg-muted/50 hover:text-foreground active:bg-muted/70";
+                          ? "text-destructive hover:bg-foreground/[0.07]"
+                          : "text-foreground lg:text-muted-foreground hover:bg-foreground/[0.07] hover:text-foreground";
                         return (
                           <li key={item.id}>
                             <button
@@ -1860,7 +1838,7 @@ const DesktopSettingsLayout = ({
                                 }
                                 setActiveSection(item.id);
                               }}
-                              className={`w-full flex items-center justify-between gap-3 px-4 lg:px-3 py-2.5 lg:py-2 rounded-none lg:rounded-lg text-sm font-semibold lg:font-medium ${baseTransition} lg:hover:translate-x-0.5 ${
+                              className={`w-full flex items-center justify-between gap-3 px-4 lg:px-3 py-3 lg:py-2.5 rounded-none lg:rounded-md text-base lg:text-sm font-normal lg:font-medium ${baseTransition} ${
                                 isActive ? activeCls : idleCls
                               }`}
                             >
@@ -1870,7 +1848,7 @@ const DesktopSettingsLayout = ({
                                     isActive
                                       ? item.destructive
                                         ? "text-destructive"
-                                        : "text-accent"
+                                        : "text-foreground"
                                       : item.destructive
                                         ? "text-destructive"
                                         : "text-muted-foreground"
@@ -1879,7 +1857,7 @@ const DesktopSettingsLayout = ({
                                 <span className="flex-1 text-left truncate">{item.label}</span>
                               </div>
                               {isMobile && (
-                                <ChevronRight className={`h-5 w-5 shrink-0 ${item.destructive ? "text-destructive/60" : "text-muted-foreground"}`} strokeWidth={2} />
+                                <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" strokeWidth={2} />
                               )}
                             </button>
                           </li>
@@ -1898,9 +1876,12 @@ const DesktopSettingsLayout = ({
 
         {/* Dynamic content panel */}
         {showContent && (
-          <div className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto">
-            <div className="bg-background px-4 pt-4 pb-0 lg:p-10 lg:min-h-full lg:max-w-4xl lg:mx-auto">
-              <div key={activeSection} className="animate-fade-in">
+          <div className="flex-1 min-w-0 lg:h-full lg:overflow-y-auto lg:bg-foreground/[0.03] lg:[scrollbar-width:thin]">
+            <div className="px-4 pt-4 pb-8 lg:mx-auto lg:min-h-full lg:max-w-3xl lg:px-10 lg:py-10">
+              {!isMobile && activeTitle && (
+                <h2 key={`t-${activeSection}`} className="mb-3 text-[2rem] font-bold leading-tight tracking-[-0.02em] text-foreground lg:text-5xl">{activeTitle}</h2>
+              )}
+              <div key={activeSection} className="settings-content animate-fade-in">
                 {contentMap[activeSection] ?? contentMap.edit_profile}
               </div>
               {extraDialogs}
