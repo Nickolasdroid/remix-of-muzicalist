@@ -140,7 +140,7 @@ const OpportunityCard = ({
 
       <div className="space-y-1">
         {/* Same names as the feed filters: Event / Collaboration */}
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-accent">{isGig ? "Event" : "Collaboration"}</p>
+        <p key={isGig ? "event" : "collab"} className="text-xs font-medium text-muted-foreground">{isGig ? "Event" : "Collaboration"}</p>
         <h3 className="text-base font-bold leading-snug text-foreground notranslate" translate="no" data-user-content="true">
           {opportunityDisplayTitle(o, lang)}
         </h3>
@@ -150,7 +150,7 @@ const OpportunityCard = ({
         <div className="space-y-1.5 text-[13.5px] text-foreground/85">
           {dateText && (
             <p className="flex items-center gap-2 min-w-0">
-              <CalendarDays className="h-4 w-4 shrink-0 text-accent" />
+              <CalendarDays className="h-4 w-4 shrink-0 text-muted-foreground" />
               <span className="truncate notranslate tabular-nums" translate="no">
                 {dateText}
                 {o.start_time && o.end_time && ` · ${o.start_time} – ${o.end_time}`}
@@ -159,7 +159,7 @@ const OpportunityCard = ({
           )}
           {place && (
             <p className="flex items-center gap-2 min-w-0">
-              <MapPin className="h-4 w-4 shrink-0 text-accent" />
+              <MapPin className="h-4 w-4 shrink-0 text-muted-foreground" />
               <span className="truncate notranslate" translate="no">
                 {place}
                 {!isGig && o.collab_type && o.collab_type !== "one_event" && (
@@ -172,12 +172,12 @@ const OpportunityCard = ({
       )}
 
       {budget ? (
-        <p className="inline-flex w-fit items-center rounded-full bg-accent/15 px-3 py-1.5 text-[14px] font-bold leading-none text-accent notranslate tabular-nums" translate="no">
+        <p className="inline-flex w-fit items-center rounded-full bg-foreground/[0.08] px-3 py-1.5 text-[14px] font-bold leading-none text-foreground notranslate tabular-nums" translate="no">
           {budget}
         </p>
       ) : (
         // No amount given: say so plainly, in grey, so only real amounts stand out
-        <p className="inline-flex w-fit items-center rounded-full bg-muted px-3 py-1.5 text-[13px] font-medium leading-none text-muted-foreground">
+        <p className="inline-flex w-fit items-center rounded-full bg-foreground/[0.05] px-3 py-1.5 text-[13px] font-medium leading-none text-muted-foreground">
           {isGig ? "Budget not specified" : "Fee not specified"}
         </p>
       )}
@@ -196,15 +196,15 @@ const OpportunityCard = ({
       {actions}
 
       {isGig && (offersCount != null || expiresText) && (
-        <div className="flex items-center justify-between border-t border-border/60 pt-2 text-xs text-muted-foreground">
+        <div className="flex items-center justify-between gap-3 pt-1 text-xs text-muted-foreground">
           <span>
             {offersCount ? (
-              <>
-                <span className="tabular-nums">{offersCount}</span>{" "}
+              <span key={offersCount === 1 ? "one" : "many"}>
+                <span className="tabular-nums notranslate" translate="no">{offersCount}</span>{" "}
                 <span>{offersCount === 1 ? "offer sent" : "offers sent"}</span>
-              </>
+              </span>
             ) : (
-              <span>No offers yet</span>
+              <span key="none">No offers yet</span>
             )}
           </span>
           {expiresText && (

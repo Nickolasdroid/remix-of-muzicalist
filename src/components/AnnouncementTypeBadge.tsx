@@ -49,7 +49,7 @@ const AnnouncementTypeBadge = ({
         <span
           role="img"
           aria-label={label}
-          className="inline-flex h-3.5 w-3.5 items-center justify-center text-accent"
+          className="inline-flex h-3.5 w-3.5 items-center justify-center"
         >
           <Megaphone className="h-3.5 w-3.5" aria-hidden="true" />
         </span>
