@@ -164,7 +164,7 @@ const OfficialProfileView = ({
             className="mb-4"
           />
           <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
-            <div className="w-full max-w-[500px] mx-auto space-y-2 md:space-y-4">
+            <div className={`w-full ${postsViewMode === "grid" ? "max-w-4xl" : "max-w-[560px]"} mx-auto md:mx-0 space-y-2 md:space-y-4`}>
               {posts.length === 0 ? (
                 <div className="text-center py-12 border border-dashed border-border rounded-lg mx-4 md:mx-0">
                   <FileText className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
@@ -207,7 +207,7 @@ const OfficialProfileView = ({
           </> : <>
           {announcementsToolbar}
           <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
-            <div className="w-full max-w-[500px] mx-auto space-y-2 md:space-y-4">
+            <div className="w-full max-w-[560px] mx-auto md:mx-0 space-y-2 md:space-y-4">
               <AnnouncementList
                 announcements={(announcements as any[]).filter((a) => announcementKind(a, "gig") === kind)}
                 profile={profile as any}

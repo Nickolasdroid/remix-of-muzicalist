@@ -418,7 +418,7 @@ const OwnerAnnouncementsList = ({ announcements, isArtist, disabled, onClose, on
 
       {shown.length > 0 ? (
         <div className={listClassName}>
-          <div className="w-full max-w-[500px] mx-auto space-y-2 md:space-y-3">{shown.map(renderCard)}</div>
+          <div className="w-full max-w-[560px] mx-auto md:mx-0 space-y-2 md:space-y-3">{shown.map(renderCard)}</div>
         </div>
       ) : (
         <div className="rounded-2xl border border-dashed border-border/70 p-6 text-center text-sm text-muted-foreground">

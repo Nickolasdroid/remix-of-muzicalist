@@ -1745,7 +1745,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       </div> :
 
                 <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
-                  <div className="w-full max-w-[500px] mx-auto space-y-2 md:space-y-4">
+                  <div className={`w-full ${postsViewMode === "grid" ? "max-w-4xl" : "max-w-[560px]"} mx-auto md:mx-0 space-y-2 md:space-y-4`}>
                       {(() => {
                     const promotions = announcements.filter((a) => a.is_premium && !isAdExpired(a)).map((a) => ({
                       ...a,
@@ -1911,7 +1911,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       </Card> :
 
                 <div className="-mx-4 md:mx-0 w-[calc(100%+2rem)] md:w-full">
-                  <div className="w-full max-w-[500px] mx-auto space-y-2 md:space-y-4">
+                  <div className="w-full max-w-[560px] mx-auto md:mx-0 space-y-2 md:space-y-4">
                       <AnnouncementList
                         announcements={activeOpps}
                         profile={artist}

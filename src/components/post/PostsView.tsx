@@ -23,7 +23,10 @@ const STORAGE_KEY = "muzicalist-posts-view";
 
 function readStoredMode(): PostsViewMode {
   if (typeof window === "undefined") return "list";
-  return window.sessionStorage.getItem(STORAGE_KEY) === "grid" ? "grid" : "list";
+  const stored = window.sessionStorage.getItem(STORAGE_KEY);
+  if (stored === "grid" || stored === "list") return stored;
+  // Nothing chosen yet: a grid on computers (like a profile on Instagram), the list on phones
+  return window.matchMedia?.("(min-width: 768px)").matches ? "grid" : "list";
 }
 
 export function usePostsViewMode() {
