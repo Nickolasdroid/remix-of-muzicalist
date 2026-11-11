@@ -416,7 +416,7 @@ const CategoryArtists = () => {
         {!loading && (
           <p className="mt-3 text-sm font-medium text-white/80">
             <span className="tabular-nums notranslate" translate="no">{filteredArtists.length}</span>{" "}
-            <span>{filteredArtists.length === 1 ? "artist" : "artists"}</span>
+            <span key={filteredArtists.length === 1 ? "one" : "many"}>{filteredArtists.length === 1 ? "artist" : "artists"}</span>
           </p>
         )}
       </header>
@@ -426,12 +426,19 @@ const CategoryArtists = () => {
       >
         <div className="mb-4 md:mb-6">
           <FilterChips {...filterProps} />
-          {/* Phone, guests: the filter button (signed-in users have it in the top bar) */}
-          {!currentUserId && (
-            <div className="flex justify-end md:hidden">
-              <FilterButton placement="page" mobileInHeader={false} {...filterProps} />
-            </div>
-          )}
+          {/* Phone: how many artists (the big header is desktop only), and for guests the
+              filter button (signed-in users have it in the top bar) */}
+          <div className="flex min-h-9 items-center justify-between gap-3 md:hidden">
+            <p className="text-sm font-medium text-muted-foreground">
+              {!loading && (
+                <>
+                  <span className="tabular-nums notranslate" translate="no">{filteredArtists.length}</span>{" "}
+                  <span key={filteredArtists.length === 1 ? "one" : "many"}>{filteredArtists.length === 1 ? "artist" : "artists"}</span>
+                </>
+              )}
+            </p>
+            {!currentUserId && <FilterButton placement="page" mobileInHeader={false} {...filterProps} />}
+          </div>
         </div>
 
         {urlDate && (
