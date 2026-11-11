@@ -363,7 +363,7 @@ const Search = () => {
       <Navigation hideMobileHeader={true} />
 
       {/* Phone: back arrow and the search field on top */}
-      <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center gap-2 bg-background px-3 md:hidden">
+      <div className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center gap-2 bg-black px-3 md:hidden">
         <button type="button" onClick={() => goBack(navigate, signedIn ? "/feed" : "/")} aria-label="Back" className="shrink-0 p-2 text-foreground">
           <ArrowLeft className="h-6 w-6" />
         </button>

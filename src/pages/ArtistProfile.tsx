@@ -1413,7 +1413,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
           <div className="sticky top-0 z-[60] h-0 md:top-16 md:z-40">
             <div
               aria-hidden={!showStickyBar}
-              className={`absolute inset-x-0 top-0 flex h-14 items-center gap-2.5 bg-background px-4 transition-[opacity,transform] duration-200 md:h-16 md:gap-3 md:px-8 md:shadow-[0_6px_16px_rgba(0,0,0,0.35)] ${
+              className={`absolute inset-x-0 top-0 flex h-14 items-center gap-2.5 bg-black px-4 md:bg-background transition-[opacity,transform] duration-200 md:h-16 md:gap-3 md:px-8 md:shadow-[0_6px_16px_rgba(0,0,0,0.35)] ${
                 showStickyBar ? 'translate-y-0 opacity-100' : 'pointer-events-none opacity-0 md:-translate-y-2'
               }`}
             >
