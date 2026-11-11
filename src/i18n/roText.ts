@@ -8,6 +8,10 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "Start for free": "Începe gratuit",
+  "Switch to Free": "Treci la planul Gratuit",
+  "Switch to Standard": "Treci la Standard",
+  "Switch to Premium": "Treci la Premium",
   "Page not found": "Pagina nu există",
   "The link may be wrong, or the page was removed.": "Linkul poate fi greșit sau pagina a fost ștearsă.",
   "Go to home page": "Mergi la pagina principală",

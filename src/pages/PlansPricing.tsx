@@ -121,9 +121,12 @@ const PlansPricing = () => {
               const isPremiumPlan = plan.id === 'Premium';
               const rank: Record<string, number> = { Free: 1, Standard: 2, Premium: 3 };
               const isDowngrade = isAuthArtist && (rank[plan.id] ?? 1) < (rank[currentPlan || 'Free'] ?? 1);
+              // Visitors: every button leads to sign-up. Artists: switch between plans.
               const label = !isAuthArtist
-                ? (isPremiumPlan ? 'Go Premium' : 'Get Started')
-                : `${isDowngrade ? 'Downgrade' : 'Upgrade'} to ${plan.name}`;
+                ? (plan.id === 'Free' ? 'Start for free' : `Choose ${plan.name}`)
+                : `Switch to ${plan.name}`;
+              // Signed-in accounts that aren't artists can't take an artist plan
+              const showAction = !isCurrentPlan && (!isAuthenticated || isArtist);
               return (
                 <PlanCard
                   key={plan.id}
@@ -143,13 +146,13 @@ const PlansPricing = () => {
                       : null
                   }
                   action={
-                    isCurrentPlan ? null : (
+                    !showAction ? null : (
                       <Button
                         disabled={loadingPlan !== null}
                         onClick={() => handleClick(plan.id, isDowngrade)}
                         className={isDowngrade ? planButtonClass.downgrade : planButtonClass.upgrade}
                       >
-                        {loadingPlan === plan.id ? 'Redirecting…' : label}
+                        <span key={label}>{loadingPlan === plan.id ? 'Redirecting…' : label}</span>
                       </Button>
                     )
                   }
