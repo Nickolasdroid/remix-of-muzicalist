@@ -1413,8 +1413,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
           <div className="sticky top-0 z-[60] h-0 md:top-16 md:z-40">
             <div
               aria-hidden={!showStickyBar}
-              className={`absolute inset-x-0 top-0 flex h-14 items-center gap-2.5 bg-background pl-2 pr-3 shadow-[0_6px_16px_rgba(0,0,0,0.35)] transition-[opacity,transform] duration-200 md:h-16 md:gap-3 md:px-8 ${
-                showStickyBar ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
+              className={`absolute inset-x-0 top-0 flex h-14 items-center gap-2.5 bg-background px-4 transition-[opacity,transform] duration-200 md:h-16 md:gap-3 md:px-8 md:shadow-[0_6px_16px_rgba(0,0,0,0.35)] ${
+                showStickyBar ? 'translate-y-0 opacity-100' : 'pointer-events-none opacity-0 md:-translate-y-2'
               }`}
             >
               <button
@@ -1422,9 +1422,9 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                 tabIndex={showStickyBar ? 0 : -1}
                 onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
                 aria-label="Back"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-foreground md:hidden"
+                className="-ml-1 shrink-0 p-2 text-foreground/80 transition-colors hover:text-foreground md:hidden"
               >
-                <ArrowLeft className="h-5 w-5" />
+                <ArrowLeft className="h-6 w-6" />
               </button>
               <Avatar className="h-8 w-8 shrink-0 md:h-9 md:w-9">
                 <AvatarImage src={artist.avatar_url || undefined} alt="" />
