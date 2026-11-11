@@ -77,6 +77,7 @@ import { CompactCalendarLegend } from "@/components/ArtistAvailabilityCalendar";
 import { getThumbUrl } from "@/lib/imageUrl";
 import { Calendar } from "@/components/ui/calendar";
 import { getAvatarOutlineClasses, getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
+import { useDominantColor } from "@/hooks/useDominantColor";
 import { isFree, isPremium, canPost, canSetEstimatedPrice, getImageLimit, getVideoLimit, getPostLimit, getAdLimit, getPromotionLimit, getSocialLinkLimit, countFilledSocialLinks, getEstimatedPriceLimit, computeGalleryVisibility, canPublishPosts } from "@/lib/planLimits";
 import { getPeriodStart, getPeriodStartIso, getPeriodEnd } from "@/lib/billingPeriod";
 import OverLimitBanner from "@/components/OverLimitBanner";
@@ -124,6 +125,8 @@ const Dashboard = () => {
   const [commentsTarget, setCommentsTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
   const [postsViewMode, setPostsViewMode] = usePostsViewMode();
   const [profile, setProfile] = useState<any>(null);
+  // Header colour taken from the profile photo, as on the public profile
+  const headerColor = useDominantColor(profile?.avatar_url);
   const [editingField, setEditingField] = useState<string | null>(null);
   const [pricingCount, setPricingCount] = useState(0);
   const [pricingDialogOpen, setPricingDialogOpen] = useState(false);
@@ -1937,138 +1940,63 @@ const Dashboard = () => {
                     {/* Hero Header: Cover + overlapping avatar/name/meta — responsive (owner view) */}
                     {!isAdmin && !calendarOnly && (
                       <div className="relative left-1/2 mb-6 w-screen -translate-x-1/2 md:left-0 md:-ml-8 md:mb-8 md:w-[calc(100%+4rem)] md:translate-x-0">
-                        <div className="relative w-full aspect-[16/7] md:aspect-auto md:h-[220px] xl:h-[260px] overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary group">
-                          {/* Spacer to keep name from overlapping top-right action buttons on tablet */}
-                          <div className="absolute top-0 right-0 h-12 md:h-14 w-full pointer-events-none" />
-                          {profile?.cover_url ? (
-                            <img src={profile.cover_url} alt="Cover" className="absolute inset-0 w-full h-full object-cover" />
-                          ) : (
-                            <div
-                              className="absolute inset-0"
-                              style={{ background: getCoverGradient(profile?.cover_theme) }}
-                            />
-
-                          )}
-                          {/* Smooth premium fade into the page background */}
+                        {/* Same header as the public profile: big round photo, huge name, colour from the photo */}
+                        <header
+                          className="relative px-4 pb-5 pt-10 md:px-8 md:pb-6 md:pt-16 xl:pt-20"
+                          style={{ background: `linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%), ${headerColor}` }}
+                        >
                           <div
-                            className="pointer-events-none absolute inset-x-0 bottom-0 h-full"
-                            style={{
-                              background:
-                                "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.98) 12%, hsl(var(--background) / 0.9) 25%, hsl(var(--background) / 0.7) 42%, hsl(var(--background) / 0.45) 60%, hsl(var(--background) / 0.2) 78%, hsl(var(--background) / 0) 100%)",
-                            }}
+                            aria-hidden="true"
+                            className="pointer-events-none absolute inset-x-0 top-full -z-10 h-64"
+                            style={{ background: `linear-gradient(${headerColor.replace('rgb(', 'rgba(').replace(')', ', 0.35)')}, transparent)` }}
                           />
-
-
-                          {/* Cover edit controls (top-right) */}
-                          <div className="absolute top-2 right-2 md:top-3 md:right-3 flex gap-2 z-20">
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <button
-                                  type="button"
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur text-white text-xs font-medium hover:bg-black/80 transition-colors"
-                                >
-                                  <Palette className="h-3.5 w-3.5" />
-                                  Theme
-                                </button>
-                              </PopoverTrigger>
-                              <PopoverContent align="end" className="w-64 p-3 rounded-lg">
-                                <p className="text-xs font-medium text-muted-foreground mb-2">Choose a cover theme</p>
-                                <div className="grid grid-cols-5 gap-2">
-                                  {COVER_THEMES.map((theme) => {
-                                    const selected = profile?.cover_theme === theme.id;
-                                    return (
-                                      <button
-                                        key={theme.id}
-                                        type="button"
-                                        onClick={() => handleSelectCoverTheme(theme.id)}
-                                        title={theme.label}
-                                        aria-label={theme.label}
-                                        className={`relative h-10 w-10 rounded-lg border-2 transition-all ${selected ? 'border-accent ring-2 ring-accent/40' : 'border-border hover:border-accent/60'}`}
-                                        style={{ background: theme.gradient }}
-                                      >
-                                        {selected && (
-                                          <Check className="absolute inset-0 m-auto h-4 w-4 text-white drop-shadow" />
-                                        )}
-                                      </button>
-                                    );
-                                  })}
-                                </div>
-                                {profile?.cover_theme && !profile?.cover_url && (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleSelectCoverTheme('')}
-                                    className="mt-3 w-full text-xs text-muted-foreground hover:text-foreground transition-colors"
-                                  >
-                                    Reset theme
-                                  </button>
-                                )}
-                              </PopoverContent>
-                            </Popover>
-                            <label htmlFor="cover-upload" className={`cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black/60 backdrop-blur text-white text-xs font-medium hover:bg-black/80 transition-colors ${isUploadingCover ? 'opacity-50 pointer-events-none' : ''}`}>
-                              <Camera className="h-3.5 w-3.5" />
-                              {profile?.cover_url ? 'Change cover' : 'Add cover'}
-                            </label>
-                            <input id="cover-upload" type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" disabled={isUploadingCover} />
-                            {profile?.cover_url && (
-                              <button
-                                type="button"
-                                onClick={handleRemoveCover}
-                                disabled={isUploadingCover}
-                                className="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-destructive/80 backdrop-blur text-destructive-foreground hover:bg-destructive transition-colors"
-                                aria-label="Remove cover"
-                              >
-                                <Trash2 className="h-3.5 w-3.5" />
-                              </button>
-                            )}
-                          </div>
-
-                          {/* Verified badge — bottom-right corner */}
-                          {profile?.is_verified && (
-                            <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 z-20 bg-black/60 backdrop-blur rounded-full p-1.5">
-                              <VerifiedBadge size="md" />
+                          <div className="relative z-10 flex items-end gap-4 md:gap-6">
+                            <div className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)} shadow-[0_4px_60px_rgba(0,0,0,0.5)] flex-shrink-0 group/avatar`}>
+                              <Avatar className="h-28 w-28 sm:h-36 sm:w-36 md:h-44 md:w-44 xl:h-56 xl:w-56">
+                                <AvatarImage src={profile?.avatar_url} className="object-cover" />
+                                <AvatarFallback className="bg-foreground/10">
+                                  <User className="h-12 w-12 md:h-16 md:w-16 text-white/60" />
+                                </AvatarFallback>
+                              </Avatar>
+                              {/* Change photo: on hover (desktop), always a small camera on phones */}
+                              <label htmlFor="avatar-upload" aria-label="Change photo" className="absolute inset-1 flex items-center justify-center rounded-full bg-black/60 opacity-0 transition-opacity cursor-pointer group-hover/avatar:opacity-100">
+                                <Camera className="h-8 w-8 md:h-10 md:w-10 text-white" />
+                              </label>
+                              <label htmlFor="avatar-upload" aria-hidden="true" className="absolute bottom-1 right-1 flex h-8 w-8 items-center justify-center rounded-full bg-black/70 text-white md:hidden cursor-pointer">
+                                <Camera className="h-4 w-4" />
+                              </label>
+                              <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                             </div>
-                          )}
-
-                        </div>
-
-                        {/* Avatar overlapping cover bottom + info below (Facebook-style) */}
-                        <div className="px-4 md:px-8 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
-                          <div className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)} shadow-xl flex-shrink-0 group/avatar`}>
-                            <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
-                              <AvatarImage src={profile?.avatar_url} />
-                              <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                                <User className="h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 text-accent" />
-                              </AvatarFallback>
-                            </Avatar>
-                            <label htmlFor="avatar-upload" className="absolute inset-1 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover/avatar:opacity-100 transition-opacity cursor-pointer">
-                              <Camera className="h-6 w-6 md:h-8 md:w-8 text-white" />
-                            </label>
-                            <input id="avatar-upload" type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-[-0.03em] text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                              {formData.stageName}
-                            </h1>
-                            <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
-                              {formData.specialization && <span className="font-medium">{translateSpecialization(formData.specialization)}</span>}
-                              {formData.specialization && formData.county && <span className="opacity-70">•</span>}
-                              {formData.county && <span className="truncate">{formData.county}</span>}
-                              {formData.country && <CountryFlagIcon country={formData.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
+                            <div className="flex-1 min-w-0 pb-1">
+                              {profile?.is_verified && (
+                                <p className="mb-1 flex items-center gap-1.5 text-xs font-medium text-white md:mb-2 md:text-sm">
+                                  <VerifiedBadge size="sm" />
+                                  <span>Verified artist</span>
+                                </p>
+                              )}
+                              <h1 className="line-clamp-2 break-words font-figtree text-4xl font-black leading-[1.05] tracking-[-0.04em] text-white sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                                {formData.stageName}
+                              </h1>
+                              <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-sm text-white/80 md:mt-3 md:gap-2 lg:text-base">
+                                {formData.specialization && <span className="font-medium">{translateSpecialization(formData.specialization)}</span>}
+                                {formData.specialization && formData.county && <span className="opacity-70">•</span>}
+                                {formData.county && <span className="truncate">{formData.county}</span>}
+                                {formData.country && <CountryFlagIcon country={formData.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
+                              </div>
+                              {hasCollabStatus(formData.specialization) && isCollabStatus(formData.collabStatus) && (
+                                <CollabStatusChip status={formData.collabStatus} className="mt-1.5" />
+                              )}
+                              {/* Owner view: Followers + Following, same visual language as the public profile */}
+                              <SocialStats
+                                className="mt-1.5 md:mt-2 flex-nowrap"
+                                followersCount={followersCount}
+                                followingCount={followingCount}
+                                onFollowersClick={() => user && navigate(`/connections/${user.id}?tab=followers`)}
+                                onFollowingClick={() => user && navigate(`/connections/${user.id}?tab=following`)}
+                              />
                             </div>
-                            {hasCollabStatus(formData.specialization) && isCollabStatus(formData.collabStatus) && (
-                              <CollabStatusChip status={formData.collabStatus} className="mt-1.5" />
-                            )}
-                            {/* Owner view: Followers + Following, same visual language as the public profile */}
-                            <SocialStats
-                              className="mt-1.5 md:mt-2 flex-nowrap"
-                              followersCount={followersCount}
-                              followingCount={followingCount}
-                              onFollowersClick={() => user && navigate(`/connections/${user.id}?tab=followers`)}
-                              onFollowingClick={() => user && navigate(`/connections/${user.id}?tab=following`)}
-                            />
                           </div>
-
-                        </div>
+                        </header>
 
 
                         {/* Stats: three quiet columns, same as the public profile */}
