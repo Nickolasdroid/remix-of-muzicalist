@@ -765,9 +765,9 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       {/* Desktop: Left Sidebar - Only when logged in */}
       {!user ? null : (
       <aside data-no-translate={skipAutoTranslate ? true : undefined} className="fixed top-16 left-0 h-[calc(100vh-64px)] w-[316px] lg:w-[356px] bg-black z-40 hidden md:flex md:flex-col gap-2 p-2 pt-0">
-        {/* Panel 1: logo and browsing (like Spotify's Home / Search box) */}
+        {/* Panel 1: browsing. Home and Search are already in the top bar, so not repeated here */}
         <div className="rounded-lg bg-background px-3 py-2">
-          {sidebarLinks.map((link) => {
+          {sidebarLinks.filter((link) => link.to !== '/feed' && link.to !== '/search').map((link) => {
             const active = isActive(link.to.split('?')[0]);
             return (
               <Link
