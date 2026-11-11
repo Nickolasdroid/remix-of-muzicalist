@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
 import { bandMembersLabel } from "@/lib/bandMembers";
+import MembersStepper from "@/components/dashboard/MembersStepper";
 import CollabStatusChip from "@/components/profile/CollabStatusChip";
 import { COLLAB_STATUSES, COLLAB_STATUS_LABEL, hasCollabStatus, isCollabStatus, isOpenToCollabs } from "@/lib/collabStatus";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -1884,7 +1885,7 @@ const Dashboard = () => {
                                   </Button>}
                               </div>
                               {editingField === 'bandMembers' ? <div className="space-y-2">
-                                  <Input type="number" min={2} placeholder="e.g. 5" value={formData.bandMembers} onChange={e => setFormData({ ...formData, bandMembers: e.target.value })} className={`h-10 max-w-[160px] ${EDIT_FIELD}`} />
+                                  <MembersStepper value={formData.bandMembers} onChange={(v) => setFormData((f) => ({ ...f, bandMembers: v }))} />
                                   <div className="flex justify-end gap-1">
                                     <Button type="button" variant="ghost" onClick={cancelEditing} className={EDIT_CANCEL_BTN}>Cancel</Button>
                                     <Button type="button" onClick={() => saveField('bandMembers')} disabled={isSaving} className={EDIT_SAVE_BTN}>Save</Button>
