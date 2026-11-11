@@ -8,6 +8,7 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "Recommended": "Recomandați",
   "Events on Muzicalist": "Evenimente prin Muzicalist",
   "Show less": "Arată mai puțin",
   "You chose the Premium plan.": "Ai ales planul Premium.",

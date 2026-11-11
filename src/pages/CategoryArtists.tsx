@@ -1,22 +1,20 @@
 import Navigation from "@/components/Navigation";
 import { recordCategoryInterest } from "@/lib/visitorTaste";
 import SEO from "@/components/SEO";
-import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import HeaderFilterTrigger from "@/components/HeaderFilterTrigger";
-import { ArrowLeft, SlidersHorizontal } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import ArtistProfileCard from "@/components/ArtistProfileCard";
 import { useInfiniteList } from "@/hooks/useInfiniteList";
+import GuestSidebar from "@/components/GuestSidebar";
+import { CATEGORY_TILES } from "@/components/CategoryTile";
+import { useTranslation } from "react-i18next";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import { getCountryName, getCountryNameVariants } from "@/lib/countryFlags";
 import { sortByPlanPriority } from "@/lib/planLimits";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import {
   Drawer,
   DrawerContent,
@@ -157,28 +155,61 @@ const FilterButton = (props: FilterButtonProps & { placement: "header" | "page";
     );
   }
 
-  if (props.placement !== "page") return null;
-
-  return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
-          <SlidersHorizontal className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-          Filter
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80 z-50">
-        <div className="space-y-4">
-          <div>
-            <h4 className="font-medium text-foreground mb-1">Filter Artists</h4>
-            <p className="text-sm text-muted-foreground">Apply filters to find the perfect artist</p>
-          </div>
-          <FilterContent {...props} />
-        </div>
-      </PopoverContent>
-    </Popover>
-  );
+  // Desktop uses the chip row instead
+  return null;
 };
+
+/** Desktop: the filters as grey chips in a row (a chosen value turns the chip lighter). */
+const CHIP = "h-8 w-auto gap-1.5 rounded-full border-0 px-3.5 text-sm font-medium text-foreground focus:ring-0 focus:ring-offset-0 focus-visible:ring-2 focus-visible:ring-white/60 [&>svg]:opacity-70";
+const chipTone = (active: boolean) => (active ? "bg-foreground/[0.24]" : "bg-foreground/[0.07] hover:bg-foreground/[0.12]");
+
+const FilterChips = (props: FilterButtonProps) => (
+  <div className="hidden flex-wrap items-center gap-2 md:flex">
+    {props.countries.length > 1 && (
+      <Select value={props.filterCountry} onValueChange={(v) => { props.setFilterCountry(v); props.setFilterCounty("all"); }}>
+        <SelectTrigger className={`${CHIP} ${chipTone(props.filterCountry !== "all")}`} aria-label="Country">
+          <SelectValue placeholder="All Countries" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="all">All Countries</SelectItem>
+          {props.countries.map((c) => (
+            <SelectItem key={c} value={c}>{getCountryName(c)}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    )}
+    <Select value={props.filterCounty} onValueChange={props.setFilterCounty}>
+      <SelectTrigger className={`${CHIP} ${chipTone(props.filterCounty !== "all")}`} aria-label="Region">
+        <SelectValue placeholder="All Regions" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">All Regions</SelectItem>
+        {props.counties.map((c) => (
+          <SelectItem key={c} value={c}>{c}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+    <Select value={props.sortOrder} onValueChange={props.setSortOrder}>
+      <SelectTrigger className={`${CHIP} ${chipTone(props.sortOrder !== "none")}`} aria-label="Sort Alphabetically">
+        <SelectValue placeholder="Recommended" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="none">Recommended</SelectItem>
+        <SelectItem value="a-z">A to Z</SelectItem>
+        <SelectItem value="z-a">Z to A</SelectItem>
+      </SelectContent>
+    </Select>
+    {activeFilterCount(props) + (props.sortOrder !== "none" ? 1 : 0) > 0 && (
+      <button
+        type="button"
+        onClick={() => { props.setFilterCountry("all"); props.setFilterCounty("all"); props.setSortOrder("none"); }}
+        className="h-8 px-2 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground"
+      >
+        Clear All Filters
+      </button>
+    )}
+  </div>
+);
 
 interface Artist {
   id: string;
@@ -193,6 +224,8 @@ interface Artist {
 
 const CategoryArtists = () => {
   const { category } = useParams<{ category: string }>();
+  const { t } = useTranslation();
+  const tile = CATEGORY_TILES.find((c) => c.path === `/categories/${category}`);
   // Remember the category for "Recommended artists" on the home page
   useEffect(() => {
     const spec = ({ Singers: "Singer", Instrumentalists: "Instrumentalist", DJs: "DJ", Bands: "Band" } as Record<string, string>)[category ?? ""];
@@ -362,7 +395,7 @@ const CategoryArtists = () => {
   const filterProps = { filterCountry, setFilterCountry, filterCounty, setFilterCounty, sortOrder, setSortOrder, countries: availableCountries, counties: filteredCounties };
 
   return (
-    <div className={`min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''} bg-background`}>
+    <div className={`min-h-screen bg-black ${currentUserId ? 'md:ml-[316px] md:py-2 md:pr-2 lg:ml-[356px]' : 'md:flex md:items-start md:gap-2 md:px-2 md:pb-2 md:pt-[72px]'}`}>
       <SEO
         title={`${category} — Book ${category} for Your Event | Muzicalist`}
         description={`Browse and book the best ${category?.toLowerCase()} on Muzicalist. Compare profiles, reviews, prices and availability, then send a booking request in minutes.`}
@@ -370,20 +403,35 @@ const CategoryArtists = () => {
       />
       <Navigation mobileTitle={category} mobileBackPath={currentUserId ? "/categories" : "/"} mobileExtraAction={currentUserId ? <FilterButton placement="header" mobileInHeader {...filterProps} /> : undefined} hideMobileNotifications />
       
-      <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20`}>
-        <div className={`${currentUserId ? "hidden" : "flex"} md:flex items-center justify-between mb-4 md:mb-12`}>
-          <Link to={currentUserId ? "/categories" : "/"} className="hidden md:block">
-            <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
-              <ArrowLeft className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-              Back
-            </Button>
-          </Link>
-
-          <h1 className="hidden md:block text-xl md:text-2xl font-display font-bold text-foreground">
-            {category}
-          </h1>
-
-          <FilterButton placement="page" mobileInHeader={!!currentUserId} {...filterProps} />
+      {!currentUserId && <GuestSidebar />}
+      <div className="min-h-screen min-w-0 flex-1 overflow-hidden bg-background pb-6 pt-14 md:min-h-[calc(100vh-80px)] md:rounded-lg md:pb-16 md:pt-0">
+      {/* Header in the category's colour (as on its tile), big title on the left */}
+      <header
+        className="hidden px-8 pb-6 pt-16 md:block lg:pt-20"
+        style={{ background: `linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.45) 100%), ${tile?.color ?? "rgb(83,83,83)"}` }}
+      >
+        <h1 className="font-figtree text-6xl font-black tracking-[-0.04em] text-white lg:text-8xl">
+          {tile ? t(`platformStats.${tile.statKey}`) : category}
+        </h1>
+        {!loading && (
+          <p className="mt-3 text-sm font-medium text-white/80">
+            <span className="tabular-nums notranslate" translate="no">{filteredArtists.length}</span>{" "}
+            <span>{filteredArtists.length === 1 ? "artist" : "artists"}</span>
+          </p>
+        )}
+      </header>
+      <div
+        className="px-4 pt-4 md:px-8 md:pt-6"
+        style={{ background: `linear-gradient(${tile ? tile.color + "40" : "transparent"} 0px, transparent 240px)` }}
+      >
+        <div className="mb-4 md:mb-6">
+          <FilterChips {...filterProps} />
+          {/* Phone, guests: the filter button (signed-in users have it in the top bar) */}
+          {!currentUserId && (
+            <div className="flex justify-end md:hidden">
+              <FilterButton placement="page" mobileInHeader={false} {...filterProps} />
+            </div>
+          )}
         </div>
 
         {urlDate && (
@@ -422,6 +470,7 @@ const CategoryArtists = () => {
           </div>
         )}
         {!loading && hasMore && <div ref={sentinelRef} className="h-px" aria-hidden="true" />}
+      </div>
       </div>
     </div>
   );
