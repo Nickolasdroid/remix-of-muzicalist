@@ -1030,8 +1030,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
             isFollowing={isFollowing}
             isOwnProfile={isOwnProfile}
             onFollowToggle={handleFollowToggle}
-            onFollowersClick={() => openConnections("followers")}
-            onFollowingClick={() => openConnections("following")}
+            onFollowersClick={currentUserId ? () => openConnections("followers") : undefined}
+            onFollowingClick={currentUserId ? () => openConnections("following") : undefined}
             onPostLike={handlePostLike}
             onComments={(cid, type) => setCommentsTarget({ id: cid, type })}
             onShare={(type) => sharePost({ profileId: artist?.id || "", stageName: artist?.stage_name, type })}
@@ -1124,8 +1124,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   className="mt-1.5"
                   followersCount={followersCount}
                   followingCount={followingCount}
-                  onFollowersClick={() => openConnections("followers")}
-                  onFollowingClick={() => openConnections("following")}
+                  onFollowersClick={currentUserId ? () => openConnections("followers") : undefined}
+                  onFollowingClick={currentUserId ? () => openConnections("following") : undefined}
                   showFollowButton={!isOwnProfile}
                   isFollowing={isFollowing}
                   onFollowToggle={handleFollowToggle}
@@ -1534,8 +1534,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                     className="mt-1.5 md:mt-2 flex-nowrap"
                     followersCount={followersCount}
                     followingCount={followingCount}
-                    onFollowersClick={() => openConnections("followers")}
-                    onFollowingClick={() => openConnections("following")}
+                    onFollowersClick={currentUserId ? () => openConnections("followers") : undefined}
+                    onFollowingClick={currentUserId ? () => openConnections("following") : undefined}
                     showFollowButton={!isOwnProfile}
                     isFollowing={isFollowing}
                     onFollowToggle={handleFollowToggle}

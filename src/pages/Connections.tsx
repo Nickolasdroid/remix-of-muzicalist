@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { Loader2, User, Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,7 @@ const Connections = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const tab: Tab = searchParams.get("tab") === "following" ? "following" : "followers";
+  const { t } = useTranslation();
 
   const [me, setMe] = useState<string | null>(null);
   const [owner, setOwner] = useState<ProfileRow | null>(null);
@@ -81,6 +83,11 @@ const Connections = () => {
       setLoading(true);
       const { data: { session } } = await supabase.auth.getSession();
       const viewer = session?.user?.id ?? null;
+      // Follower lists are for members only
+      if (!viewer) {
+        navigate("/login", { replace: true });
+        return;
+      }
       const [{ data: ownerRow }, { data: followerRows }, { data: followingRows }, mine] = await Promise.all([
         supabase.from("profiles").select(PROFILE_COLUMNS).eq("id", profileId).maybeSingle(),
         supabase.from("followers").select("follower_id, created_at").eq("artist_id", profileId).order("created_at", { ascending: false }),
@@ -201,31 +208,33 @@ const Connections = () => {
     return isOwn ? "You're not following anyone yet." : "Not following anyone yet.";
   }, [tab, isOwn]);
 
-  const renderRow = (p: ProfileRow, suggested = false) => {
+  /** One account as a card, like the artist shelves: round photo, name, details, then the action. */
+  const renderCard = (p: ProfileRow, suggested = false) => {
     const name = displayName(p);
     const sub = [p.specialization ? translateSpecialization(p.specialization) : null, p.county].filter(Boolean).join(" · ");
+    const action = actionFor(p, suggested);
     return (
-      <li key={p.id} className="mx-2 flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-foreground/[0.07]">
-        <Link to={`/artist/${p.slug || p.id}`} className="flex min-w-0 flex-1 items-center gap-3">
-          <Avatar className="h-12 w-12">
-            {p.avatar_url ? <AvatarImage src={p.avatar_url} alt={name} /> : null}
-            <AvatarFallback>
-              <User className="h-5 w-5" />
+      <li key={p.id} className="flex flex-col rounded-md p-2.5 transition-colors hover:bg-foreground/[0.07] md:p-3">
+        <Link to={`/artist/${p.slug || p.id}`} className="block min-w-0">
+          <Avatar className="aspect-square h-auto w-full shadow-[0_8px_24px_rgba(0,0,0,0.5)]">
+            {p.avatar_url ? <AvatarImage src={p.avatar_url} alt={name} className="object-cover" /> : null}
+            <AvatarFallback className="bg-foreground/[0.06]">
+              <User className="h-10 w-10 text-muted-foreground" />
             </AvatarFallback>
           </Avatar>
-          <div className="min-w-0">
-            <p className="truncate text-base font-medium text-foreground notranslate" translate="no">{name}</p>
-            {sub && <p className="truncate text-sm text-muted-foreground">{sub}</p>}
-          </div>
+          <p className="mt-2.5 truncate text-base font-medium text-foreground notranslate" translate="no">{name}</p>
+          <p className="mt-0.5 truncate text-sm text-muted-foreground">{sub || "\u00a0"}</p>
         </Link>
-        <div className="shrink-0">{actionFor(p, suggested)}</div>
+        {action && <div className="mt-2.5">{action}</div>}
       </li>
     );
   };
 
-  const setTab = (t: Tab) => {
+  const GRID = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 -mx-2.5 md:-mx-3";
+
+  const setTab = (tb: Tab) => {
     const next = new URLSearchParams(searchParams);
-    next.set("tab", t);
+    next.set("tab", tb);
     setSearchParams(next, { replace: true });
   };
 
@@ -233,23 +242,32 @@ const Connections = () => {
     <div className="min-h-screen bg-black">
       <Navigation mobileTitle={owner ? displayName(owner) : " "} onMobileBack={() => goBack(navigate, "/feed")} hideMobileNotifications />
       <div className="md:ml-[316px] md:py-2 md:pr-2 lg:ml-[356px]">
-      <main className="min-h-screen bg-background pb-24 pt-14 md:min-h-[calc(100vh-80px)] md:rounded-lg md:pb-10 md:pt-10">
-      <div className="mx-auto max-w-xl">
-        <h1 className="hidden md:block px-4 pb-2 text-5xl font-bold tracking-[-0.02em] text-foreground notranslate" translate="no">
-          {owner ? displayName(owner) : ""}
+      <main className="min-h-screen bg-background px-4 pb-24 pt-16 md:min-h-[calc(100vh-80px)] md:rounded-lg md:px-8 md:pb-10 md:pt-8">
+        {/* Whose list: small photo and name, back to their profile */}
+        {owner && (
+          <Link to={`/artist/${owner.slug || owner.id}`} className="hidden items-center gap-2.5 text-sm font-bold text-foreground hover:underline md:inline-flex">
+            <Avatar className="h-7 w-7">
+              {owner.avatar_url ? <AvatarImage src={owner.avatar_url} alt="" className="object-cover" /> : null}
+              <AvatarFallback><User className="h-3.5 w-3.5" /></AvatarFallback>
+            </Avatar>
+            <span className="notranslate" translate="no">{displayName(owner)}</span>
+          </Link>
+        )}
+        <h1 key={tab} className="mt-2 hidden font-figtree text-5xl font-black tracking-[-0.03em] text-foreground md:block lg:text-6xl">
+          {tab === "followers" ? t("social.followers") : isOwn ? t("social.following") : t("social.followingThirdPerson")}
         </h1>
 
-        <div role="tablist" className="sticky top-14 md:top-16 z-10 flex gap-2 bg-background px-4 py-3">
-          {(["followers", "following"] as Tab[]).map((t) => (
+        <div role="tablist" className="sticky top-14 z-10 -mx-4 flex gap-2 bg-background px-4 py-3 md:top-16 md:mx-0 md:mt-4 md:px-0">
+          {(["followers", "following"] as Tab[]).map((tb) => (
             <button
-              key={t}
+              key={tb}
               role="tab"
-              aria-selected={tab === t}
-              onClick={() => setTab(t)}
-              className={`h-8 rounded-full px-3.5 text-sm text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${tab === t ? "bg-foreground/[0.24] font-medium" : "bg-foreground/[0.07] hover:bg-foreground/[0.12]"}`}
+              aria-selected={tab === tb}
+              onClick={() => setTab(tb)}
+              className={`h-8 rounded-full px-3.5 text-sm text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${tab === tb ? "bg-foreground/[0.24] font-medium" : "bg-foreground/[0.07] hover:bg-foreground/[0.12]"}`}
             >
-              <span className="tabular-nums">{loading ? "–" : lists[t].length}</span>{" "}
-              <span>{t === "following" ? "Following" : lists.followers.length === 1 && !loading ? "Follower" : "Followers"}</span>
+              <span className="tabular-nums notranslate" translate="no">{loading ? "–" : lists[tb].length}</span>{" "}
+              <span>{tb === "followers" ? t("social.followers") : isOwn ? t("social.following") : t("social.followingThirdPerson")}</span>
             </button>
           ))}
         </div>
@@ -261,9 +279,9 @@ const Connections = () => {
         ) : (
           <>
             {current.length > 0 ? (
-              <ul className="py-1">{current.map((p) => renderRow(p))}</ul>
+              <ul className={`mt-2 ${GRID}`}>{current.map((p) => renderCard(p))}</ul>
             ) : (
-              <div className="flex flex-col items-center px-6 pt-12 pb-6 text-center">
+              <div className="flex flex-col items-center px-6 pb-6 pt-12 text-center">
                 <div className="mb-3 rounded-full bg-foreground/[0.07] p-3">
                   <Users className="h-6 w-6 text-muted-foreground" aria-hidden="true" />
                 </div>
@@ -272,15 +290,14 @@ const Connections = () => {
             )}
 
             {suggestions.length > 0 && (
-              <section className="mt-6">
-                <h2 className="px-4 text-xl font-bold tracking-[-0.01em] text-foreground">Suggested artists</h2>
-                <p className="px-4 pb-3 pt-0.5 text-sm text-muted-foreground">Artists near you that you don't follow yet.</p>
-                <ul>{suggestions.map((p) => renderRow(p, true))}</ul>
+              <section className="mt-10">
+                <h2 className="font-figtree text-[22px] font-bold tracking-[-0.01em] text-foreground md:text-2xl">Suggested artists</h2>
+                <p className="pb-3 pt-0.5 text-sm text-muted-foreground">Artists near you that you don't follow yet.</p>
+                <ul className={GRID}>{suggestions.map((p) => renderCard(p, true))}</ul>
               </section>
             )}
           </>
         )}
-      </div>
       </main>
       </div>
 
