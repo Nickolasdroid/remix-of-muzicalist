@@ -8,6 +8,9 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "Artists by the country they live in.": "Artiști după țara în care locuiesc.",
+  "Artists by the region they live in.": "Artiști după regiunea în care locuiesc.",
+  "Your country": "Țara ta",
   "How many people go on stage, you included.": "Câți oameni urcă pe scenă, inclusiv tu.",
   "Fewer members": "Mai puțini membri",
   "More members": "Mai mulți membri",

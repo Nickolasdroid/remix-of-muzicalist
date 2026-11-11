@@ -1,10 +1,10 @@
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import { Input } from "@/components/ui/input";
-import { Search, MapPin, Loader2 } from "lucide-react";
+import { Search, MapPin } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Link, useNavigate } from "react-router-dom";
+import PlaceTile from "@/components/PlaceTile";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import CountryPickerButton from "@/components/CountryPickerButton";
 import { getCountryNameVariants, getCountryName } from "@/lib/countryFlags";
@@ -14,6 +14,7 @@ const Counties = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [counties, setCounties] = useState<string[]>([]);
+  const [countyCounts, setCountyCounts] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
@@ -38,6 +39,8 @@ const Counties = () => {
         .sort((a, b) => getCountryName(a.country).localeCompare(getCountryName(b.country)))[0];
 
       setSelectedCountry(top?.country || null);
+      // No artists anywhere yet: show the empty message instead of loading forever
+      if (!top) setIsLoading(false);
     };
     checkAuth();
   }, [navigate]);
@@ -65,6 +68,10 @@ const Counties = () => {
     }
 
     const uniqueCounties = [...new Set(data.map(p => p.county))].filter(Boolean).sort();
+    // How many artists per region
+    const counts: Record<string, number> = {};
+    data.forEach((p) => { if (p.county) counts[p.county] = (counts[p.county] || 0) + 1; });
+    setCountyCounts(counts);
     setCounties(uniqueCounties);
     setIsLoading(false);
   }, [selectedCountry]);
@@ -80,66 +87,64 @@ const Counties = () => {
   );
 
   return (
-    <div className="min-h-screen md:ml-[316px] lg:ml-[356px] bg-background relative">
+    <div className="min-h-screen bg-black md:ml-[316px] md:py-2 md:pr-2 lg:ml-[356px]">
       <SEO title="Browse Artists by County | Muzicalist" description="Find musical artists in every county. Browse local singers, bands, DJs and instrumentalists and book the right one for your event on Muzicalist." path="/counties" />
       <Navigation />
-      
-      <div className="relative z-10 container mx-auto px-4 pt-20 md:pt-8 pb-6 md:pb-20">
-        <div className="text-center mb-8 md:mb-16">
-          <h1 className="hidden md:block text-3xl md:text-5xl lg:text-6xl font-display font-bold text-foreground mb-4 md:mb-6">Regions</h1>
-          
-          <div className="flex justify-center mb-4">
-            <CountryPickerButton
-              selectedCountry={selectedCountry}
-              onCountryChange={setSelectedCountry}
-              hideAllOption
-            />
-          </div>
 
-          <div className="max-w-xl mx-auto relative">
-            <Search className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
+      <main
+        className="min-h-screen min-w-0 bg-background px-4 pb-24 pt-16 md:min-h-[calc(100vh-80px)] md:rounded-lg md:px-8 md:pb-12 md:pt-14"
+        style={{ background: "linear-gradient(180deg, rgba(255,255,255,0.07) 0px, #121212 280px)" }}
+      >
+        <h1 className="hidden font-figtree text-6xl font-black tracking-[-0.04em] text-foreground md:block lg:text-7xl">Regions</h1>
+        <p className="mt-2 hidden text-base text-muted-foreground md:block">Artists by the region they live in.</p>
+
+        {/* Country, then search, on one row on computers */}
+        <div className="mt-0 flex flex-col gap-3 md:mt-6 md:flex-row md:items-center">
+          <CountryPickerButton
+            selectedCountry={selectedCountry}
+            onCountryChange={setSelectedCountry}
+            hideAllOption
+          />
+          <div className="relative w-full max-w-md">
+            <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Search for a region..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="pl-10 md:pl-12 pr-3 md:pr-4 h-10 md:h-14 w-full text-base rounded-2xl md:rounded-full border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted text-foreground placeholder:text-muted-foreground"
+              className="h-12 w-full rounded-full border-0 bg-foreground/[0.07] pl-12 pr-4 text-base text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-0"
             />
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto">
+        <div className="mt-6 md:mt-8">
           {isLoading ? (
-            <div className="flex justify-center items-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-accent" />
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4" aria-hidden="true">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="h-[72px] animate-pulse rounded-lg bg-foreground/[0.05] md:h-20" />
+              ))}
             </div>
           ) : counties.length === 0 ? (
-            <div className="text-center mt-12">
-              <p className="text-muted-foreground text-base md:text-lg">No regions with registered artists yet.</p>
-            </div>
+            <p className="mt-10 text-base text-muted-foreground">No regions with registered artists yet.</p>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
               {filteredCounties.map(county => (
-                <Link key={county} to={`/counties/${county}`}>
-                  <Button 
-                    variant="outline" 
-                    className="h-auto py-4 md:py-6 w-full flex items-center justify-start gap-2 md:gap-3 hover:bg-foreground/[0.07] hover:border-foreground transition-all group"
-                  >
-                    <MapPin className="h-4 w-4 md:h-5 md:w-5 text-accent group-hover:scale-110 transition-transform" />
-                    <span className="text-sm md:text-lg font-medium truncate">{county}</span>
-                  </Button>
-                </Link>
+                <PlaceTile
+                  key={county}
+                  to={`/counties/${county}`}
+                  icon={<MapPin className="h-5 w-5 text-muted-foreground" />}
+                  name={county}
+                  count={countyCounts[county] || 0}
+                />
               ))}
             </div>
           )}
 
           {!isLoading && counties.length > 0 && filteredCounties.length === 0 && (
-            <div className="text-center mt-12">
-              <p className="text-muted-foreground text-base md:text-lg">No regions found matching "{searchTerm}"</p>
-            </div>
+            <p className="mt-10 text-base text-muted-foreground">No regions found matching "{searchTerm}"</p>
           )}
         </div>
-      </div>
+      </main>
     </div>
   );
 };

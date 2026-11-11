@@ -137,7 +137,7 @@ const CountryPickerButton = ({ selectedCountry, onCountryChange, hideAllOption }
       ) : (
         <CountryFlagIcon country={selectedCountry} className="h-4 w-6 flex-shrink-0 rounded-sm shadow-sm" />
       )}
-      <span className="text-sm font-medium truncate">{displayName || "Select Country"}</span>
+      <span key={displayName || "none"} className="text-sm font-medium truncate">{displayName || "Select Country"}</span>
       <ChevronDown className="h-3 w-3 text-muted-foreground flex-shrink-0" />
     </Button>
   );
