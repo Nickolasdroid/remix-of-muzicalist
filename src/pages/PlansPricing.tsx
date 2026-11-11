@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { subscriptionPlans as plans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import { startCheckout, openCustomerPortal } from "@/lib/checkout";
+import { setPlanIntent, clearPlanIntent } from "@/lib/planIntent";
 
 const PlansPricing = () => {
   const navigate = useNavigate();
@@ -22,6 +23,9 @@ const PlansPricing = () => {
   const handleClick = async (planId: 'Free' | 'Standard' | 'Premium', isDowngrade: boolean) => {
     // Not authenticated -> send to register artist
     if (!isAuthenticated) {
+      // Remember a paid choice: after sign-up and the artist profile, payment opens directly
+      if (planId === 'Free') clearPlanIntent();
+      else setPlanIntent(planId, isAnnual ? 'yearly' : 'monthly');
       navigate('/register?type=artist');
       return;
     }

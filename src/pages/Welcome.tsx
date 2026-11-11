@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import AuthShell, { authButtonClass } from "@/components/AuthShell";
 import SEO from "@/components/SEO";
-import { AccountTypeChoice, ArtistPromoConsent, homeForAccount, type AccountType } from "@/pages/Register";
+import { AccountTypeChoice, homeForAccount, type AccountType } from "@/pages/Register";
 import { getOnboardingState } from "@/lib/onboarding";
 
 /** After signing up with Google: the one question the email sign-up asks up front. */
@@ -20,7 +20,6 @@ const Welcome = () => {
       return null;
     }
   });
-  const [promoConsent, setPromoConsent] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -40,7 +39,7 @@ const Welcome = () => {
 
   if (!ready) return null;
 
-  const valid = accountType === "user" || (accountType === "artist" && promoConsent);
+  const valid = accountType === "user" || accountType === "artist";
 
   const save = async () => {
     if (!accountType || !valid || saving) return;
@@ -71,7 +70,6 @@ const Welcome = () => {
       <AuthShell title="What brings you here?" signedIn>
         <div className="space-y-4">
           <AccountTypeChoice value={accountType} onChange={setAccountType} />
-          {accountType === "artist" && <ArtistPromoConsent checked={promoConsent} onChange={setPromoConsent} />}
           <Button type="button" onClick={save} disabled={!valid || saving} className={authButtonClass}>
             {saving ? "Saving…" : "Continue"}
           </Button>

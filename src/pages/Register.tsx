@@ -7,12 +7,12 @@ import { lovable } from "@/integrations/lovable/index";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import AuthShell, { authButtonClass, authInputClass } from "@/components/AuthShell";
 import PasswordStrengthIndicator, { getPasswordScore } from "@/components/PasswordStrengthIndicator";
 import SEO from "@/components/SEO";
 import { trackPixelEvent } from "@/components/MetaPixel";
 import { cn } from "@/lib/utils";
+import { peekPlanIntent } from "@/lib/planIntent";
 
 export type AccountType = "artist" | "user";
 
@@ -61,20 +61,6 @@ export const AccountTypeChoice = ({
   </div>
 );
 
-/** Consent artists give once: public profile content may be used to promote them. */
-export const ArtistPromoConsent = ({ checked, onChange }: { checked: boolean; onChange: (v: boolean) => void }) => (
-  <div className="flex items-start gap-3">
-    <Checkbox id="promotionalConsent" checked={checked} onCheckedChange={(c) => onChange(c === true)} className="mt-0.5" />
-    <Label htmlFor="promotionalConsent" className="cursor-pointer text-sm font-normal leading-relaxed text-muted-foreground">
-      <span>I agree that Muzicalist may use public content from my profile to promote it, as described in the</span>{" "}
-      <Link to="/terms-of-service" target="_blank" className="font-medium text-foreground underline underline-offset-2">
-        Terms and Conditions
-      </Link>
-      <span>.</span>
-    </Label>
-  </div>
-);
-
 /** Where a new account goes first. Artists fill in their profile before anything else. */
 export const homeForAccount = (type: AccountType) => (type === "artist" ? "/complete-profile" : "/user-dashboard");
 
@@ -97,7 +83,6 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [accountType, setAccountType] = useState<AccountType | null>(preset === "artist" || preset === "user" ? preset : null);
-  const [promoConsent, setPromoConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -127,6 +112,8 @@ const Register = () => {
 
   if (authChecking) return null;
 
+  const planIntent = accountType === "user" ? null : peekPlanIntent();
+
   const google = async () => {
     setGoogleLoading(true);
     // Google can't carry the role: the welcome screen preselects it from here
@@ -152,7 +139,7 @@ const Register = () => {
   const emailValid = EMAIL_RE.test(email.trim()) && !emailTaken && !emailChecking;
   const passwordValid = password.length >= 8 && getPasswordScore(password) >= 3;
   const nameValid = name.trim().length >= 2;
-  const typeValid = accountType === "user" || (accountType === "artist" && promoConsent);
+  const typeValid = accountType === "user" || accountType === "artist";
 
   const createAccount = async () => {
     if (!accountType || !typeValid || submitting) return;
@@ -241,6 +228,13 @@ const Register = () => {
         }
       >
         {stepHeader}
+
+        {step === 0 && planIntent && (
+          <p className="mb-6 rounded-lg bg-foreground/[0.07] px-4 py-3 text-sm leading-relaxed text-muted-foreground">
+            <span>{planIntent.plan === "Premium" ? "You chose the Premium plan." : "You chose the Standard plan."}</span>{" "}
+            <span>After you create your artist profile, we'll take you to payment.</span>
+          </p>
+        )}
 
         {step === 0 && (
           <form
@@ -364,7 +358,6 @@ const Register = () => {
         {step === 3 && (
           <div className="space-y-4">
             <AccountTypeChoice value={accountType} onChange={setAccountType} />
-            {accountType === "artist" && <ArtistPromoConsent checked={promoConsent} onChange={setPromoConsent} />}
             <p className="text-xs leading-relaxed text-muted-foreground">
               <span>By signing up you agree to the</span>{" "}
               <Link to="/terms-of-service" target="_blank" className="underline underline-offset-2 hover:text-foreground">Terms and Conditions</Link>{" "}

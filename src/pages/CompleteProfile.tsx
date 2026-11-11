@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { takePlanIntent } from "@/lib/planIntent";
+import { startCheckout } from "@/lib/checkout";
 import { useNavigate } from "react-router-dom";
 import Cropper, { type Area } from "react-easy-crop";
 import { Camera, Check, User } from "lucide-react";
@@ -175,6 +177,18 @@ const CompleteProfile = () => {
       if (error) throw error;
       await getOnboardingState(userId, true);
       toast.success("Your profile is live. Clients can now find you.");
+      // A paid plan picked before signing up: go straight to payment
+      const intent = takePlanIntent();
+      if (intent) {
+        const origin = window.location.origin;
+        const ok = await startCheckout({
+          plan: intent.plan,
+          billing: intent.billing,
+          successUrl: `${origin}/dashboard?checkout=success`,
+          cancelUrl: `${origin}/plans?checkout=cancelled`,
+        });
+        if (ok) return;
+      }
       navigate("/dashboard", { replace: true });
     } catch (err: any) {
       toast.error(err?.message || "Couldn't save your profile. Please try again.");
