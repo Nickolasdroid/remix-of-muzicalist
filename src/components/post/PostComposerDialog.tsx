@@ -384,7 +384,7 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
             )}
             <Button
               type="button"
-              className="max-md:hidden h-11 w-full rounded-lg bg-accent font-semibold text-accent-foreground transition-colors hover:bg-accent/90"
+              className="max-md:hidden h-11 w-full rounded-full bg-accent font-bold text-accent-foreground transition-colors hover:bg-accent/90 disabled:bg-foreground/[0.1] disabled:text-muted-foreground disabled:opacity-100"
               onClick={handlePublish}
               disabled={isPublishing || uploadProgress !== null || !isValid || !canCreate || postsRemaining <= 0}
             >
@@ -550,7 +550,7 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
             onClick={() => imageInputRef.current?.click()}
             className="inline-flex items-center gap-2 rounded-full bg-card px-3 py-2 text-sm text-foreground/90 transition-colors hover:bg-muted disabled:opacity-50"
           >
-            <ImageIcon className="h-4 w-4 text-accent" />
+            <ImageIcon className="h-4 w-4 text-muted-foreground" />
             Photo
           </button>
           <button
@@ -559,16 +559,16 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
             onClick={() => videoInputRef.current?.click()}
             className="inline-flex items-center gap-2 rounded-full bg-card px-3 py-2 text-sm text-foreground/90 transition-colors hover:bg-muted disabled:opacity-50"
           >
-            <VideoIcon className="h-4 w-4 text-accent" />
+            <VideoIcon className="h-4 w-4 text-muted-foreground" />
             Video
           </button>
           <Popover open={availabilityOpen} onOpenChange={setAvailabilityOpen}>
             <PopoverTrigger asChild>
               <button
                 type="button"
-                className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm transition-colors ${availableOn ? "bg-accent/15 text-accent" : "bg-card text-foreground/90 hover:bg-muted"}`}
+                className={`inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm transition-colors ${availableOn ? "bg-foreground/[0.18] text-foreground" : "bg-card text-foreground/90 hover:bg-muted"}`}
               >
-                <CalendarCheck className="h-4 w-4 text-accent" />
+                <CalendarCheck className={`h-4 w-4 ${availableOn ? "text-foreground" : "text-muted-foreground"}`} />
                 <span className="max-sm:hidden">I'm available</span>
                 <span className="sm:hidden">Available</span>
               </button>
@@ -596,7 +596,7 @@ const PostComposerDialog = ({ open, onOpenChange, onPublished }: PostComposerDia
               <span
                 aria-hidden
                 className="grid h-5 w-5 place-items-center rounded-full"
-                style={{ background: `conic-gradient(hsl(var(--accent)) ${ringPct}%, hsl(var(--border)) ${ringPct}% 100%)` }}
+                style={{ background: `conic-gradient(hsl(var(--foreground)) ${ringPct}%, hsl(var(--border)) ${ringPct}% 100%)` }}
               >
                 <span className="h-3.5 w-3.5 rounded-full bg-background" />
               </span>

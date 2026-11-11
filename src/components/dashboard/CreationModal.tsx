@@ -35,7 +35,7 @@ export const CreationModalShell = ({ title, meta, footer, children, className, b
     )}
   >
     {mobileHeader}
-    <DialogHeader className={cn("px-5 pt-5 pb-4 border-b border-border/60 space-y-2 text-left", mobileHeader && "max-md:sr-only")}>
+    <DialogHeader className={cn("px-5 pt-5 pb-2 space-y-2 text-left", mobileHeader && "max-md:sr-only")}>
       <DialogTitle className="text-base sm:text-lg font-semibold pr-8">{title}</DialogTitle>
       {meta && <div className="flex flex-wrap items-center gap-2">{meta}</div>}
     </DialogHeader>
@@ -43,7 +43,7 @@ export const CreationModalShell = ({ title, meta, footer, children, className, b
     <div className={cn("flex-1 overflow-y-auto overscroll-contain px-5 py-5 space-y-6", bodyClassName)}>{children}</div>
 
     {footer && (
-      <div className="px-5 py-4 border-t border-border/60 bg-background safe-area-bottom">{footer}</div>
+      <div className="px-5 pb-5 pt-2 bg-background safe-area-bottom">{footer}</div>
     )}
   </DialogContent>
 );

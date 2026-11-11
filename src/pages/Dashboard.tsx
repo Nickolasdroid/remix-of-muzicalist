@@ -2369,7 +2369,7 @@ const Dashboard = () => {
                                 <Button
                                   size="sm"
                                   onClick={() => setShowPostDialog(true)}
-                                  className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
+                                  className="h-8 shrink-0 rounded-full border border-foreground/25 bg-transparent px-3.5 text-sm font-bold text-foreground hover:border-foreground hover:bg-transparent"
                                 >
                                   <Plus className="h-4 w-4 mr-1" />
                                   {t('dashboardPosts.createPost', 'Add')}
@@ -2562,7 +2562,7 @@ const Dashboard = () => {
                               <Button
                                 size="sm"
                                 onClick={() => setShowAnnouncementDialog(true)}
-                                className="bg-accent text-accent-foreground hover:bg-accent/90 rounded-lg shrink-0"
+                                className="h-8 shrink-0 rounded-full border border-foreground/25 bg-transparent px-3.5 text-sm font-bold text-foreground hover:border-foreground hover:bg-transparent"
                               >
                                 <Plus className="h-4 w-4 mr-1" />
                                 {t('dashboardPosts.createPost', 'Add')}

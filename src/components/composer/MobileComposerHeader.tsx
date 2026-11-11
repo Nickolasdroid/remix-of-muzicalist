@@ -32,7 +32,7 @@ const MobileComposerHeader = ({
       type="button"
       onClick={onAction}
       disabled={disabled || busy}
-      className="justify-self-end inline-flex items-center gap-1.5 rounded-lg bg-accent px-3.5 py-1.5 text-sm font-semibold text-accent-foreground transition-opacity disabled:opacity-40"
+      className="justify-self-end inline-flex items-center gap-1.5 rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-accent-foreground transition-colors disabled:bg-foreground/[0.1] disabled:text-muted-foreground"
     >
       {busy && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
       {actionLabel}
