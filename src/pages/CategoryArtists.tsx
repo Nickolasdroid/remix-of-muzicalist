@@ -226,6 +226,7 @@ const CategoryArtists = () => {
   const { category } = useParams<{ category: string }>();
   const { t } = useTranslation();
   const tile = CATEGORY_TILES.find((c) => c.path === `/categories/${category}`);
+  const categoryLabel = tile ? t(`platformStats.${tile.statKey}`) : category ?? "";
   // Remember the category for "Recommended artists" on the home page
   useEffect(() => {
     const spec = ({ Singers: "Singer", Instrumentalists: "Instrumentalist", DJs: "DJ", Bands: "Band" } as Record<string, string>)[category ?? ""];
@@ -401,7 +402,8 @@ const CategoryArtists = () => {
         description={`Browse and book the best ${category?.toLowerCase()} on Muzicalist. Compare profiles, reviews, prices and availability, then send a booking request in minutes.`}
         path={`/categories/${encodeURIComponent(category ?? "")}`}
       />
-      <Navigation mobileTitle={category} mobileBackPath={currentUserId ? "/categories" : "/"} mobileExtraAction={currentUserId ? <FilterButton placement="header" mobileInHeader {...filterProps} /> : undefined} hideMobileNotifications />
+      {/* Phone: the count sits next to the name in the top bar, e.g. "Soliști (186)" */}
+      <Navigation mobileTitle={`${categoryLabel}${loading ? "" : ` (${filteredArtists.length})`}`} mobileBackPath={currentUserId ? "/categories" : "/"} mobileExtraAction={currentUserId ? <FilterButton placement="header" mobileInHeader {...filterProps} /> : undefined} hideMobileNotifications />
       
       {!currentUserId && <GuestSidebar />}
       <div className="min-h-screen min-w-0 flex-1 overflow-hidden bg-background pb-6 pt-14 md:min-h-[calc(100vh-80px)] md:rounded-lg md:pb-16 md:pt-0">
@@ -411,14 +413,14 @@ const CategoryArtists = () => {
         style={{ background: `linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.45) 100%), ${tile?.color ?? "rgb(83,83,83)"}` }}
       >
         <h1 className="font-figtree text-6xl font-black tracking-[-0.04em] text-white lg:text-8xl">
-          {tile ? t(`platformStats.${tile.statKey}`) : category}
+          {categoryLabel}
+          {/* How many, on the same line, lighter so the name stays the main thing */}
+          {!loading && (
+            <span className="ml-3 align-baseline text-[0.5em] font-bold tracking-[-0.02em] text-white/70 tabular-nums notranslate lg:ml-4" translate="no">
+              ({filteredArtists.length})
+            </span>
+          )}
         </h1>
-        {!loading && (
-          <p className="mt-3 text-sm font-medium text-white/80">
-            <span className="tabular-nums notranslate" translate="no">{filteredArtists.length}</span>{" "}
-            <span key={filteredArtists.length === 1 ? "one" : "many"}>{filteredArtists.length === 1 ? "artist" : "artists"}</span>
-          </p>
-        )}
       </header>
       <div
         className="px-4 pt-4 md:px-8 md:pt-6"
@@ -426,19 +428,12 @@ const CategoryArtists = () => {
       >
         <div className="mb-4 md:mb-6">
           <FilterChips {...filterProps} />
-          {/* Phone: how many artists (the big header is desktop only), and for guests the
-              filter button (signed-in users have it in the top bar) */}
-          <div className="flex min-h-9 items-center justify-between gap-3 md:hidden">
-            <p className="text-sm font-medium text-muted-foreground">
-              {!loading && (
-                <>
-                  <span className="tabular-nums notranslate" translate="no">{filteredArtists.length}</span>{" "}
-                  <span key={filteredArtists.length === 1 ? "one" : "many"}>{filteredArtists.length === 1 ? "artist" : "artists"}</span>
-                </>
-              )}
-            </p>
-            {!currentUserId && <FilterButton placement="page" mobileInHeader={false} {...filterProps} />}
-          </div>
+          {/* Phone, guests: the filter button (signed-in users have it in the top bar) */}
+          {!currentUserId && (
+            <div className="flex justify-end md:hidden">
+              <FilterButton placement="page" mobileInHeader={false} {...filterProps} />
+            </div>
+          )}
         </div>
 
         {urlDate && (
