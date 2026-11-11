@@ -1583,15 +1583,13 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
               {/* Action buttons */}
               {!isOwnProfile && (
-                <div ref={actionRowRef} className="mx-4 md:mx-8 mt-6 md:mt-7 grid grid-cols-[48px_1fr_48px] items-center gap-2 md:flex md:gap-3">
-                  {/* Phone: Calendar in the middle, message and options as plain icons on the sides.
-                      Desktop: Calendar, message, options in a row. */}
+                <div ref={actionRowRef} className="mx-4 md:mx-8 mt-6 md:mt-7 flex items-center gap-2 md:gap-3">
                   <Button
                     onClick={() => {
                       if (!currentUserId) { navigate('/login'); return; }
                       navigate(`/book/${artist.id}`);
                     }}
-                    className="justify-self-center px-10 md:px-8 h-12 rounded-full bg-accent text-accent-foreground hover:bg-accent/90 font-bold text-[15px]"
+                    className="flex-1 md:flex-none md:px-8 h-12 rounded-full bg-accent text-accent-foreground hover:bg-accent/90 font-bold text-[15px]"
                   >
                     <CalendarIcon className="mr-2 h-5 w-5" />
                     Calendar
@@ -1605,12 +1603,12 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                     size="icon"
                     aria-label="Send Message"
                     title="Send Message"
-                    className="order-first h-12 w-12 shrink-0 rounded-full max-md:border-0 max-md:bg-transparent max-md:text-muted-foreground max-md:hover:bg-transparent max-md:hover:text-foreground md:order-none"
+                    className="h-12 w-12 shrink-0 rounded-full"
                   >
-                    <MessageCircle className="!h-6 !w-6 md:!h-5 md:!w-5" />
+                    <MessageCircle className="h-5 w-5" />
                   </Button>
                   {/* Share, report... */}
-                  <div className="shrink-0 justify-self-end text-muted-foreground hover:text-foreground [&_button]:h-12 [&_button]:w-12 [&_svg]:h-6 [&_svg]:w-6">
+                  <div className="shrink-0 text-muted-foreground hover:text-foreground [&_button]:h-12 [&_button]:w-12 [&_svg]:h-6 [&_svg]:w-6">
                     <ProfileActionsMenu
                       profileId={artist.id}
                       profileName={artist.stage_name}
