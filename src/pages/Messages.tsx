@@ -4,7 +4,7 @@ import { opportunityDisplayTitle } from "@/lib/opportunities";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useCloseOnBack } from "@/lib/modalHistory";
 import { goBack } from "@/lib/backNavigation";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
@@ -566,14 +566,27 @@ const Messages = () => {
           </span>
         </div>
       )}
-      {list.length === 0 ? <div className="p-4 text-center text-muted-foreground">
-          {forAd ? "No replies yet" : "No conversations yet"}
-        </div> : list.map(conv => {
+      {list.length === 0 ? (forAd ? <div className="p-4 text-center text-sm text-muted-foreground">No replies yet</div> : (
+        // Empty inbox: say what will show up here and give a way to start
+        <div className="flex flex-col items-center px-6 pb-10 pt-16 text-center md:pt-20">
+          <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-foreground/[0.07]">
+            <MessageCircle className="h-7 w-7 text-muted-foreground" aria-hidden="true" />
+          </span>
+          <p className="text-lg font-bold text-foreground">No messages yet</p>
+          <p className="mt-1.5 max-w-xs text-sm text-muted-foreground">When you write to an artist or someone writes to you, the conversation shows up here.</p>
+          <Link
+            to="/artists"
+            className="mt-6 inline-flex h-10 items-center rounded-full border border-foreground/40 px-6 text-sm font-bold text-foreground transition-colors hover:border-foreground"
+          >
+            Browse artists
+          </Link>
+        </div>
+      )) : list.map(conv => {
         const profile = getOtherProfile(conv);
         const isAd = !!conv.announcement_id;
-        return <div key={conv.id} className={`w-full p-4 flex items-center gap-3 hover:bg-muted/50 transition-colors border-b border-border/50 cursor-pointer ${selectedConversation?.id === conv.id ? 'bg-accent/10' : ''}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(isAd ? conv.announcement_context || null : null); }}>
-            <Avatar className={`h-10 w-10`}>
-              <AvatarImage src={profile.avatar_url || undefined} />
+        return <div key={conv.id} className={`mx-2 flex cursor-pointer items-center gap-3 rounded-md px-2.5 py-2.5 transition-colors ${selectedConversation?.id === conv.id ? 'bg-foreground/[0.1]' : 'hover:bg-foreground/[0.07]'}`} onClick={() => { setSelectedConversation(conv); setAnnouncementContext(isAd ? conv.announcement_context || null : null); }}>
+            <Avatar className="h-12 w-12 shrink-0">
+              <AvatarImage src={profile.avatar_url || undefined} className="object-cover" />
               <AvatarFallback>
                 <User className="h-5 w-5" />
               </AvatarFallback>
@@ -681,22 +694,22 @@ const Messages = () => {
         <div className="pt-20 md:pt-8 text-center text-muted-foreground">Loading...</div>
       </div>;
   }
-  return <div className="min-h-screen md:ml-[316px] lg:ml-[356px] bg-background">
+  return <div className="min-h-screen bg-background md:ml-[316px] md:bg-black md:py-2 md:pr-2 lg:ml-[356px]">
       <Navigation mobileTitle="Messages" onMobileBack={handleMobileBack} hideMobileHeader={conversationActive} />
       
-      <div className="px-0 pt-14 md:pt-0 pb-16 md:pb-0 h-screen md:h-[calc(100vh-64px)]">
-        {/* Desktop: Grid layout */}
-        <div className="hidden md:grid md:grid-cols-3 md:h-[calc(100vh-64px)]">
+      <div className="px-0 pt-14 md:pt-0 pb-16 md:pb-0 h-screen md:h-[calc(100vh-80px)]">
+        {/* Desktop: two panels side by side, like the rest of the app */}
+        <div className="hidden md:flex md:h-full md:gap-2">
           {/* Conversations List */}
-          <div className="md:col-span-1 p-0 overflow-hidden bg-background border-r border-border">
-            <h1 className="flex h-[49px] items-center border-b border-border px-4 text-base font-semibold">Messages</h1>
-            <ScrollArea className="h-[calc(100%-49px)]">
+          <div className="flex w-[340px] shrink-0 flex-col overflow-hidden rounded-lg bg-background lg:w-[380px]">
+            <h1 className="px-4 pb-3 pt-5 font-figtree text-2xl font-bold tracking-[-0.01em] text-foreground">Messages</h1>
+            <ScrollArea className="flex-1 pb-2">
               {renderConversationList()}
             </ScrollArea>
             </div>
 
           {/* Messages Area */}
-          <div className="md:col-span-2 p-0 overflow-hidden flex flex-col bg-background">
+          <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg bg-background">
             {selectedConversation || pendingArtist ? <>
                 {/* Header */}
                 <div className="p-4 border-b border-border flex items-center justify-between gap-3">
@@ -785,15 +798,19 @@ const Messages = () => {
                   </Button>
                 </form>
                 )}
-              </> : <div className="flex-1 flex items-center justify-center text-muted-foreground">
-                Select a conversation to start messaging
+              </> : <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+                <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-foreground/[0.07]">
+                  <MessageCircle className="h-7 w-7 text-muted-foreground" aria-hidden="true" />
+                </span>
+                <p className="text-lg font-bold text-foreground">Your messages</p>
+                <p className="mt-1.5 text-sm text-muted-foreground">Select a conversation to start messaging</p>
               </div>}
           </div>
         </div>
 
         {/* Mobile: Full-width conversation list */}
         <div className="md:hidden h-full">
-          <div className="p-0 overflow-hidden bg-background h-full border-t border-border">
+          <div className="h-full overflow-hidden bg-background pt-1">
             <div className="h-full overflow-y-auto">
               {renderConversationList()}
             </div>

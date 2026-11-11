@@ -8,6 +8,8 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "When you write to an artist or someone writes to you, the conversation shows up here.": "Când îi scrii unui artist sau îți scrie cineva, conversația apare aici.",
+  "Your messages": "Mesajele tale",
   "Recommended": "Recomandați",
   "Events on Muzicalist": "Evenimente prin Muzicalist",
   "Show less": "Arată mai puțin",
