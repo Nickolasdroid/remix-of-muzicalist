@@ -411,11 +411,12 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
   const mobileBottomNav = [
     { to: '/feed', icon: Home, label: t('navigation.home'), showBadge: false },
     { to: '/search', icon: Search, label: t('common.search'), showBadge: false },
-    { to: user ? '/messages' : '/login', icon: MessageSquare, label: t('navigation.messages'), showBadge: true },
-    // Artists: their calendar; organizers: their bookings. Badge = items waiting for an answer
+    // Calendar in the middle. Artists: their calendar; organizers: their bookings.
+    // Badge = items waiting for an answer
     userType === 'user'
       ? { to: user ? '/booking-requests' : '/login', icon: CalendarCheck, label: t('navigation.bookings', 'Bookings'), showBadge: false, badgeCount: bookingActionCount }
       : { to: user ? '/calendar' : '/login', icon: CalendarCheck, label: t('navigation.calendar', 'Calendar'), showBadge: false, badgeCount: bookingActionCount },
+    { to: user ? '/messages' : '/login', icon: MessageSquare, label: t('navigation.messages'), showBadge: true },
     { to: user ? (userType === 'user' ? '/user-dashboard' : '/dashboard?tab=profile') : '/login', icon: User, label: t('navigation.profile'), showBadge: false },
   ];
 
