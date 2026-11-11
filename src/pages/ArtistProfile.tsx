@@ -18,7 +18,7 @@ import ExpandableText from "@/components/ExpandableText";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { getEmbedInfo, providerLabel } from "@/lib/mediaEmbed";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Navigation from "@/components/Navigation";
 import { genreLabel } from "@/lib/genreLabel";
 import { LikeCountButton } from "@/components/LikesDialog";
@@ -35,6 +35,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PROFILE_PANEL } from "@/lib/profileLayout";
 import GuestSidebar from "@/components/GuestSidebar";
 import SimilarArtists from "@/components/profile/SimilarArtists";
+import PastEvents from "@/components/profile/PastEvents";
 import { getThumbUrl } from "@/lib/imageUrl";
 import GuestSignupBar from "@/components/GuestSignupBar";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -284,6 +285,21 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
     if (target) navigate(`/connections/${target}?tab=${tab}`);
   };
   const [acceptedEventsCount, setAcceptedEventsCount] = useState<number>(0);
+  // Bar with name + Calendar at the top once the action buttons scroll out of view (Spotify style)
+  const [showStickyBar, setShowStickyBar] = useState(false);
+  const stickyObserver = useRef<IntersectionObserver | null>(null);
+  const actionRowRef = useCallback((node: HTMLDivElement | null) => {
+    stickyObserver.current?.disconnect();
+    if (!node) {
+      setShowStickyBar(false);
+      return;
+    }
+    stickyObserver.current = new IntersectionObserver(
+      ([entry]) => setShowStickyBar(!entry.isIntersecting && entry.boundingClientRect.top < 80),
+      { rootMargin: "-72px 0px 0px 0px" },
+    );
+    stickyObserver.current.observe(node);
+  }, []);
   const [activeTab, setActiveTab] = useState<string>("details");
   // Posts tab chips: Posts · Events · Collaborations
   const [postsKind, setPostsKind] = useState<ContentKind>("posts");
@@ -1391,6 +1407,36 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       {/* Visitors keep the left panel from the home page (also narrows the page) */}
       {!currentUserId && !isReviewsView && <GuestSidebar />}
       <div className={`${isReviewsView ? 'hidden' : ''} ${PROFILE_PANEL} min-w-0 flex-1 pt-14 md:pt-0 pb-6 md:pb-20 px-0`}>
+        {/* Sticks to the top once the buttons under the name scroll away: name + Calendar */}
+        {!isOwnProfile && (
+          <div className="sticky top-14 z-40 h-0 md:top-16">
+            <div
+              aria-hidden={!showStickyBar}
+              className={`absolute inset-x-0 top-0 flex h-16 items-center gap-3 bg-background px-4 shadow-[0_6px_16px_rgba(0,0,0,0.35)] backdrop-blur transition-[opacity,transform] duration-200 md:px-8 ${
+                showStickyBar ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
+              }`}
+            >
+              <Avatar className="h-9 w-9 shrink-0">
+                <AvatarImage src={artist.avatar_url || undefined} alt="" />
+                <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
+              </Avatar>
+              <span className="min-w-0 flex-1 truncate font-figtree text-lg font-bold text-foreground md:text-2xl notranslate" translate="no" data-user-content="true">
+                {artist.stage_name}
+              </span>
+              <Button
+                tabIndex={showStickyBar ? 0 : -1}
+                onClick={() => {
+                  if (!currentUserId) { navigate('/login'); return; }
+                  navigate(`/book/${artist.id}`);
+                }}
+                className="h-10 shrink-0 rounded-full bg-accent px-5 font-bold text-accent-foreground hover:bg-accent/90"
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                Calendar
+              </Button>
+            </div>
+          </div>
+        )}
         <div ref={profileContentRef} className="container mx-auto max-w-none px-4 md:px-8">
           <Link to="/leaderboard">
             
@@ -1442,8 +1488,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   </div>
                 )}
 
-                {/* Secondary profile actions */}
-                <div className="absolute top-2 right-2 md:top-3 md:right-3 z-30">
+                {/* Secondary profile actions (on others' profiles they sit in the action row) */}
+                {isOwnProfile && <div className="absolute top-2 right-2 md:top-3 md:right-3 z-30">
                   <div className="rounded-full bg-black/45 backdrop-blur-sm border border-white/15 text-white hover:bg-black/60 transition-colors">
                     <ProfileActionsMenu
                       profileId={artist.id}
@@ -1453,7 +1499,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       isArtist={true}
                     />
                   </div>
-                </div>
+                </div>}
               </div>
 
               {/* Avatar overlapping cover bottom + info below (Facebook-style) */}
@@ -1483,6 +1529,22 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                     {artist.county && <span className="truncate">{artist.county}</span>}
                     {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                   </div>
+                  {/* The number organizers look at first (like Spotify's monthly listeners); hidden with no reviews */}
+                  {reviews.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('reviews')}
+                      className="mt-1 inline-flex items-center gap-1 text-sm md:text-base text-foreground hover:underline"
+                    >
+                      <Star className="h-4 w-4 fill-current" aria-hidden="true" />
+                      <span className="font-bold tabular-nums notranslate" translate="no">{getAverageRating()}</span>
+                      <span className="text-muted-foreground">·</span>
+                      <span key={reviews.length === 1 ? 'one' : 'many'} className="text-muted-foreground">
+                        <span className="tabular-nums notranslate" translate="no">{reviews.length}</span>{' '}
+                        <span>{reviews.length === 1 ? 'review' : 'reviews'}</span>
+                      </span>
+                    </button>
+                  )}
                   {collabStatus && <CollabStatusChip status={collabStatus} className="mt-1.5" />}
                   <SocialStats
                     className="mt-1.5 md:mt-2 flex-nowrap"
@@ -1535,13 +1597,13 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
 
               {/* Action buttons */}
               {!isOwnProfile && (
-                <div className="mx-4 md:mx-8 mt-6 md:mt-7 grid grid-cols-1 gap-2 md:flex md:gap-3">
+                <div ref={actionRowRef} className="mx-4 md:mx-8 mt-6 md:mt-7 flex items-center gap-2 md:gap-3">
                   <Button
                     onClick={() => {
                       if (!currentUserId) { navigate('/login'); return; }
                       navigate(`/book/${artist.id}`);
                     }}
-                    className="w-full md:w-auto md:px-8 h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-bold text-[15px]"
+                    className="flex-1 md:flex-none md:px-8 h-12 rounded-full bg-accent text-accent-foreground hover:bg-accent/90 font-bold text-[15px]"
                   >
                     <CalendarIcon className="mr-2 h-5 w-5" />
                     Calendar
@@ -1552,11 +1614,23 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       navigate(`/messages?artistId=${artist.id}`);
                     }}
                     variant="outline"
-                    className="w-full md:w-auto md:px-8 h-12 font-bold text-[15px]"
+                    size="icon"
+                    aria-label="Send Message"
+                    title="Send Message"
+                    className="h-12 w-12 shrink-0 rounded-full"
                   >
-                    <MessageCircle className="mr-2 h-5 w-5" />
-                    Send Message
+                    <MessageCircle className="h-5 w-5" />
                   </Button>
+                  {/* Share, report... */}
+                  <div className="shrink-0 text-muted-foreground hover:text-foreground [&_button]:h-12 [&_button]:w-12 [&_svg]:h-6 [&_svg]:w-6">
+                    <ProfileActionsMenu
+                      profileId={artist.id}
+                      profileName={artist.stage_name}
+                      isOwnProfile={isOwnProfile}
+                      currentUserId={currentUserId}
+                      isArtist={true}
+                    />
+                  </div>
                 </div>
               )}
 
@@ -1621,6 +1695,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                           )}
                         </div>
                       </div>
+                    {/* Events played through Muzicalist (type and month), like Spotify's discography */}
+                    <PastEvents profileId={artist.id} title={<SectionHeaderWithUsage title="Events on Muzicalist" className="mb-3" />} />
                     {/* Below xl the side panel's cards sit here, before similar artists */}
                     <div className="space-y-4 xl:hidden">{sideCards}</div>
                     <SimilarArtists artistId={artist.id} specialization={artist.specialization} county={artist.county} />
