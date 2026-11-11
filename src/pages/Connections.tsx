@@ -208,29 +208,31 @@ const Connections = () => {
     return isOwn ? "You're not following anyone yet." : "Not following anyone yet.";
   }, [tab, isOwn]);
 
-  /** One account as a card, like the artist shelves: round photo, name, details, then the action. */
+  /** One account per row, Instagram style: photo, name and details, the button on the right. */
   const renderCard = (p: ProfileRow, suggested = false) => {
     const name = displayName(p);
     const sub = [p.specialization ? translateSpecialization(p.specialization) : null, p.county].filter(Boolean).join(" · ");
     const action = actionFor(p, suggested);
     return (
-      <li key={p.id} className="flex flex-col rounded-md p-2.5 transition-colors hover:bg-foreground/[0.07] md:p-3">
-        <Link to={`/artist/${p.slug || p.id}`} className="block min-w-0">
-          <Avatar className="aspect-square h-auto w-full shadow-[0_8px_24px_rgba(0,0,0,0.5)]">
+      <li key={p.id} className="-mx-2 flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-foreground/[0.05]">
+        <Link to={`/artist/${p.slug || p.id}`} className="flex min-w-0 flex-1 items-center gap-3">
+          <Avatar className="h-14 w-14 shrink-0">
             {p.avatar_url ? <AvatarImage src={p.avatar_url} alt={name} className="object-cover" /> : null}
             <AvatarFallback className="bg-foreground/[0.06]">
-              <User className="h-10 w-10 text-muted-foreground" />
+              <User className="h-6 w-6 text-muted-foreground" />
             </AvatarFallback>
           </Avatar>
-          <p className="mt-2.5 truncate text-base font-medium text-foreground notranslate" translate="no">{name}</p>
-          <p className="mt-0.5 truncate text-sm text-muted-foreground">{sub || "\u00a0"}</p>
+          <span className="min-w-0">
+            <span className="block truncate text-[15px] font-bold text-foreground notranslate" translate="no">{name}</span>
+            {sub && <span className="block truncate text-sm text-muted-foreground">{sub}</span>}
+          </span>
         </Link>
-        {action && <div className="mt-2.5">{action}</div>}
+        {action && <div className="shrink-0">{action}</div>}
       </li>
     );
   };
 
-  const GRID = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 -mx-2.5 md:-mx-3";
+  const GRID = "space-y-0.5";
 
   const setTab = (tb: Tab) => {
     const next = new URLSearchParams(searchParams);
@@ -242,7 +244,8 @@ const Connections = () => {
     <div className="min-h-screen bg-black">
       <Navigation mobileTitle={owner ? displayName(owner) : " "} onMobileBack={() => goBack(navigate, "/feed")} hideMobileNotifications />
       <div className="md:ml-[316px] md:py-2 md:pr-2 lg:ml-[356px]">
-      <main className="min-h-screen bg-background px-4 pb-24 pt-16 md:min-h-[calc(100vh-80px)] md:rounded-lg md:px-8 md:pb-10 md:pt-8">
+      <main className="min-h-screen bg-background px-4 pb-24 pt-14 md:min-h-[calc(100vh-80px)] md:rounded-lg md:px-8 md:pb-10 md:pt-8">
+        <div className="md:max-w-2xl">
         {/* Whose list: small photo and name, back to their profile */}
         {owner && (
           <Link to={`/artist/${owner.slug || owner.id}`} className="hidden items-center gap-2.5 text-sm font-bold text-foreground hover:underline md:inline-flex">
@@ -257,17 +260,18 @@ const Connections = () => {
           {tab === "followers" ? t("social.followers") : isOwn ? t("social.following") : t("social.followingThirdPerson")}
         </h1>
 
-        <div role="tablist" className="sticky top-14 z-10 -mx-4 flex gap-2 bg-background px-4 py-3 md:top-16 md:mx-0 md:mt-4 md:px-0">
+        <div role="tablist" className="sticky top-14 z-10 -mx-4 flex border-b border-foreground/10 bg-background md:top-16 md:mx-0 md:mt-4">
           {(["followers", "following"] as Tab[]).map((tb) => (
             <button
               key={tb}
               role="tab"
               aria-selected={tab === tb}
               onClick={() => setTab(tb)}
-              className={`h-8 rounded-full px-3.5 text-sm text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 ${tab === tb ? "bg-foreground/[0.24] font-medium" : "bg-foreground/[0.07] hover:bg-foreground/[0.12]"}`}
+              className={`relative h-12 flex-1 text-[15px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/60 ${tab === tb ? "font-bold text-foreground" : "font-medium text-muted-foreground hover:text-foreground"}`}
             >
               <span className="tabular-nums notranslate" translate="no">{loading ? "–" : lists[tb].length}</span>{" "}
               <span>{tb === "followers" ? t("social.followers") : isOwn ? t("social.following") : t("social.followingThirdPerson")}</span>
+              {tab === tb && <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-0.5 bg-foreground" />}
             </button>
           ))}
         </div>
@@ -279,7 +283,7 @@ const Connections = () => {
         ) : (
           <>
             {current.length > 0 ? (
-              <ul className={`mt-2 ${GRID}`}>{current.map((p) => renderCard(p))}</ul>
+              <ul className={`mt-3 ${GRID}`}>{current.map((p) => renderCard(p))}</ul>
             ) : (
               <div className="flex flex-col items-center px-6 pb-6 pt-12 text-center">
                 <div className="mb-3 rounded-full bg-foreground/[0.07] p-3">
@@ -292,12 +296,13 @@ const Connections = () => {
             {suggestions.length > 0 && (
               <section className="mt-10">
                 <h2 className="font-figtree text-[22px] font-bold tracking-[-0.01em] text-foreground md:text-2xl">Suggested artists</h2>
-                <p className="pb-3 pt-0.5 text-sm text-muted-foreground">Artists near you that you don't follow yet.</p>
+                <p className="pb-2 pt-0.5 text-sm text-muted-foreground">Artists near you that you don't follow yet.</p>
                 <ul className={GRID}>{suggestions.map((p) => renderCard(p, true))}</ul>
               </section>
             )}
           </>
         )}
+        </div>
       </main>
       </div>
 
