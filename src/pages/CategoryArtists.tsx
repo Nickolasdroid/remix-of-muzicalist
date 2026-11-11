@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import HeaderFilterTrigger from "@/components/HeaderFilterTrigger";
 import { ArrowLeft, SlidersHorizontal } from "lucide-react";
 import ArtistProfileCard from "@/components/ArtistProfileCard";
+import { useInfiniteList } from "@/hooks/useInfiniteList";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
@@ -355,6 +356,8 @@ const CategoryArtists = () => {
 
     return result;
   }, [artists, filterCountry, filterCounty, sortOrder]);
+  // A batch at a time; the next one appears near the bottom
+  const { visible, hasMore, sentinelRef } = useInfiniteList(filteredArtists, 20, `${category}|${filterCountry}|${filterCounty}|${sortOrder}`);
 
   const filterProps = { filterCountry, setFilterCountry, filterCounty, setFilterCounty, sortOrder, setSortOrder, countries: availableCountries, counties: filteredCounties };
 
@@ -398,7 +401,7 @@ const CategoryArtists = () => {
         ) : (
           <div className="-mx-2 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:-mx-3">
             {filteredArtists.length > 0 ? (
-              filteredArtists.map((artist) => (
+              visible.map((artist) => (
               <ArtistProfileCard
                   key={artist.id}
                   id={artist.id}
@@ -418,6 +421,7 @@ const CategoryArtists = () => {
             )}
           </div>
         )}
+        {!loading && hasMore && <div ref={sentinelRef} className="h-px" aria-hidden="true" />}
       </div>
     </div>
   );

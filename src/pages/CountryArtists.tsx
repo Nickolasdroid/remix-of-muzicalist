@@ -9,6 +9,7 @@ import HeaderFilterTrigger from "@/components/HeaderFilterTrigger";
 import { Input } from "@/components/ui/input";
 import { Search, ArrowLeft, Users, SlidersHorizontal } from "lucide-react";
 import ArtistProfileCard from "@/components/ArtistProfileCard";
+import { useInfiniteList } from "@/hooks/useInfiniteList";
 import { getCountryFlag, getCountryName, getCountryNameVariants } from "@/lib/countryFlags";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import {
@@ -306,6 +307,8 @@ const CountryArtists = () => {
 
     return result;
   }, [artists, searchTerm, filterCategory, filterCounty, sortOrder, urlDate, bookedArtistIds]);
+  // A batch at a time; the next one appears near the bottom
+  const { visible, hasMore, sentinelRef } = useInfiniteList(filteredArtists, 20, `${searchTerm}|${filterCategory}|${filterCounty}|${sortOrder}|${urlDate}`);
 
   const filterProps = { filterCategory, setFilterCategory, filterCounty, setFilterCounty, sortOrder, setSortOrder, counties };
 
@@ -371,7 +374,7 @@ const CountryArtists = () => {
             </div>
           ) : filteredArtists.length > 0 ? (
             <div className="-mx-2 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:-mx-3">
-              {filteredArtists.map(artist => (
+              {visible.map(artist => (
                 <ArtistProfileCard
                   key={artist.id}
                   id={artist.id}
@@ -382,6 +385,7 @@ const CountryArtists = () => {
                   searchDate={urlDate}
                 />
               ))}
+              {hasMore && <div ref={sentinelRef} className="col-span-full h-px" aria-hidden="true" />}
             </div>
           ) : (
             <div className="text-center py-12">

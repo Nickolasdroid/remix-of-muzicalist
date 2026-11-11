@@ -12,6 +12,7 @@ import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { useInfiniteList } from "@/hooks/useInfiniteList";
 
 interface ArtistData {
   id: string;
@@ -43,6 +44,8 @@ const AllArtists = () => {
       )
     : allArtists;
   const [loading, setLoading] = useState(true);
+  // A batch at a time; the next one appears near the bottom
+  const { visible, hasMore, sentinelRef } = useInfiniteList(artists, 20, query);
 
   useEffect(() => {
     const fetchArtists = async () => {
@@ -119,7 +122,7 @@ const AllArtists = () => {
           <p className="text-muted-foreground text-center py-20">{query ? "No artists match your search." : "No artists found."}</p>
         ) : (
           <div className="-mx-2 grid grid-cols-2 md:-mx-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {artists.map((artist) => (
+            {visible.map((artist) => (
               <ArtistTile
                 key={artist.id}
                 id={artist.id}
@@ -135,6 +138,7 @@ const AllArtists = () => {
             ))}
           </div>
         )}
+        {hasMore && <div ref={sentinelRef} className="h-px" aria-hidden="true" />}
       </div>
 
       <Footer />

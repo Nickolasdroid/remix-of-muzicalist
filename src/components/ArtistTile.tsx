@@ -6,6 +6,7 @@ import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
 import { getThumbUrl } from "@/lib/imageUrl";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import { getCountryFlag } from "@/lib/countryFlags";
+import { useReveal } from "@/hooks/useReveal";
 
 interface ArtistTileProps {
   id: string;
@@ -27,7 +28,10 @@ interface ArtistTileProps {
  */
 const ArtistTile = ({ id, stageName, imageUrl, plan, specialization, county, country, rating, reviewCount, overlay }: ArtistTileProps) => {
   const flag = country ? getCountryFlag(country) : "";
+  // Fades and rises in the first time it scrolls into view
+  const reveal = useReveal<HTMLDivElement>();
   return (
+    <div ref={reveal.ref} className={reveal.className} style={reveal.style}>
     <Link
       to={`/artist/${id}`}
       className="group block rounded-md p-2 transition-colors hover:bg-white/[0.07] focus-visible:bg-white/[0.07] focus-visible:outline-none md:p-3"
@@ -60,6 +64,7 @@ const ArtistTile = ({ id, stageName, imageUrl, plan, specialization, county, cou
       )}
       <ArtistCardStatusBadge rating={rating} reviewCount={reviewCount} className="mt-1" />
     </Link>
+    </div>
   );
 };
 
