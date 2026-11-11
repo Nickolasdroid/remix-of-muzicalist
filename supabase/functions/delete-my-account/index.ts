@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { deleteAllUserStorage } from "../_shared/deleteUserStorage.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -65,6 +66,11 @@ Deno.serve(async (req) => {
     await admin.from("content_reports").delete().eq("reporter_id", targetId);
     await admin.from("user_roles").delete().eq("user_id", targetId);
     await admin.from("profiles").delete().eq("id", targetId);
+
+    // Remove this user's files (avatars, covers, gallery/post/announcement media,
+    // verification docs, report attachments, stories) — rows above are gone, but
+    // Storage objects are separate and must be cleaned up explicitly.
+    await deleteAllUserStorage(admin, targetId);
 
     // Delete from auth (this also invalidates all refresh tokens / sessions)
     const { error: delErr } = await admin.auth.admin.deleteUser(targetId);

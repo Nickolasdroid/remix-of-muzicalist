@@ -1,5 +1,6 @@
 import Stripe from "npm:stripe@17.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { ALL_PRICE_IDS } from "../_shared/stripePriceMap.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -22,6 +23,9 @@ Deno.serve(async (req) => {
 
     if (!price_id || typeof price_id !== "string") {
       return new Response(JSON.stringify({ error: "price_id required" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    }
+    if (!ALL_PRICE_IDS.includes(price_id)) {
+      return new Response(JSON.stringify({ error: "Unknown price_id" }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
     const supabaseAdmin = createClient(

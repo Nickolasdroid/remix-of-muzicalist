@@ -1,4 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+import { deleteAllUserStorage } from "../_shared/deleteUserStorage.ts";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -54,8 +57,8 @@ Deno.serve(async (req) => {
 
     const body = await req.json().catch(() => ({}));
     const targetId: string | undefined = body?.user_id;
-    if (!targetId || typeof targetId !== "string") {
-      return new Response(JSON.stringify({ error: "user_id required" }), {
+    if (!targetId || typeof targetId !== "string" || !UUID_RE.test(targetId)) {
+      return new Response(JSON.stringify({ error: "user_id required and must be a valid UUID" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -77,6 +80,8 @@ Deno.serve(async (req) => {
       "announcements",
       "announcement_likes",
       "post_likes",
+      "comment_likes",
+      "comments",
       "calendar_events",
       "booking_requests",
       "consumed_ad_slots",
@@ -86,6 +91,7 @@ Deno.serve(async (req) => {
       "followers",
       "messages",
       "conversations",
+      "content_reports",
       "notifications",
       "subscription_events",
       "user_roles",
@@ -106,6 +112,8 @@ Deno.serve(async (req) => {
     // User-id scoped rows
     await admin.from("announcement_likes").delete().eq("user_id", targetId);
     await admin.from("post_likes").delete().eq("user_id", targetId);
+    await admin.from("comment_likes").delete().eq("user_id", targetId);
+    await admin.from("comments").delete().eq("user_id", targetId);
     await admin.from("notifications").delete().eq("user_id", targetId);
     await admin.from("followers").delete().eq("follower_id", targetId);
     await admin.from("followers").delete().eq("artist_id", targetId);
@@ -114,8 +122,14 @@ Deno.serve(async (req) => {
       .from("conversations")
       .delete()
       .or(`artist_id.eq.${targetId},participant_id.eq.${targetId}`);
+    await admin.from("content_reports").delete().eq("reporter_id", targetId);
     await admin.from("user_roles").delete().eq("user_id", targetId);
     await admin.from("profiles").delete().eq("id", targetId);
+
+    // Remove this user's files (avatars, covers, gallery/post/announcement media,
+    // verification docs, report attachments, stories) — rows above are gone, but
+    // Storage objects are separate and must be cleaned up explicitly.
+    await deleteAllUserStorage(admin, targetId);
 
     // Finally delete from auth
     const { error: delErr } = await admin.auth.admin.deleteUser(targetId);

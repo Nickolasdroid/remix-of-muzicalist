@@ -25,6 +25,8 @@ import { CURRENCIES } from "@/lib/currencies";
 import { BookingOfferFields, OFFER_NOTE_MAX, offerErrorText } from "@/lib/bookingOffers";
 import { opportunityErrorText } from "@/lib/opportunities";
 import { isValidPhone } from "@/lib/contracts";
+import DiscardDraftDialog from "@/components/composer/DiscardDraftDialog";
+import { useCloseOnBack } from "@/hooks/useCloseOnBack";
 
 interface BookingOfferDialogProps {
   open: boolean;
@@ -130,6 +132,31 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
   const isUpdate = booking?.status === "offered";
   const phoneValid = !needsPhone || isValidPhone(phone);
 
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
+  // Meaningful, user-entered effort worth protecting — not just the auto-filled price suggestion.
+  const isDirty = note.trim().length > 0 || acceptTerms || askAdvance || (needsPhone && (phone.trim() !== "" || legalName.trim() !== ""));
+  const releaseHistory = useCloseOnBack(open, () => {
+    if (saving) return false;
+    if (isDirty) {
+      setConfirmDiscard(true);
+      return false;
+    }
+    onOpenChange(false);
+    return true;
+  });
+  const handleOpenChange = (next: boolean) => {
+    if (next) {
+      onOpenChange(true);
+      return;
+    }
+    if (saving) return;
+    if (isDirty) {
+      setConfirmDiscard(true);
+      return;
+    }
+    onOpenChange(false);
+  };
+
   const handleSend = async () => {
     if (!booking || !priceValid || !acceptTerms || !advanceValid || !phoneValid || saving) return;
     setSaving(true);
@@ -185,12 +212,13 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
       title: isUpdate ? "Offer updated" : "Offer sent",
       description: "The booking is confirmed when the organizer accepts your offer.",
     });
+    releaseHistory();
     onOpenChange(false);
     onSent?.();
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange} manageHistory={false}>
       <DialogContent className="max-w-md rounded-lg">
         <DialogHeader>
           <DialogTitle>{isUpdate ? "Update offer" : "Send an offer"}</DialogTitle>
@@ -355,6 +383,16 @@ const BookingOfferDialog = ({ open, onOpenChange, booking, announcementId, onSen
           </div>
         )}
       </DialogContent>
+      <DiscardDraftDialog
+        open={confirmDiscard}
+        title="Discard this offer?"
+        onKeep={() => setConfirmDiscard(false)}
+        onDiscard={() => {
+          setConfirmDiscard(false);
+          releaseHistory();
+          onOpenChange(false);
+        }}
+      />
     </Dialog>
   );
 };

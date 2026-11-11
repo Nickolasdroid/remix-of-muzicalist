@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
+import DiscardDraftDialog from "@/components/composer/DiscardDraftDialog";
+import { useCloseOnBack } from "@/hooks/useCloseOnBack";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import TimeSelector from "@/components/TimeSelector";
 import {
@@ -402,10 +404,34 @@ const BookingRequestDialog = ({
   submitting = false,
   busySlots = [],
 }: BookingRequestDialogProps) => {
+  const [confirmDiscard, setConfirmDiscard] = useState(false);
+  const isDirty = !!(form.message.trim() || form.eventType.trim() || form.startTime || form.endTime || form.endDate);
+  const releaseHistory = useCloseOnBack(open, () => {
+    if (submitting) return false;
+    if (isDirty) {
+      setConfirmDiscard(true);
+      return false;
+    }
+    onOpenChange(false);
+    return true;
+  });
+  const handleOpenChange = (next: boolean) => {
+    if (next) {
+      onOpenChange(true);
+      return;
+    }
+    if (submitting) return;
+    if (isDirty) {
+      setConfirmDiscard(true);
+      return;
+    }
+    onOpenChange(false);
+  };
+
   if (!date) return null;
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange} manageHistory={false}>
       <DialogContent className="max-w-[460px] w-[calc(100%-1.5rem)] p-0 gap-0 rounded-lg overflow-hidden max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center gap-3 px-5 pt-5 pb-4 pr-12">
@@ -439,6 +465,16 @@ const BookingRequestDialog = ({
           className="flex-1 overflow-y-auto px-5 pb-5 space-y-4"
         />
       </DialogContent>
+      <DiscardDraftDialog
+        open={confirmDiscard}
+        title="Discard this booking request?"
+        onKeep={() => setConfirmDiscard(false)}
+        onDiscard={() => {
+          setConfirmDiscard(false);
+          releaseHistory();
+          onOpenChange(false);
+        }}
+      />
     </Dialog>
   );
 };
