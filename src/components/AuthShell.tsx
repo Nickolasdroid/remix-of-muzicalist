@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { Link } from "react-router-dom";
+import logo from "@/assets/logo.webp";
 
 /** Input style for the account pages: label above, grey outline that turns white on hover. */
 export const authInputClass =
@@ -29,7 +31,25 @@ const AuthShell = ({
   signedIn?: boolean;
   /** Longer forms get a wider column so fields can sit side by side */
   wide?: boolean;
-}) => (
+}) =>
+  !signedIn ? (
+    // Log in / sign up / password, like Spotify: no top bar, no footer, only the logo
+    // (the way back home) and the form, so nothing pulls attention away from it
+    <div className="min-h-screen bg-background">
+      <main className="flex min-h-screen justify-center px-6 py-10 md:items-center md:py-16">
+        <div className={wide ? "w-full max-w-[560px]" : "w-full max-w-[324px]"}>
+          <Link to="/" aria-label="Muzicalist" className="mx-auto mb-6 block w-fit rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70">
+            <img src={logo} alt="" className="h-10 w-10 object-contain" />
+          </Link>
+          {title && <h1 className="mb-10 text-center font-figtree text-[2.5rem] font-bold leading-[1.08] tracking-[-0.03em] text-foreground md:text-5xl">{title}</h1>}
+          <div>{children}</div>
+          {footer && (
+            <div className="mt-12 flex flex-col items-center gap-2 text-center text-base text-muted-foreground [&_a]:font-bold [&_a]:text-foreground [&_a]:no-underline [&_a:hover]:underline">{footer}</div>
+          )}
+        </div>
+      </main>
+    </div>
+  ) : (
   <div className="min-h-screen bg-black">
     <Navigation />
     <main className={signedIn ? "px-0 pb-2 pt-14 md:ml-[316px] lg:ml-[356px] md:pl-0 md:pr-2 md:pt-2" : "px-0 pb-2 pt-14 md:px-2 md:pt-[72px]"}>
@@ -52,6 +72,6 @@ const AuthShell = ({
       </div>
     </main>
   </div>
-);
+  );
 
 export default AuthShell;
