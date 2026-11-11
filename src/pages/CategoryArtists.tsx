@@ -403,7 +403,7 @@ const CategoryArtists = () => {
         path={`/categories/${encodeURIComponent(category ?? "")}`}
       />
       {/* Phone: the count sits next to the name in the top bar, e.g. "Soliști (186)" */}
-      <Navigation mobileTitle={`${categoryLabel}${loading ? "" : ` (${filteredArtists.length})`}`} mobileBackPath={currentUserId ? "/categories" : "/"} mobileExtraAction={currentUserId ? <FilterButton placement="header" mobileInHeader {...filterProps} /> : undefined} hideMobileNotifications />
+      <Navigation mobileTitle={`${categoryLabel}${loading ? "" : ` (${filteredArtists.length})`}`} mobileBackPath={currentUserId ? "/categories" : "/"} mobileExtraAction={<FilterButton placement="header" mobileInHeader {...filterProps} />} hideMobileNotifications />
       
       {!currentUserId && <GuestSidebar />}
       <div className="min-h-screen min-w-0 flex-1 overflow-hidden bg-background pb-6 pt-14 md:min-h-[calc(100vh-80px)] md:rounded-lg md:pb-16 md:pt-0">
@@ -428,12 +428,7 @@ const CategoryArtists = () => {
       >
         <div className="mb-4 md:mb-6">
           <FilterChips {...filterProps} />
-          {/* Phone, guests: the filter button (signed-in users have it in the top bar) */}
-          {!currentUserId && (
-            <div className="flex justify-end md:hidden">
-              <FilterButton placement="page" mobileInHeader={false} {...filterProps} />
-            </div>
-          )}
+
         </div>
 
         {urlDate && (
