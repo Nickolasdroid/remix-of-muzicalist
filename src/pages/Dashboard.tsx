@@ -1924,7 +1924,7 @@ const Dashboard = () => {
         mobileTitle={calendarOnly ? undefined : getMobileTitle()} 
         mobileBackPath={calendarOnly ? undefined : getMobileBackPath()}
         // Calendar on phones: title in the header (like the other pages); Statistics takes the bell's place
-        hideMobileNotifications={calendarOnly}
+        hideMobileNotifications={calendarOnly || (activeTab === "profile" && !isAdmin)}
         mobileAction={calendarOnly && isPremium(currentPlan) ? (
           <Button variant="ghost" size="icon" className="h-10 w-10" aria-label="Statistics" onClick={() => navigate('/analytics')}>
             <BarChart3 className="h-5 w-5" />

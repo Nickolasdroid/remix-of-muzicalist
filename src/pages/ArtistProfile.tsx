@@ -1380,7 +1380,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         ]}
 
       />
-      {isReviewsView ? <Navigation mobileTitle="Reviews" onMobileBack={goBackFromReviews} mobileAction={writeReviewButton ?? <span />} /> : <Navigation mobileOverlay />}
+      {isReviewsView ? <Navigation mobileTitle="Reviews" onMobileBack={goBackFromReviews} mobileAction={writeReviewButton ?? <span />} /> : <Navigation mobileOverlay hideMobileNotifications />}
       
       {isReviewsView && (() => {
         const reviewLimit = getReviewDisplayLimit(artist?.plan);
