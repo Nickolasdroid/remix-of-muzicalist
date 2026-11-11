@@ -1409,18 +1409,28 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       <div className={`${isReviewsView ? 'hidden' : ''} ${PROFILE_PANEL} min-w-0 flex-1 pt-14 md:pt-0 pb-6 md:pb-20 px-0`}>
         {/* Sticks to the top once the buttons under the name scroll away: name + Calendar */}
         {!isOwnProfile && (
-          <div className="sticky top-14 z-40 h-0 md:top-16">
+          // Phone: covers the site header (logo, bell), so only one compact row stays at the top
+          <div className="sticky top-0 z-[60] h-0 md:top-16 md:z-40">
             <div
               aria-hidden={!showStickyBar}
-              className={`absolute inset-x-0 top-0 flex h-16 items-center gap-3 bg-background px-4 shadow-[0_6px_16px_rgba(0,0,0,0.35)] backdrop-blur transition-[opacity,transform] duration-200 md:px-8 ${
+              className={`absolute inset-x-0 top-0 flex h-14 items-center gap-2.5 bg-background pl-2 pr-3 shadow-[0_6px_16px_rgba(0,0,0,0.35)] transition-[opacity,transform] duration-200 md:h-16 md:gap-3 md:px-8 ${
                 showStickyBar ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'
               }`}
             >
-              <Avatar className="h-9 w-9 shrink-0">
+              <button
+                type="button"
+                tabIndex={showStickyBar ? 0 : -1}
+                onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
+                aria-label="Back"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-foreground md:hidden"
+              >
+                <ArrowLeft className="h-5 w-5" />
+              </button>
+              <Avatar className="h-8 w-8 shrink-0 md:h-9 md:w-9">
                 <AvatarImage src={artist.avatar_url || undefined} alt="" />
                 <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
               </Avatar>
-              <span className="min-w-0 flex-1 truncate font-figtree text-lg font-bold text-foreground md:text-2xl notranslate" translate="no" data-user-content="true">
+              <span className="min-w-0 flex-1 truncate font-figtree text-base font-bold text-foreground md:text-2xl notranslate" translate="no" data-user-content="true">
                 {artist.stage_name}
               </span>
               <Button
@@ -1429,7 +1439,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   if (!currentUserId) { navigate('/login'); return; }
                   navigate(`/book/${artist.id}`);
                 }}
-                className="h-10 shrink-0 rounded-full bg-accent px-5 font-bold text-accent-foreground hover:bg-accent/90"
+                className="h-9 shrink-0 rounded-full bg-accent px-4 text-sm font-bold text-accent-foreground hover:bg-accent/90 md:h-10 md:px-5"
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 Calendar
