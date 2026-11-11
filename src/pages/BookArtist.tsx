@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { usePageTitle } from "@/hooks/usePageTitle";
 import { goBack } from "@/lib/backNavigation";
 import { trackActivityEvent } from "@/lib/activityTracker";
@@ -210,6 +210,21 @@ const BookArtist = () => {
     }
   };
 
+  // After a day is picked, glide down to the form that opens under the calendar
+  const formRef = useRef<HTMLDivElement>(null);
+  const scrollToForm = useRef(false);
+  const pickDate = (d: Date | undefined) => {
+    scrollToForm.current = !!d;
+    setSelectedDate(d);
+  };
+  useEffect(() => {
+    if (!scrollToForm.current || !selectedDate) return;
+    scrollToForm.current = false;
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    // Wait a frame so the form is laid out before measuring
+    requestAnimationFrame(() => formRef.current?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }));
+  }, [selectedDate]);
+
   if (loading || !artist) {
     return (
       <div className="min-h-screen bg-background md:ml-[316px] lg:ml-[356px]">
@@ -250,7 +265,7 @@ const BookArtist = () => {
           <ArtistAvailabilityCalendar
             large
             selected={selectedDate}
-            onSelect={setSelectedDate}
+            onSelect={pickDate}
             busyDates={busyDates.filter((d) => !hasFreeHours(d))}
             partialDates={busyDates.filter((d) => hasFreeHours(d))}
             blockedDates={blockedDates}
@@ -259,7 +274,7 @@ const BookArtist = () => {
         </div>
 
         {/* Booking form */}
-        {selectedDate && <div className="rounded-lg bg-foreground/[0.05] p-4 md:p-6">
+        {selectedDate && <div ref={formRef} className="scroll-mt-20 rounded-lg bg-foreground/[0.05] p-4 animate-in fade-in slide-in-from-bottom-2 duration-300 md:scroll-mt-24 md:p-6">
           {selectedBlocked ? (
             <p className="text-sm text-muted-foreground">The artist has marked this day as unavailable. Choose another date.</p>
           ) : selectedFullyBooked ? (
