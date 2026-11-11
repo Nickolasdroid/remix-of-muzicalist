@@ -1515,22 +1515,6 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                     {artist.county && <span className="truncate">{artist.county}</span>}
                     {artist.country && <CountryFlagIcon country={artist.country} className="h-3.5 w-5 md:h-4 md:w-6 lg:h-5 lg:w-7 rounded-sm shadow-sm flex-shrink-0" />}
                   </div>
-                  {/* The number organizers look at first (like Spotify's monthly listeners); hidden with no reviews */}
-                  {reviews.length > 0 && (
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('reviews')}
-                      className="mt-1 inline-flex items-center gap-1 text-sm md:text-base text-white hover:underline"
-                    >
-                      <Star className="h-4 w-4 fill-current" aria-hidden="true" />
-                      <span className="font-bold tabular-nums notranslate" translate="no">{getAverageRating()}</span>
-                      <span className="text-white/70">·</span>
-                      <span key={reviews.length === 1 ? 'one' : 'many'} className="text-white/70">
-                        <span className="tabular-nums notranslate" translate="no">{reviews.length}</span>{' '}
-                        <span>{reviews.length === 1 ? 'review' : 'reviews'}</span>
-                      </span>
-                    </button>
-                  )}
                   {collabStatus && <CollabStatusChip status={collabStatus} className="mt-1.5" />}
                   <SocialStats
                     className="mt-1.5 md:mt-2 flex-nowrap"
