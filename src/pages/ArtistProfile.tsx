@@ -1018,9 +1018,10 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         type="profile"
         image={artist.avatar_url || undefined}
       />
-      <Navigation />
-      <div className={`pt-14 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20 px-0 md:px-4`}>
-        <div className="container mx-auto max-w-4xl px-4 md:px-0">
+      <Navigation mobileOverlay hideMobileNotifications />
+      {!currentUserId && <GuestSidebar />}
+      <div className={`${PROFILE_PANEL} min-w-0 flex-1 pt-0 pb-6 md:pb-20 px-0`}>
+        <div className="container mx-auto max-w-none px-4 md:px-8">
           <OfficialProfileView
             profile={artist as any}
             posts={posts as any}

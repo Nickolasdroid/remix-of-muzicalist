@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import SocialStats from "@/components/SocialStats";
 import { getAvatarOutlineClassesLarge } from "@/lib/subscriptionStyles";
-import { getCoverGradient } from "@/lib/coverThemes";
+import { useDominantColor } from "@/hooks/useDominantColor";
 
 export interface OfficialProfileHeaderProps {
   name: string;
@@ -19,7 +19,7 @@ export interface OfficialProfileHeaderProps {
   onFollowingClick?: () => void;
   /** Rendered inside the avatar ring (e.g. dashboard upload overlay) */
   avatarExtra?: React.ReactNode;
-  /** Rendered on top of the cover (e.g. dashboard cover controls) */
+  /** No longer shown: profiles have no cover photo */
   coverExtra?: React.ReactNode;
 }
 
@@ -41,69 +41,56 @@ const OfficialProfileHeader = ({
   onFollowersClick,
   onFollowingClick,
   avatarExtra,
-  coverExtra,
 }: OfficialProfileHeaderProps) => {
+  const headerColor = useDominantColor(avatarUrl);
+  // Same header as artist profiles: big round photo, huge name, colour taken from the photo
   return (
-    <div className="relative left-1/2 mb-6 w-screen -translate-x-1/2 md:left-0 md:mb-8 md:w-full md:translate-x-0">
-      <div className="relative w-full aspect-[16/7] md:aspect-[16/6] lg:aspect-[16/5] xl:aspect-[16/4] md:rounded-2xl overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
-        {coverUrl ? (
-          <img src={coverUrl} alt={`${name} cover`} className="absolute inset-0 w-full h-full object-cover" />
-        ) : (
-          <div className="absolute inset-0" style={{ background: getCoverGradient(coverTheme) }} />
-        )}
-
-        {/* Smooth fade into the page background */}
+    <div className="relative left-1/2 mb-2 w-screen -translate-x-1/2 md:left-0 md:-ml-8 md:w-[calc(100%+4rem)] md:translate-x-0">
+      <header
+        className="relative px-4 pb-5 pt-24 md:px-8 md:pb-6 md:pt-16 xl:pt-20"
+        style={{ background: `linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%), ${headerColor}` }}
+      >
         <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 h-full"
-          style={{
-            background:
-              "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.98) 12%, hsl(var(--background) / 0.9) 25%, hsl(var(--background) / 0.7) 42%, hsl(var(--background) / 0.45) 60%, hsl(var(--background) / 0.2) 78%, hsl(var(--background) / 0) 100%)",
-          }}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-full -z-10 h-64"
+          style={{ background: `linear-gradient(${headerColor.replace("rgb(", "rgba(").replace(")", ", 0.35)")}, transparent)` }}
         />
-
-        {coverExtra}
-      </div>
-
-      <div className="px-4 md:px-0 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-end gap-3 md:gap-4 lg:gap-5 relative z-10">
-        <div
-          className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(plan as any)} shadow-xl flex-shrink-0 group/avatar`}
-        >
-          <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
-            <AvatarImage src={avatarUrl || undefined} alt={name} />
-            <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10 font-display font-bold text-2xl">
-              {name.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-          {avatarExtra}
-        </div>
-        <div className="flex-1 min-w-0 pb-1">
-          <div className="flex items-center gap-2 min-w-0">
+        <div className="relative z-10 flex items-end gap-4 md:gap-6">
+          <div className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(plan as any)} shadow-[0_4px_60px_rgba(0,0,0,0.5)] flex-shrink-0 group/avatar`}>
+            <Avatar className="h-28 w-28 sm:h-36 sm:w-36 md:h-44 md:w-44 xl:h-56 xl:w-56">
+              <AvatarImage src={avatarUrl || undefined} alt={name} className="object-cover" />
+              <AvatarFallback className="bg-foreground/10 font-display font-bold text-4xl">
+                {name.charAt(0)}
+              </AvatarFallback>
+            </Avatar>
+            {avatarExtra}
+          </div>
+          <div className="flex-1 min-w-0 pb-1">
+            <p className="mb-1 flex items-center gap-1.5 text-xs font-medium text-white md:mb-2 md:text-sm">
+              <VerifiedBadge size="sm" />
+              <span>Admin</span>
+            </p>
             <h1
-              className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-display font-bold text-foreground truncate notranslate"
+              className="line-clamp-2 break-words font-figtree text-4xl font-black leading-[1.05] tracking-[-0.04em] text-white sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl notranslate"
               data-user-content="true"
               data-no-translate="true"
               translate="no"
             >
               {name}
             </h1>
-            <VerifiedBadge size="md" />
-          </div>
-          <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
-            <span className="font-medium">Admin</span>
+            <SocialStats
+              className="mt-2 md:mt-3"
+              followersCount={followersCount}
+              followingCount={followingCount}
+              onFollowersClick={onFollowersClick}
+              onFollowingClick={onFollowingClick}
+              showFollowButton={showFollowButton}
+              isFollowing={isFollowing}
+              onFollowToggle={onFollowToggle}
+            />
           </div>
         </div>
-      </div>
-
-      <SocialStats
-        className="mx-4 md:mx-0 mt-3 md:mt-4"
-        followersCount={followersCount}
-        followingCount={followingCount}
-        onFollowersClick={onFollowersClick}
-        onFollowingClick={onFollowingClick}
-        showFollowButton={showFollowButton}
-        isFollowing={isFollowing}
-        onFollowToggle={onFollowToggle}
-      />
+      </header>
     </div>
   );
 };
