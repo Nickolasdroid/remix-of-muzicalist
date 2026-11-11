@@ -836,7 +836,8 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
                 label: userType === 'user' ? t('navigation.bookings', 'Bookings') : t('navigation.calendar', 'Calendar'),
                 badge: bookingActionCount,
               },
-              ...userSidebarLinks,
+              // Profile is the round photo in the top bar, so it isn't repeated here
+              ...userSidebarLinks.filter((l) => l.icon !== User),
             ].map((link) => {
               const active = isActive(link.to.split('?')[0]) || (link.to.includes('?') && location.search.includes(link.to.split('?')[1]));
               return (
