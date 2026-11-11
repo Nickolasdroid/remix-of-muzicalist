@@ -13,7 +13,7 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { User, Send, ArrowLeft, MessageCircle, Trash2, MoreVertical, Megaphone, MapPin, Calendar, Euro, X, Check, CheckCheck } from "lucide-react";
+import { User, Send, ArrowLeft, MessageCircle, Trash2, MoreHorizontal, Megaphone, MapPin, Calendar, Euro, X, Check, CheckCheck } from "lucide-react";
 import { formatDateNoYear } from "@/lib/utils";
 import { isAdExpired } from "@/lib/adExpiration";
 import { translateSpecialization } from "@/lib/specializationLabel";
@@ -615,6 +615,123 @@ const Messages = () => {
     </>;
   };
 
+  /** The open conversation, the same on phones (full screen) and desktop (right panel). */
+  const renderChat = (mobile: boolean) => {
+    const other = selectedConversation ? getOtherProfile(selectedConversation) : null;
+    const name = other ? other.stage_name : pendingArtist?.stage_name;
+    const avatar = (other ? other.avatar_url : pendingArtist?.avatar_url) || undefined;
+    const spec = other ? other.specialization : pendingArtist?.specialization;
+    const otherId = selectedConversation
+      ? (selectedConversation.artist_id === user?.id ? selectedConversation.participant_id : selectedConversation.artist_id)
+      : pendingArtist?.id;
+    const subtitle = translateSpecialization(spec) || t('common.user', 'User');
+    // Only artists have a public profile to open
+    const profileHref = spec && otherId ? `/artist/${otherId}` : null;
+    const who = <>
+      <Avatar className="h-9 w-9 shrink-0 md:h-10 md:w-10">
+        <AvatarImage src={avatar} className="object-cover" />
+        <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
+      </Avatar>
+      <span className="flex min-w-0 flex-col">
+        <span className="truncate text-base font-bold text-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">{name}</span>
+        <span className="truncate text-xs text-muted-foreground">{subtitle}</span>
+      </span>
+    </>;
+    return <div className="flex h-full min-h-0 flex-col">
+      {/* Header: on phones the same black bar as the site header */}
+      <div className={`flex h-14 shrink-0 items-center gap-2 px-4 ${mobile ? 'bg-black' : 'md:h-16 border-b border-foreground/10'}`}>
+        {mobile && <button type="button" aria-label="Back" className="-ml-1 shrink-0 p-2 text-foreground/80 transition-colors hover:text-foreground" onClick={() => {
+          setSelectedConversation(null);
+          setPendingArtist(null);
+        }}>
+            <ArrowLeft className="h-6 w-6" />
+          </button>}
+        {profileHref
+          ? <Link to={profileHref} className="flex min-w-0 flex-1 items-center gap-3">{who}</Link>
+          : <div className="flex min-w-0 flex-1 items-center gap-3">{who}</div>}
+        {selectedConversation ? <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="shrink-0 rounded-full" aria-label="Conversation options">
+                <MoreHorizontal className="h-5 w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => openDeleteDialog(selectedConversation.id)}>
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete conversation
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu> : <div className="w-10 shrink-0" />}
+      </div>
+
+      {/* Announcement context header */}
+      {announcementContext && <AnnouncementHeader ad={announcementContext} viewerId={user?.id} otherId={selectedConversation ? (selectedConversation.artist_id === user?.id ? selectedConversation.participant_id : selectedConversation.artist_id) : null} rejected={!!(selectedConversation as any)?.collab_rejected_at} onDismiss={() => setAnnouncementContext(null)} />}
+
+      {/* Messages */}
+      <ScrollArea className="min-h-0 flex-1 px-3 md:px-5">
+        <div className="py-4">
+          {/* New conversation: who you're writing to, Instagram style */}
+          {messages.length === 0 && <div className="flex flex-col items-center pb-6 pt-8 text-center">
+              <Avatar className="h-24 w-24">
+                <AvatarImage src={avatar} className="object-cover" />
+                <AvatarFallback><User className="h-10 w-10" /></AvatarFallback>
+              </Avatar>
+              <p className="mt-3 text-xl font-bold text-foreground notranslate" translate="no">{name}</p>
+              <p className="text-sm text-muted-foreground">{subtitle}</p>
+              {profileHref && <Link to={profileHref} className="mt-4 inline-flex h-9 items-center rounded-full bg-foreground/[0.07] px-5 text-sm font-bold text-foreground transition-colors hover:bg-foreground/[0.12]">
+                  View profile
+                </Link>}
+              <p className="mt-6 text-sm text-muted-foreground">Send a message to start the conversation</p>
+            </div>}
+          {messages.map((msg, index) => {
+            const prevMsg = index > 0 ? messages[index - 1] : null;
+            const nextMsg = index < messages.length - 1 ? messages[index + 1] : null;
+            const showDateSeparator = shouldShowDateSeparator(msg, prevMsg);
+            const mine = msg.sender_id === user?.id;
+            // Consecutive messages from the same person sit closer together
+            const sameAsNext = !!nextMsg && nextMsg.sender_id === msg.sender_id && !shouldShowDateSeparator(nextMsg, msg);
+            return <div key={msg.id}>
+                {showDateSeparator && <p className="my-4 text-center text-xs font-medium text-muted-foreground">
+                    {formatMessageDate(new Date(msg.created_at))}
+                  </p>}
+                <div className={`flex ${mine ? 'justify-end' : 'justify-start'} ${sameAsNext ? 'mb-0.5' : 'mb-2.5'}`}>
+                  <div className={`max-w-[78%] px-3.5 py-2 md:max-w-[65%] ${mine ? 'rounded-[20px] rounded-br-md bg-foreground text-background' : 'rounded-[20px] rounded-bl-md bg-foreground/[0.1] text-foreground'}`}>
+                    <p className="whitespace-pre-wrap break-words text-[15px] leading-snug notranslate" data-user-content="true" data-no-translate="true" translate="no">{msg.content}</p>
+                    <div className="mt-0.5 flex items-center justify-end gap-1">
+                      <span className="text-[11px] opacity-60 tabular-nums">
+                        {new Date(msg.created_at).toLocaleTimeString((i18n.language || 'ro').startsWith('ro') ? 'ro-RO' : 'en-GB', {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                      {mine && <span className={`inline-flex ${msg.read_at ? 'text-sky-600' : 'opacity-50'}`} aria-label={msg.read_at ? t('messages.read', 'Read') : t('messages.sent', 'Sent')}>
+                          {msg.read_at ? <CheckCheck className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}
+                        </span>}
+                    </div>
+                  </div>
+                </div>
+              </div>;
+          })}
+          <div data-chat-end="" />
+        </div>
+      </ScrollArea>
+
+      {/* Input: a round field and a send button that lights up once there is text */}
+      {isAdConversationLocked ? (
+        <div className="shrink-0 px-4 py-4 text-center text-sm text-muted-foreground">
+          {selectedConversation?.announcement_context?.kind === "gig" ? "This event has ended or was deleted. You can no longer send messages." : "This collaboration has ended or was deleted. You can no longer send messages."}
+        </div>
+      ) : (
+      <form onSubmit={sendMessage} className="flex shrink-0 items-center gap-2 px-3 pb-3 pt-2 md:px-4 md:pb-4">
+        <Input value={newMessage} onChange={e => setNewMessage(e.target.value)} placeholder="Type a message..." disabled={sending} className="h-11 rounded-full border-0 bg-foreground/[0.07] px-4 text-base focus-visible:ring-1 focus-visible:ring-white/30 focus-visible:ring-offset-0 md:text-sm" />
+        <Button type="submit" disabled={sending || !newMessage.trim()} size="icon" aria-label="Send" className={`h-11 w-11 shrink-0 rounded-full transition-colors disabled:opacity-100 ${newMessage.trim() ? 'bg-foreground text-background hover:bg-foreground/90' : 'bg-foreground/[0.07] text-muted-foreground hover:bg-foreground/[0.07]'}`}>
+          <Send className="h-4 w-4" />
+        </Button>
+      </form>
+      )}
+    </div>;
+  };
+
   // Check if ad conversation is locked (ad deleted or expired)
   const isAdConversationLocked = (() => {
     const conv = selectedConversation;
@@ -688,6 +805,12 @@ const Messages = () => {
     setSelectedConversation(null);
     setPendingArtist(null);
   });
+  // Open on the latest message, and follow new ones
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      document.querySelectorAll('[data-chat-end]').forEach((el) => el.scrollIntoView({ block: 'end' }));
+    });
+  }, [messages.length, selectedConversation?.id]);
   if (loading && !user) {
     return <div className="min-h-screen md:ml-[316px] lg:ml-[356px] bg-background">
         <Navigation mobileTitle="Messages" onMobileBack={handleMobileBack} />
@@ -710,95 +833,7 @@ const Messages = () => {
 
           {/* Messages Area */}
           <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg bg-background">
-            {selectedConversation || pendingArtist ? <>
-                {/* Header */}
-                <div className="p-4 border-b border-border flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <Avatar className={`h-10 w-10`}>
-                      <AvatarImage src={selectedConversation ? getOtherProfile(selectedConversation).avatar_url || undefined : pendingArtist?.avatar_url || undefined} />
-                      <AvatarFallback>
-                        <User className="h-5 w-5" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col items-start min-w-0">
-                      <span className="font-semibold notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                        {selectedConversation ? getOtherProfile(selectedConversation).stage_name : pendingArtist?.stage_name}
-                      </span>
-                      <span className="text-xs text-muted-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                        {selectedConversation ? getOtherSpecialization(selectedConversation) : translateSpecialization(pendingArtist?.specialization) || t('common.user', 'User')}
-                      </span>
-                    </div>
-                  </div>
-                  {selectedConversation ? <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical className="h-5 w-5" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => openDeleteDialog(selectedConversation.id)}>
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete conversation
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu> : <div className="w-10" />}
-                </div>
-
-                {/* Announcement context header */}
-                {announcementContext && <AnnouncementHeader ad={announcementContext} viewerId={user?.id} otherId={selectedConversation ? (selectedConversation.artist_id === user?.id ? selectedConversation.participant_id : selectedConversation.artist_id) : null} rejected={!!(selectedConversation as any)?.collab_rejected_at} onDismiss={() => setAnnouncementContext(null)} />}
-
-                {/* Messages */}
-                <ScrollArea className="flex-1 p-4">
-                  <div className="space-y-4">
-                    {messages.length === 0 && pendingArtist && <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-                        Send a message to start the conversation
-                      </div>}
-                    {messages.map((msg, index) => {
-                  const prevMsg = index > 0 ? messages[index - 1] : null;
-                  const showDateSeparator = shouldShowDateSeparator(msg, prevMsg);
-                  return <div key={msg.id}>
-                          {showDateSeparator && <div className="flex items-center justify-center my-4">
-                              <div className="bg-muted px-3 py-1 rounded-full">
-                                <span className="text-xs text-muted-foreground font-medium">
-                                  {formatMessageDate(new Date(msg.created_at))}
-                                </span>
-                              </div>
-                            </div>}
-                          <div className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-[70%] rounded-lg px-4 py-2 ${msg.sender_id === user?.id ? 'bg-accent text-accent-foreground' : 'bg-muted'}`}>
-                              <p className="notranslate" data-user-content="true" data-no-translate="true" translate="no">{msg.content}</p>
-                              <div className="flex items-center justify-end gap-1 mt-1">
-                                <span className="text-xs opacity-70">
-                                  {new Date(msg.created_at).toLocaleTimeString([], {
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                                </span>
-                                {msg.sender_id === user?.id && <span className={`inline-flex ${msg.read_at ? 'text-blue-400' : 'opacity-50'}`} aria-label={msg.read_at ? t('messages.read', 'Read') : t('messages.sent', 'Sent')}>
-                                    {msg.read_at ? <CheckCheck className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}
-                                  </span>}
-                              </div>
-                            </div>
-                          </div>
-                        </div>;
-                })}
-                  </div>
-                </ScrollArea>
-
-                {/* Input */}
-                {isAdConversationLocked ? (
-                  <div className="p-4 border-t border-border text-center text-sm text-muted-foreground">
-                    {selectedConversation?.announcement_context?.kind === "gig" ? "This event has ended or was deleted. You can no longer send messages." : "This collaboration has ended or was deleted. You can no longer send messages."}
-                  </div>
-                ) : (
-                <form onSubmit={sendMessage} className="p-4 border-t border-border flex gap-2">
-                  <Input value={newMessage} onChange={e => setNewMessage(e.target.value)} placeholder="Type a message..." disabled={sending} />
-                  <Button type="submit" disabled={sending || !newMessage.trim()}>
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </form>
-                )}
-              </> : <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+            {selectedConversation || pendingArtist ? renderChat(false) : <div className="flex flex-1 flex-col items-center justify-center px-6 text-center">
                 <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-foreground/[0.07]">
                   <MessageCircle className="h-7 w-7 text-muted-foreground" aria-hidden="true" />
                 </span>
@@ -819,101 +854,7 @@ const Messages = () => {
 
           {/* Mobile: Chat overlay */}
           {(selectedConversation || pendingArtist) && <div className="fixed top-0 bottom-16 left-0 right-0 z-40 bg-background">
-              <div className="flex flex-col h-full">
-                {/* Header */}
-                <div className="p-3 border-b border-border flex items-center justify-between gap-3 bg-background">
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <Button variant="ghost" size="icon" className="shrink-0" onClick={() => {
-                setSelectedConversation(null);
-                setPendingArtist(null);
-              }}>
-                      <ArrowLeft className="h-5 w-5" />
-                    </Button>
-                    <Avatar className={`h-9 w-9 shrink-0`}>
-                      <AvatarImage src={selectedConversation ? getOtherProfile(selectedConversation).avatar_url || undefined : pendingArtist?.avatar_url || undefined} />
-                      <AvatarFallback>
-                        <User className="h-4 w-4" />
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col items-start min-w-0">
-                      <span className="font-semibold text-base truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                        {selectedConversation ? getOtherProfile(selectedConversation).stage_name : pendingArtist?.stage_name}
-                      </span>
-                      <span className="text-xs text-muted-foreground notranslate" data-user-content="true" data-no-translate="true" translate="no">
-                        {selectedConversation ? getOtherSpecialization(selectedConversation) : translateSpecialization(pendingArtist?.specialization) || t('common.user', 'User')}
-                      </span>
-                    </div>
-                  </div>
-                  {selectedConversation ? <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="shrink-0">
-                          <MoreVertical className="h-5 w-5" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => openDeleteDialog(selectedConversation.id)}>
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          Delete conversation
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu> : <div className="w-10 shrink-0" />}
-                </div>
-
-                {/* Announcement context header */}
-                {announcementContext && <AnnouncementHeader ad={announcementContext} viewerId={user?.id} otherId={selectedConversation ? (selectedConversation.artist_id === user?.id ? selectedConversation.participant_id : selectedConversation.artist_id) : null} rejected={!!(selectedConversation as any)?.collab_rejected_at} onDismiss={() => setAnnouncementContext(null)} />}
-
-                {/* Messages */}
-                <ScrollArea className="flex-1 p-4 bg-background">
-                  <div className="space-y-4">
-                    {messages.length === 0 && pendingArtist && <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-                        Send a message to start the conversation
-                      </div>}
-                    {messages.map((msg, index) => {
-                  const prevMsg = index > 0 ? messages[index - 1] : null;
-                  const showDateSeparator = shouldShowDateSeparator(msg, prevMsg);
-                  return <div key={msg.id}>
-                          {showDateSeparator && <div className="flex items-center justify-center my-4">
-                              <div className="bg-muted px-3 py-1 rounded-full">
-                                <span className="text-xs text-muted-foreground font-medium">
-                                  {formatMessageDate(new Date(msg.created_at))}
-                                </span>
-                              </div>
-                            </div>}
-                          <div className={`flex ${msg.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-[80%] rounded-lg px-3 py-2 ${msg.sender_id === user?.id ? 'bg-accent text-accent-foreground' : 'bg-muted'}`}>
-                              <p className="text-sm notranslate" data-user-content="true" data-no-translate="true" translate="no">{msg.content}</p>
-                              <div className="flex items-center justify-end gap-1 mt-1">
-                                <span className="text-xs opacity-70">
-                                  {new Date(msg.created_at).toLocaleTimeString([], {
-                              hour: '2-digit',
-                              minute: '2-digit'
-                            })}
-                                </span>
-                                {msg.sender_id === user?.id && <span className={`inline-flex ${msg.read_at ? 'text-blue-400' : 'opacity-50'}`} aria-label={msg.read_at ? t('messages.read', 'Read') : t('messages.sent', 'Sent')}>
-                                    {msg.read_at ? <CheckCheck className="h-3.5 w-3.5" /> : <Check className="h-3.5 w-3.5" />}
-                                  </span>}
-                              </div>
-                            </div>
-                          </div>
-                        </div>;
-                })}
-                  </div>
-                </ScrollArea>
-
-                {/* Input */}
-                {isAdConversationLocked ? (
-                  <div className="p-3 border-t border-border text-center text-sm text-muted-foreground bg-background">
-                    {selectedConversation?.announcement_context?.kind === "gig" ? "This event has ended or was deleted. You can no longer send messages." : "This collaboration has ended or was deleted. You can no longer send messages."}
-                  </div>
-                ) : (
-                <form onSubmit={sendMessage} className="p-3 border-t border-border flex gap-2 bg-background">
-                  <Input value={newMessage} onChange={e => setNewMessage(e.target.value)} placeholder="Type a message..." disabled={sending} className="text-base" />
-                  <Button type="submit" disabled={sending || !newMessage.trim()} size="icon">
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </form>
-                )}
-              </div>
+              {renderChat(true)}
             </div>}
         </div>
       </div>
