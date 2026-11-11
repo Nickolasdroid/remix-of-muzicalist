@@ -36,6 +36,7 @@ import { PROFILE_PANEL } from "@/lib/profileLayout";
 import GuestSidebar from "@/components/GuestSidebar";
 import SimilarArtists from "@/components/profile/SimilarArtists";
 import PastEvents from "@/components/profile/PastEvents";
+import { useDominantColor } from "@/hooks/useDominantColor";
 import { getThumbUrl } from "@/lib/imageUrl";
 import GuestSignupBar from "@/components/GuestSignupBar";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -285,6 +286,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
     if (target) navigate(`/connections/${target}?tab=${tab}`);
   };
   const [acceptedEventsCount, setAcceptedEventsCount] = useState<number>(0);
+  // Header colour taken from the profile photo (Spotify style)
+  const headerColor = useDominantColor(artist?.avatar_url);
   // Bar with name + Calendar at the top once the action buttons scroll out of view (Spotify style)
   const [showStickyBar, setShowStickyBar] = useState(false);
   const stickyObserver = useRef<IntersectionObserver | null>(null);
@@ -1456,51 +1459,19 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
           <div className="space-y-6 md:space-y-8">
             {/* Hero Header: Cover + overlapping avatar/name/meta — responsive */}
             <div className="relative left-1/2 mb-6 w-screen -translate-x-1/2 md:left-0 md:-ml-8 md:mb-8 md:w-[calc(100%+4rem)] md:translate-x-0">
-              <div className="relative w-full aspect-[16/7] md:aspect-auto md:h-[220px] xl:h-[260px] overflow-hidden bg-gradient-to-br from-accent/20 via-card to-secondary">
-                {artist.cover_url ? (
-                  <button
-                    type="button"
-                    onClick={() => setLightboxSrc(artist.cover_url!)}
-                    className="group/cover absolute inset-0 w-full h-full cursor-zoom-in"
-                    aria-label="Enlarge cover photo"
-                  >
-                    <img
-                      src={artist.cover_url}
-                      alt={`${artist.stage_name} cover`}
-                      className="absolute inset-0 w-full h-full object-cover"
-                    />
-                    <span className="hidden md:block pointer-events-none absolute top-3 left-3 px-2.5 py-1 rounded-full bg-black/60 text-white text-xs font-medium opacity-0 group-hover/cover:opacity-100 transition-opacity">
-                      Click to enlarge
-                    </span>
-                  </button>
-                ) : (
-                  <div
-                    className="absolute inset-0"
-                    style={{ background: getCoverGradient((artist as any).cover_theme) }}
-                  />
-                )}
-
-
-                {/* Smooth premium fade into the page background (Spotify/Apple Music style) */}
+              {/* Header like a Spotify artist without a banner photo: big round photo, huge name,
+                  the background coloured from the photo and fading into the page below */}
+              <header
+                className="relative px-4 pb-5 pt-10 md:px-8 md:pb-6 md:pt-16 xl:pt-20"
+                style={{ background: `linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%), ${headerColor}` }}
+              >
                 <div
-                  className="pointer-events-none absolute inset-x-0 bottom-0 h-full"
-                  style={{
-                    background:
-                      "linear-gradient(to top, hsl(var(--background)) 0%, hsl(var(--background) / 0.98) 12%, hsl(var(--background) / 0.9) 25%, hsl(var(--background) / 0.7) 42%, hsl(var(--background) / 0.45) 60%, hsl(var(--background) / 0.2) 78%, hsl(var(--background) / 0) 100%)",
-                  }}
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-x-0 top-full -z-10 h-64"
+                  style={{ background: `linear-gradient(${headerColor.replace('rgb(', 'rgba(').replace(')', ', 0.35)')}, transparent)` }}
                 />
-
-
-                {/* Verified badge — bottom-right corner */}
-                {(artist as any).is_verified && (
-                  <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 z-20 bg-black/60 backdrop-blur rounded-full p-1.5">
-                    <VerifiedBadge size="md" />
-                  </div>
-                )}
-
-                {/* Secondary profile actions (on others' profiles they sit in the action row) */}
-                {isOwnProfile && <div className="absolute top-2 right-2 md:top-3 md:right-3 z-30">
-                  <div className="rounded-full bg-black/45 backdrop-blur-sm border border-white/15 text-white hover:bg-black/60 transition-colors">
+                {isOwnProfile && (
+                  <div className="absolute right-2 top-2 z-30 rounded-full bg-black/45 text-white transition-colors hover:bg-black/60 md:right-3 md:top-3">
                     <ProfileActionsMenu
                       profileId={artist.id}
                       profileName={artist.stage_name}
@@ -1509,31 +1480,34 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                       isArtist={true}
                     />
                   </div>
-                </div>}
-              </div>
-
-              {/* Avatar overlapping cover bottom + info below (Facebook-style) */}
-              <div className="px-4 md:px-8 -mt-10 md:-mt-12 lg:-mt-14 xl:-mt-16 flex items-center gap-3 md:gap-4 lg:gap-5 relative z-10">
+                )}
+                <div className="relative z-10 flex items-end gap-4 md:gap-6">
                 <button
                   type="button"
                   onClick={() => artist.avatar_url && setLightboxSrc(artist.avatar_url)}
                   disabled={!artist.avatar_url}
                   aria-label="Enlarge profile picture"
-                  className={`group/avatar relative p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)} shadow-xl flex-shrink-0 ${artist.avatar_url ? 'cursor-zoom-in' : 'cursor-default'}`}
+                  className={`group/avatar relative p-1 rounded-full ${getAvatarOutlineClassesLarge(artist.plan)} shadow-[0_4px_60px_rgba(0,0,0,0.5)] flex-shrink-0 ${artist.avatar_url ? 'cursor-zoom-in' : 'cursor-default'}`}
                 >
-                  <Avatar className="w-20 h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 xl:w-32 xl:h-32">
-                    <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} />
-                    <AvatarFallback className="bg-gradient-to-br from-accent/30 to-accent/10">
-                      <User className="h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 text-accent" />
+                  <Avatar className="h-28 w-28 sm:h-36 sm:w-36 md:h-44 md:w-44 xl:h-56 xl:w-56">
+                    <AvatarImage src={artist.avatar_url || undefined} alt={artist.stage_name} className="object-cover" />
+                    <AvatarFallback className="bg-foreground/10">
+                      <User className="h-12 w-12 md:h-16 md:w-16 text-white/60" />
                     </AvatarFallback>
                   </Avatar>
                 </button>
 
-                <div className="flex-1 min-w-0">
-                  <h1 className="text-3xl md:text-5xl lg:text-6xl font-display font-bold tracking-[-0.03em] text-foreground truncate notranslate" data-user-content="true" data-no-translate="true" translate="no">
+                <div className="flex-1 min-w-0 pb-1">
+                  {(artist as any).is_verified && (
+                    <p className="mb-1 flex items-center gap-1.5 text-xs font-medium text-white md:mb-2 md:text-sm">
+                      <VerifiedBadge size="sm" />
+                      <span>Verified artist</span>
+                    </p>
+                  )}
+                  <h1 className="line-clamp-2 break-words font-figtree text-4xl font-black leading-[1.05] tracking-[-0.04em] text-white sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl notranslate" data-user-content="true" data-no-translate="true" translate="no">
                     {artist.stage_name}
                   </h1>
-                  <div className="flex items-center gap-1.5 md:gap-2 text-muted-foreground text-sm md:text-sm lg:text-base mt-0.5 md:mt-1 flex-wrap">
+                  <div className="mt-1.5 flex flex-wrap items-center gap-1.5 text-sm text-white/80 md:mt-3 md:gap-2 lg:text-base">
                     {artist.specialization && <span className="font-medium">{translateSpecialization(artist.specialization)}</span>}
                     {artist.specialization && artist.county && <span className="opacity-70">•</span>}
                     {artist.county && <span className="truncate">{artist.county}</span>}
@@ -1544,12 +1518,12 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                     <button
                       type="button"
                       onClick={() => setActiveTab('reviews')}
-                      className="mt-1 inline-flex items-center gap-1 text-sm md:text-base text-foreground hover:underline"
+                      className="mt-1 inline-flex items-center gap-1 text-sm md:text-base text-white hover:underline"
                     >
                       <Star className="h-4 w-4 fill-current" aria-hidden="true" />
                       <span className="font-bold tabular-nums notranslate" translate="no">{getAverageRating()}</span>
-                      <span className="text-muted-foreground">·</span>
-                      <span key={reviews.length === 1 ? 'one' : 'many'} className="text-muted-foreground">
+                      <span className="text-white/70">·</span>
+                      <span key={reviews.length === 1 ? 'one' : 'many'} className="text-white/70">
                         <span className="tabular-nums notranslate" translate="no">{reviews.length}</span>{' '}
                         <span>{reviews.length === 1 ? 'review' : 'reviews'}</span>
                       </span>
@@ -1568,7 +1542,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   />
 
                 </div>
-              </div>
+                </div>
+              </header>
 
 
               {/* Stats: three quiet columns, value over label, no box */}
