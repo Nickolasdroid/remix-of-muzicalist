@@ -608,5 +608,21 @@
     "deleteTitle": "Ștergi această postare?",
     "deleteDesc": "Această acțiune nu poate fi anulată.",
     "cancel": "Anulează"
+  },
+  "profileMenu": {
+    "title": "Opțiuni profil",
+    "editProfile": "Editează profilul",
+    "shareProfile": "Distribuie profilul",
+    "copyLink": "Copiază linkul profilului",
+    "settings": "Setări",
+    "block": "Blochează",
+    "unblock": "Deblochează",
+    "reportProfile": "Raportează profilul",
+    "linkCopied": "Linkul profilului a fost copiat.",
+    "linkCopyFailed": "Linkul nu a putut fi copiat",
+    "blocked": "Profil blocat",
+    "blockedDesc": "Nu vă mai puteți urmări și nu vă mai puteți trimite mesaje.",
+    "unblocked": "Profil deblocat",
+    "blockFailed": "Acțiunea nu a reușit"
   }
 }

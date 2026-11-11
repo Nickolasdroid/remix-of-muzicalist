@@ -158,14 +158,18 @@ const ProfileActionsMenu = ({
         },
       ]
     : [
+        // Everyday actions first, then report and block at the bottom (like Spotify / Instagram)
         {
-          key: "block",
-          label: isBlocked
-            ? t("profileMenu.unblock", "Unblock")
-            : t("profileMenu.block", "Block"),
-          icon: isBlocked ? ShieldCheck : Ban,
-          onSelect: handleBlockToggle,
-          destructive: !isBlocked,
+          key: "share",
+          label: t("profileMenu.shareProfile", "Share profile"),
+          icon: Share2,
+          onSelect: handleShare,
+        },
+        {
+          key: "copy",
+          label: t("profileMenu.copyLink", "Copy profile link"),
+          icon: Link2,
+          onSelect: handleCopy,
         },
         {
           key: "report",
@@ -180,16 +184,13 @@ const ProfileActionsMenu = ({
           },
         },
         {
-          key: "share",
-          label: t("profileMenu.shareProfile", "Share profile"),
-          icon: Share2,
-          onSelect: handleShare,
-        },
-        {
-          key: "copy",
-          label: t("profileMenu.copyLink", "Copy profile link"),
-          icon: Link2,
-          onSelect: handleCopy,
+          key: "block",
+          label: isBlocked
+            ? t("profileMenu.unblock", "Unblock")
+            : t("profileMenu.block", "Block"),
+          icon: isBlocked ? ShieldCheck : Ban,
+          onSelect: handleBlockToggle,
+          destructive: !isBlocked,
         },
       ];
 

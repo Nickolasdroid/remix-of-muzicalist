@@ -77,7 +77,7 @@ const PostActionsMenu = ({ actions, disabled, open, onOpenChange, title }: PostA
                     : "text-foreground hover:bg-foreground/[0.07]"
                 }`}
               >
-                <action.icon className={`h-5 w-5 ${action.destructive ? "" : "text-accent"}`} />
+                <action.icon className={`h-5 w-5 ${action.destructive ? "" : "text-muted-foreground"}`} />
                 {action.label}
               </button>
             ))}
