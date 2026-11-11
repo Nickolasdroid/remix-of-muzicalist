@@ -3,7 +3,7 @@ import { canGoBackInApp, goBack, isRootPath, parentPathFor } from "@/lib/backNav
 import { PrefetchLink as Link } from "@/components/PrefetchLink";
 import { preloadForPath } from "@/lib/routePreload";
 import { getPlan } from "@/lib/planLimits";
-import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageSquare, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle, Shield, ChevronRight, CalendarCheck, Plus } from "lucide-react";
+import { Users, Trophy, MapPin, Megaphone, Info, LogIn, Search, Home, User, MessageCircle, Settings, LogOut, Bell, Menu, MoreHorizontal, Globe, Crown, ArrowLeft, HelpCircle, Shield, ChevronRight, CalendarCheck, Plus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import {
   Popover,
@@ -397,12 +397,12 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
   const userSidebarLinks = userType === 'user' 
     ? [
         { to: '/notifications', icon: Bell, label: t('navigation.notifications'), badge: unreadNotifications },
-        { to: '/messages', icon: MessageSquare, label: t('navigation.messages'), badge: unreadCount },
+        { to: '/messages', icon: MessageCircle, label: t('navigation.messages'), badge: unreadCount },
         { to: '/user-dashboard', icon: User, label: t('navigation.profile') },
       ]
     : [
         { to: '/notifications', icon: Bell, label: t('navigation.notifications'), badge: unreadNotifications },
-        { to: '/messages', icon: MessageSquare, label: t('navigation.messages'), badge: unreadCount },
+        { to: '/messages', icon: MessageCircle, label: t('navigation.messages'), badge: unreadCount },
         ...(userType === 'artist' ? [{ to: '/my-plan', icon: Crown, label: t('navigation.myPlan', 'My Plan') }] : []),
         { to: '/dashboard?tab=profile', icon: User, label: t('navigation.profile') },
       ];
@@ -416,7 +416,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     userType === 'user'
       ? { to: user ? '/booking-requests' : '/login', icon: CalendarCheck, label: t('navigation.bookings', 'Bookings'), showBadge: false, badgeCount: bookingActionCount }
       : { to: user ? '/calendar' : '/login', icon: CalendarCheck, label: t('navigation.calendar', 'Calendar'), showBadge: false, badgeCount: bookingActionCount },
-    { to: user ? '/messages' : '/login', icon: MessageSquare, label: t('navigation.messages'), showBadge: true },
+    { to: user ? '/messages' : '/login', icon: MessageCircle, label: t('navigation.messages'), showBadge: true },
     { to: user ? (userType === 'user' ? '/user-dashboard' : '/dashboard?tab=profile') : '/login', icon: User, label: t('navigation.profile'), showBadge: false },
   ];
 
