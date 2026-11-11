@@ -1380,7 +1380,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         ]}
 
       />
-      {isReviewsView ? <Navigation mobileTitle="Reviews" onMobileBack={goBackFromReviews} mobileAction={writeReviewButton ?? <span />} /> : <Navigation />}
+      {isReviewsView ? <Navigation mobileTitle="Reviews" onMobileBack={goBackFromReviews} mobileAction={writeReviewButton ?? <span />} /> : <Navigation mobileOverlay />}
       
       {isReviewsView && (() => {
         const reviewLimit = getReviewDisplayLimit(artist?.plan);
@@ -1409,7 +1409,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       })()}
       {/* Visitors keep the left panel from the home page (also narrows the page) */}
       {!currentUserId && !isReviewsView && <GuestSidebar />}
-      <div className={`${isReviewsView ? 'hidden' : ''} ${PROFILE_PANEL} min-w-0 flex-1 pt-14 md:pt-0 pb-6 md:pb-20 px-0`}>
+      <div className={`${isReviewsView ? 'hidden' : ''} ${PROFILE_PANEL} min-w-0 flex-1 pt-0 pb-6 md:pb-20 px-0`}>
         {/* Sticks to the top once the buttons under the name scroll away: name + Calendar */}
         {!isOwnProfile && (
           // Phone: covers the site header (logo, bell), so only one compact row stays at the top
@@ -1462,7 +1462,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
               {/* Header like a Spotify artist without a banner photo: big round photo, huge name,
                   the background coloured from the photo and fading into the page below */}
               <header
-                className="relative px-4 pb-5 pt-10 md:px-8 md:pb-6 md:pt-16 xl:pt-20"
+                className="relative px-4 pb-5 pt-24 md:px-8 md:pb-6 md:pt-16 xl:pt-20"
                 style={{ background: `linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%), ${headerColor}` }}
               >
                 <div

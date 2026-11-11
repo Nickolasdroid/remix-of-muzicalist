@@ -70,6 +70,13 @@ interface NavigationProps {
    * the header doesn't pull attention away from the profiles; guests keep login/register.
    */
   hideMobileNotifications?: boolean;
+  /**
+   * Profile pages on phones: the header starts see-through over the coloured profile header,
+   * with nothing in the middle, and turns black while scrolling down.
+   */
+  mobileOverlay?: boolean;
+  /** With mobileOverlay: text shown in the middle once the page is scrolled (e.g. the name). */
+  mobileScrollTitle?: string;
 }
 
 /** Reserves body space for the fixed mobile bottom bar while it is rendered. */
@@ -82,7 +89,7 @@ const BottomNavSpacer = ({ active }: { active: boolean }) => {
   return null;
 };
 
-const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader, mobileAction, mobileExtraAction, hideMobileNotifications }: NavigationProps = {}) => {
+const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader, mobileAction, mobileExtraAction, hideMobileNotifications, mobileOverlay, mobileScrollTitle }: NavigationProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -126,6 +133,15 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
   const [bookingActionCount, setBookingActionCount] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  // See-through phone header on profiles: how far the page is scrolled
+  const [overlayScroll, setOverlayScroll] = useState(0);
+  useEffect(() => {
+    if (!mobileOverlay) return;
+    const onScroll = () => setOverlayScroll(window.scrollY);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [mobileOverlay]);
   const [navQuery, setNavQuery] = useState(() =>
     typeof window !== 'undefined' && window.location.pathname === '/search' ? new URLSearchParams(window.location.search).get('q') || '' : '',
   );
@@ -514,8 +530,10 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       )}
 
       {/* Mobile: Top Header Bar */}
-      <nav data-no-translate={skipAutoTranslate ? true : undefined} className={`fixed top-0 left-0 right-0 z-50 md:hidden bg-black ${hideMobileHeader ? 'hidden' : ''}`}>
-        <div className={`flex items-center justify-between h-14 ${user ? 'px-4' : 'gap-2 px-2 min-[375px]:px-4'}`}>
+      <nav data-no-translate={skipAutoTranslate ? true : undefined} className={`fixed top-0 left-0 right-0 z-50 md:hidden ${mobileOverlay ? 'bg-transparent' : 'bg-black'} ${hideMobileHeader ? 'hidden' : ''}`}>
+        {/* Profiles: black fades in as the coloured header scrolls away */}
+        {mobileOverlay && <div aria-hidden="true" className="absolute inset-0 bg-black" style={{ opacity: Math.min(1, overlayScroll / 180) }} />}
+        <div className={`relative flex items-center justify-between h-14 ${user ? 'px-4' : 'gap-2 px-2 min-[375px]:px-4'}`}>
           {/* Left: Back button (when mobileTitle provided) or Menu Button (logged in) or Logo (logged out) */}
           {showMobileBack ? (
             <button
@@ -635,12 +653,25 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
           ) : (
             <Link to="/" className="flex items-center gap-2">
               <img src={logo} alt="Muzicalist — The Global Stage for Musical Artists" className="h-8 w-8 object-contain" />
-              <span className="font-bold text-foreground uppercase" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>
+              {/* Profiles: only the small logo (the way home), not the name */}
+              {!mobileOverlay && <span className="font-bold text-foreground uppercase" style={{ fontFamily: "Montserrat, 'Montserrat Fallback', sans-serif", letterSpacing: "-0.02em" }}>Muzicalist</span>}
             </Link>
           )}
 
           {/* Center: Custom mobile title or page title (logged in) or nothing */}
-          {mobileTitle ? (
+          {mobileOverlay ? (
+            // Profiles: empty at first (the big name is right below), the name once scrolled
+            mobileScrollTitle ? (
+              <span
+                aria-hidden={overlayScroll < 240}
+                className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[calc(100%-7.5rem)] truncate text-center font-display font-bold text-foreground text-lg transition-opacity duration-200 notranslate"
+                translate="no"
+                style={{ opacity: overlayScroll >= 240 ? 1 : 0 }}
+              >
+                {mobileScrollTitle}
+              </span>
+            ) : null
+          ) : mobileTitle ? (
             <span className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[calc(100%-7.5rem)] truncate text-center font-display font-bold text-foreground text-lg">{localizedMobileTitle}</span>
           ) : user ? (
             <>

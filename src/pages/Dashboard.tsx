@@ -1918,6 +1918,9 @@ const Dashboard = () => {
 
   return <div className={`min-h-screen md:ml-[316px] lg:ml-[356px] bg-black md:py-2 md:pr-2 ${showSidePanel ? "md:flex md:items-start md:gap-2" : ""}`}>
       <Navigation 
+        // Own profile on phones: see-through header over the coloured header, name once scrolled
+        mobileOverlay={activeTab === "profile" && !calendarOnly && !isAdmin}
+        mobileScrollTitle={formData.stageName}
         mobileTitle={calendarOnly ? undefined : getMobileTitle()} 
         mobileBackPath={calendarOnly ? undefined : getMobileBackPath()}
         // Calendar on phones: title in the header (like the other pages); Statistics takes the bell's place
@@ -1932,7 +1935,7 @@ const Dashboard = () => {
         } : undefined}
       />
       
-      <div style={calendarOnly ? { background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" } : undefined} className={`${PROFILE_PANEL} min-w-0 flex-1 pt-14 ${activeTab === "profile" && !calendarOnly && !isAdmin ? "md:pt-0" : "md:pt-8"} ${activeTab === "settings" ? "pb-[env(safe-area-inset-bottom)] md:pb-8" : "pb-6 md:pb-20"} px-0`}>
+      <div style={calendarOnly ? { background: "linear-gradient(180deg, rgba(212,175,55,0.16) 0px, #121212 320px)" } : undefined} className={`${PROFILE_PANEL} min-w-0 flex-1 ${activeTab === "profile" && !calendarOnly && !isAdmin ? "pt-0 md:pt-0" : "pt-14 md:pt-8"} ${activeTab === "settings" ? "pb-[env(safe-area-inset-bottom)] md:pb-8" : "pb-6 md:pb-20"} px-0`}>
         <div className={`container mx-auto ${activeTab === "profile" && !calendarOnly ? "max-w-none md:px-8" : calendarOnly ? "max-w-6xl md:px-8" : "max-w-4xl md:px-0"} ${activeTab === "settings" ? "px-0" : "px-4"}`}>
           {activeTab !== "profile"}
               {/* Profile Tab */}
@@ -1942,7 +1945,7 @@ const Dashboard = () => {
                       <div className="relative left-1/2 mb-6 w-screen -translate-x-1/2 md:left-0 md:-ml-8 md:mb-8 md:w-[calc(100%+4rem)] md:translate-x-0">
                         {/* Same header as the public profile: big round photo, huge name, colour from the photo */}
                         <header
-                          className="relative px-4 pb-5 pt-10 md:px-8 md:pb-6 md:pt-16 xl:pt-20"
+                          className="relative px-4 pb-5 pt-24 md:px-8 md:pb-6 md:pt-16 xl:pt-20"
                           style={{ background: `linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%), ${headerColor}` }}
                         >
                           <div
