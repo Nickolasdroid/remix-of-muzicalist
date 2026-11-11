@@ -1201,7 +1201,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
     <>
                       {/* Availability */}
                       <div className="rounded-lg bg-foreground/[0.05] p-5">
-                        <SectionHeaderWithUsage title="Availability" size="sm" className="mb-4" />
+                        <SectionHeaderWithUsage title="Calendar" size="sm" className="mb-4" />
                         <ArtistAvailabilityCalendar
                           large
                           selected={undefined}
@@ -1544,7 +1544,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                     className="w-full md:w-auto md:px-8 h-12 bg-accent text-accent-foreground hover:bg-accent/90 font-bold text-[15px]"
                   >
                     <CalendarIcon className="mr-2 h-5 w-5" />
-                    Check availability
+                    Calendar
                   </Button>
                   <Button
                     onClick={() => {

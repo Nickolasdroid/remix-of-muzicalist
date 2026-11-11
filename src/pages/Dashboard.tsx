@@ -1709,7 +1709,7 @@ const Dashboard = () => {
     <>
                           {/* Availability: same card visitors see; a day opens the calendar */}
                           <div className="rounded-lg bg-foreground/[0.05] p-5">
-                            <SectionHeaderWithUsage title="Availability" size="sm" className="mb-4" />
+                            <SectionHeaderWithUsage title="Calendar" size="sm" className="mb-4" />
                             <ArtistAvailabilityCalendar
                               large
                               selected={undefined}

@@ -228,13 +228,13 @@ const BookArtist = () => {
 
   return (
     <div className="min-h-screen bg-background md:ml-[316px] lg:ml-[356px]">
-      <Navigation mobileTitle="Booking request" mobileBackPath={`/artist/${id}`} hideMobileNotifications />
+      <Navigation mobileTitle="Calendar" mobileBackPath={`/artist/${id}`} hideMobileNotifications />
       <div className="container mx-auto px-4 pt-20 md:pt-6 py-6 pb-32 md:pb-12 max-w-3xl">
         <Button variant="ghost" size="sm" onClick={() => goBack(navigate, `/artist/${id}`)} className="mb-4 -ml-2 hidden md:inline-flex">
           <ArrowLeft className="h-4 w-4 mr-1" /> Back
         </Button>
 
-        <h1 className="mb-4 hidden text-3xl font-bold tracking-[-0.02em] text-foreground md:block md:text-4xl">Booking request</h1>
+        <h1 className="mb-4 hidden text-3xl font-bold tracking-[-0.02em] text-foreground md:block md:text-4xl">Calendar</h1>
         <Link to={`/artist/${artist.id}`} className="group mb-6 flex w-fit max-w-full items-center gap-3">
           <Avatar className="h-10 w-10">
             <AvatarImage src={artist.avatar_url || undefined} />
@@ -247,7 +247,6 @@ const BookArtist = () => {
 
         {/* Calendar Section: the same calendar as on the profile and in the artist's dashboard */}
         <div className="mb-4 rounded-lg bg-foreground/[0.05] p-4 md:p-6">
-          <h2 className="mb-4 text-xl font-bold tracking-[-0.01em] text-foreground">Choose the date</h2>
           <ArtistAvailabilityCalendar
             large
             selected={selectedDate}
@@ -266,6 +265,8 @@ const BookArtist = () => {
           ) : selectedFullyBooked ? (
             <p className="text-sm text-muted-foreground">The artist is booked for the whole day. Choose another date.</p>
           ) : (
+            <>
+            <h2 className="mb-4 text-xl font-bold tracking-[-0.01em] text-foreground">Booking request</h2>
             <BookingRequestFields
               date={selectedDate}
               form={form}
@@ -274,6 +275,7 @@ const BookArtist = () => {
               submitting={submitting}
               busySlots={isBusyDate(selectedDate) ? selectedSlots : []}
             />
+            </>
           )}
         </div>}
       </div>
