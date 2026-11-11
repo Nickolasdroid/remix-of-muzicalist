@@ -113,13 +113,13 @@ const TERMS_COPY: Record<"en" | "ro", TermsCopy> = {
       {
         title: "11. Promotional Use of Profile Content",
         paragraphs: [
-          "When an artist creates an account on Muzicalist, they grant Muzicalist a non-exclusive, worldwide, royalty-free right to use publicly available content from their profile, including:",
+          "Artists who agree to be promoted grant Muzicalist a non-exclusive, worldwide, royalty-free right to use publicly available content from their profile, including:",
         ],
         items: ["profile photos", "cover images", "artist name", "biography", "uploaded public media", "achievements, rankings and statistics displayed on the platform"],
         afterItems: [
           "This content may be used by Muzicalist for: social media posts, promotional graphics, advertisements, artist spotlights, rankings and featured artist campaigns, and marketing materials related to the Muzicalist platform.",
-          "Artists retain full ownership of their content at all times. Artists can disable participation in promotional campaigns at any time from the Promotion section of their account settings. Disabling this option will prevent any future promotional use of their profile content, but will not require the removal of promotional materials already published before the opt-out date.",
-          "This processing is carried out on the basis of the artist's consent, given at registration and renewable at any time, in accordance with the EU General Data Protection Regulation (GDPR). Artists may exercise their rights of access, rectification, erasure, restriction and objection by contacting us at the address below.",
+          "Artists retain full ownership of their content at all times. Artists are asked in the app whether they agree to be promoted and can change their answer at any time from the Promotion section of their account settings. Turning promotion off stops any future promotional use of their profile content, and Muzicalist removes posts already published about an artist if the artist asks.",
+          "This processing is carried out on the basis of the artist's consent, which is optional and can be withdrawn at any time, in accordance with the EU General Data Protection Regulation (GDPR). Artists may exercise their rights of access, rectification, erasure, restriction and objection by contacting us at the address below.",
         ],
       },
       {
@@ -241,13 +241,13 @@ const TERMS_COPY: Record<"en" | "ro", TermsCopy> = {
       {
         title: "11. Utilizarea promoțională a conținutului de profil",
         paragraphs: [
-          "Când un artist creează un cont pe Muzicalist, acordă Muzicalist un drept neexclusiv, mondial și fără redevențe de a folosi conținut public disponibil din profil, inclusiv:",
+          "Artiștii care sunt de acord să fie promovați acordă Muzicalist un drept neexclusiv, mondial și fără redevențe de a folosi conținut public disponibil din profil, inclusiv:",
         ],
         items: ["fotografii de profil", "imagini de copertă", "numele artistului", "biografia", "materiale media publice încărcate", "realizări, clasamente și statistici afișate pe platformă"],
         afterItems: [
           "Acest conținut poate fi folosit de Muzicalist pentru: postări pe rețele sociale, materiale promoționale, reclame, prezentări ale artiștilor, clasamente, campanii cu artiști recomandați și materiale de marketing legate de platforma Muzicalist.",
-          "Artiștii păstrează în orice moment proprietatea deplină asupra conținutului lor. Participarea la campaniile promoționale poate fi dezactivată oricând din secțiunea Promovare a setărilor contului. Dezactivarea va preveni utilizările promoționale viitoare ale conținutului de profil, dar nu impune eliminarea materialelor promoționale publicate anterior datei de retragere.",
-          "Această prelucrare se bazează pe consimțământul artistului, acordat la înregistrare și reînnoibil oricând, în conformitate cu Regulamentul general privind protecția datelor (GDPR). Artiștii își pot exercita drepturile de acces, rectificare, ștergere, restricționare și opoziție contactându-ne la adresa de mai jos.",
+          "Artiștii păstrează în orice moment proprietatea deplină asupra conținutului lor. Artiștii sunt întrebați în aplicație dacă sunt de acord să fie promovați și își pot schimba răspunsul oricând din secțiunea Promovare a setărilor contului. Dezactivarea oprește orice utilizare promoțională viitoare a conținutului de profil, iar Muzicalist șterge postările deja publicate despre un artist dacă artistul cere acest lucru.",
+          "Această prelucrare se bazează pe consimțământul artistului, care este opțional și poate fi retras oricând, în conformitate cu Regulamentul general privind protecția datelor (GDPR). Artiștii își pot exercita drepturile de acces, rectificare, ștergere, restricționare și opoziție contactându-ne la adresa de mai jos.",
         ],
       },
       {

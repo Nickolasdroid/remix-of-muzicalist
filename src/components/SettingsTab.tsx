@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo } from "react";
+import { savePromotionChoice } from "@/lib/promotionConsent";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -123,9 +124,7 @@ const SettingsTab = ({
   const [reportMessage, setReportMessage] = useState("");
   const [reportFile, setReportFile] = useState<File | null>(null);
   const reportFileInputRef = useRef<HTMLInputElement>(null);
-  const [allowPromotion, setAllowPromotion] = useState(true);
-  const [showPromotionInfo, setShowPromotionInfo] = useState(false);
-  const [showDisablePromotionConfirm, setShowDisablePromotionConfirm] = useState(false);
+  const [allowPromotion, setAllowPromotion] = useState(false);
   const [commentsAllowFrom, setCommentsAllowFrom] = useState<CommentsAllowFrom>("everyone");
   const [mentionsAllowFrom, setMentionsAllowFrom] = useState<MentionsAllowFrom>("everyone");
   const [commentsAllowGifs, setCommentsAllowGifs] = useState(true);
@@ -348,28 +347,17 @@ const SettingsTab = ({
     }
   };
 
-  const applyPromotionChange = async (next: boolean) => {
+  const handleTogglePromotion = async (next: boolean) => {
     setAllowPromotion(next);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    const { error } = await supabase
-      .from("profiles")
-      .update({ allow_promotion: next } as any)
-      .eq("id", user.id);
+    const { error } = await savePromotionChoice(user.id, next);
     if (error) {
       setAllowPromotion(!next);
       toast({ title: "Error", description: "Could not update promotion preference.", variant: "destructive" });
     } else {
       toast({ title: "Saved", description: next ? "Promotion enabled." : "Promotion disabled." });
     }
-  };
-
-  const handleTogglePromotion = (next: boolean) => {
-    if (!next) {
-      setShowDisablePromotionConfirm(true);
-      return;
-    }
-    applyPromotionChange(true);
   };
 
   const resetPasswordForm = () => {
@@ -1325,22 +1313,16 @@ const SettingsTab = ({
 
   const PromotionContent = (
     <div className="space-y-6">
-      <div>
-        <p className="text-sm text-muted-foreground">
-          Manage how Muzicalist promotes your profile
-        </p>
-      </div>
-      <div className="flex items-center justify-between gap-4">
-        <button
-          type="button"
-          onClick={() => setShowPromotionInfo(true)}
-          className="text-left group flex-1"
-        >
-          <Label className="text-sm font-medium cursor-pointer underline-offset-4 group-hover:underline">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1 space-y-2">
+          <Label htmlFor="allow-promotion" className="text-sm font-medium">
             Allow promotion on Muzicalist channels
           </Label>
-        </button>
-        <Switch checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Muzicalist may post about you on its Instagram, Facebook and TikTok, using your name, photos and profile description. We tag you and link to your profile. We'll remove a post about you if you ask.
+          </p>
+        </div>
+        <Switch id="allow-promotion" checked={allowPromotion} onCheckedChange={handleTogglePromotion} />
       </div>
     </div>
   );
@@ -1442,6 +1424,7 @@ const SettingsTab = ({
         { id: "blocked_users", label: "Blocked Users", icon: UserX },
         { id: "comments", label: "Comments", icon: MessageCircle },
         { id: "mentions_tags", label: "Mentions & Tags", icon: AtSign },
+        ...(accountType === "artist" ? [{ id: "promotion" as SettingSection, label: "Promotion", icon: Megaphone }] : []),
       ],
     },
     {
@@ -1608,32 +1591,6 @@ const SettingsTab = ({
     }}
     extraDialogs={
       <>
-        <Dialog open={showPromotionInfo} onOpenChange={setShowPromotionInfo}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                                Promotion on Muzicalist channels
-              </DialogTitle>
-            </DialogHeader>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              I agree that Muzicalist may use the information and materials from my profile (including name, images, description, and announcements) for promotional purposes, both on the platform and on its social media channels, without affecting my rights to the content.
-            </p>
-          </DialogContent>
-        </Dialog>
-        <AlertDialog open={showDisablePromotionConfirm} onOpenChange={setShowDisablePromotionConfirm}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Disable promotion?</AlertDialogTitle>
-              <AlertDialogDescription>
-                By disabling promotion, your profile will no longer be featured by Muzicalist on its social media channels or in promotional materials. This may significantly reduce your visibility, lower the number of profile views, and decrease your chances of receiving booking requests and being discovered by new clients. Are you sure you want to continue?
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter className="flex-row justify-end gap-2 space-x-0">
-              <AlertDialogCancel className="mt-0">Keep enabled</AlertDialogCancel>
-              <AlertDialogAction onClick={() => applyPromotionChange(false)}>Disable</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
         {LanguageConfirmDialog}
         {ThemeConfirmDialog}
         {DisableCommentsDialog}

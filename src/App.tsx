@@ -14,6 +14,7 @@ import ChunkErrorBoundary from "./components/ChunkErrorBoundary";
 import { Capacitor } from "@capacitor/core";
 import { lazyWithPreload } from "@/lib/lazyWithPreload";
 import OnboardingGate from "@/components/OnboardingGate";
+import PromotionConsentPrompt from "@/components/PromotionConsentPrompt";
 import { registerPreload, preloadPopularRoutes } from "@/lib/routePreload";
 
 // Lazy-loaded routes — keep first-load bundle small so pages load fast on
@@ -129,6 +130,7 @@ const App = () => (
         <MetaPixel />
         <GuestThemeGuard />
         <OnboardingGate />
+        <PromotionConsentPrompt />
         <AutoTranslatePageText />
         <RoutePrefetcher />
         <ChunkErrorBoundary>
