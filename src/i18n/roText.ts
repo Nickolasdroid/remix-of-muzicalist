@@ -8,6 +8,9 @@
 
 export const RO_TEXT: Record<string, string> = {
   "Log in to your account": "Intră în cont",
+  "Page not found": "Pagina nu există",
+  "The link may be wrong, or the page was removed.": "Linkul poate fi greșit sau pagina a fost ștearsă.",
+  "Go to home page": "Mergi la pagina principală",
   "Can we feature you on Muzicalist's social media?": "Te putem promova pe rețelele sociale Muzicalist?",
   "We'd like to post about artists on Muzicalist's Instagram, Facebook and TikTok, using your name, photos and profile description. We tag you and link to your profile, so organizers can find you.": "Vrem să postăm despre artiști pe Instagram, Facebook și TikTok-ul Muzicalist, folosind numele, pozele și descrierea din profilul tău. Te etichetăm și punem link spre profilul tău, ca organizatorii să te găsească.",
   "You can change this anytime in Settings, and we'll remove a post about you if you ask.": "Poți schimba oricând asta din Setări, iar dacă ne ceri, ștergem o postare despre tine.",
