@@ -1711,7 +1711,8 @@ const Dashboard = () => {
   const ownSideCards = (
     <>
                           {/* Availability: same card visitors see; a day opens the calendar */}
-                          <div className="rounded-lg bg-foreground/[0.05] p-5">
+                          {/* Not on phones: the Calendar button (profile) / bottom bar (own) already opens it */}
+                          <div className="hidden rounded-lg bg-foreground/[0.05] p-5 md:block">
                             <SectionHeaderWithUsage title="Calendar" size="sm" className="mb-4" />
                             <ArtistAvailabilityCalendar
                               large

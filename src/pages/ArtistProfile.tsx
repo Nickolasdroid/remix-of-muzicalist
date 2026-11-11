@@ -1220,7 +1220,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
   const sideCards = (
     <>
                       {/* Availability */}
-                      <div className="rounded-lg bg-foreground/[0.05] p-5">
+                      {/* Not on phones: the Calendar button (profile) / bottom bar (own) already opens it */}
+                      <div className="hidden rounded-lg bg-foreground/[0.05] p-5 md:block">
                         <SectionHeaderWithUsage title="Calendar" size="sm" className="mb-4" />
                         <ArtistAvailabilityCalendar
                           large
