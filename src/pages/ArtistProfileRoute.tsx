@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import ArtistProfile from "./ArtistProfile";
+import PageLoading from "@/components/PageLoading";
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -74,11 +75,7 @@ const ArtistProfileRoute = ({ view }: { view?: "reviews" } = {}) => {
   }
 
   if (!resolvedId) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">…</div>
-      </div>
-    );
+    return <PageLoading overlay />;
   }
 
   return <ArtistProfile key={view ?? "profile"} artistId={resolvedId} view={view} />;

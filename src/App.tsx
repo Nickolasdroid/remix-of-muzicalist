@@ -14,6 +14,7 @@ import ChunkErrorBoundary from "./components/ChunkErrorBoundary";
 import { Capacitor } from "@capacitor/core";
 import { lazyWithPreload } from "@/lib/lazyWithPreload";
 import OnboardingGate from "@/components/OnboardingGate";
+import PageLoading from "@/components/PageLoading";
 import PromotionConsentPrompt from "@/components/PromotionConsentPrompt";
 import { registerPreload, preloadPopularRoutes } from "@/lib/routePreload";
 
@@ -102,9 +103,8 @@ const queryClient = new QueryClient();
 
 // Fallback transparent: nu introduce flash de background. Randăm ce era
 // (ScrollToTop lasă poziția), doar ținem layout-ul până vine chunk-ul.
-const RouteFallback = () => (
-  <div className="min-h-screen bg-background" aria-hidden="true" />
-);
+// Rarely seen: navigation waits on the old page while the next one loads (startTransition)
+const RouteFallback = () => <PageLoading />;
 
 // Preîncarcă la idle rutele cele mai vizitate, ca prima navigare spre ele
 // să fie deja din cache.
@@ -125,7 +125,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true }}>
         <ScrollToTop />
         <MetaPixel />
         <GuestThemeGuard />

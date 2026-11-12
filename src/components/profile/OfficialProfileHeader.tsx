@@ -48,12 +48,12 @@ const OfficialProfileHeader = ({
     <div className="relative left-1/2 mb-2 w-screen -translate-x-1/2 md:left-0 md:-ml-8 md:w-[calc(100%+4rem)] md:translate-x-0">
       <header
         className="relative px-4 pb-5 pt-24 md:px-8 md:pb-6 md:pt-16 xl:pt-20"
-        style={{ background: `linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%), ${headerColor}` }}
+        style={{ backgroundColor: headerColor, backgroundImage: 'linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%)', transition: 'background-color 600ms ease' }}
       >
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-full -z-10 h-64"
-          style={{ background: `linear-gradient(${headerColor.replace("rgb(", "rgba(").replace(")", ", 0.35)")}, transparent)` }}
+          style={{ backgroundColor: headerColor, opacity: 0.35, maskImage: 'linear-gradient(black, transparent)', WebkitMaskImage: 'linear-gradient(black, transparent)', transition: 'background-color 600ms ease' }}
         />
         <div className="relative z-10 flex items-end gap-4 md:gap-6">
           <div className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(plan as any)} shadow-[0_4px_60px_rgba(0,0,0,0.5)] flex-shrink-0 group/avatar`}>

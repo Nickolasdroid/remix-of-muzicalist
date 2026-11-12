@@ -11,6 +11,7 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import ReviewCard from "@/components/ReviewCard";
 import ReviewsSummary from "@/components/ReviewsSummary";
 import Navigation from "@/components/Navigation";
+import PageLoading from "@/components/PageLoading";
 import SocialStats from "@/components/SocialStats";
 import OfficialProfileHeader from "@/components/profile/OfficialProfileHeader";
 
@@ -1700,12 +1701,7 @@ const Dashboard = () => {
     }
   };
   if (isLoading) {
-    return <div className="min-h-screen md:ml-[316px] lg:ml-[356px] bg-card flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading profile...</p>
-                            </div>
-      </div>;
+    return <PageLoading overlay />;
   }
   // Short facts and profile views: a right-hand panel on wide screens, inline otherwise
   const ownImages = galleryItems.filter((g: any) => g.type === 'image');
@@ -1948,12 +1944,12 @@ const Dashboard = () => {
                         {/* Same header as the public profile: big round photo, huge name, colour from the photo */}
                         <header
                           className="relative px-4 pb-5 pt-24 md:px-8 md:pb-6 md:pt-16 xl:pt-20"
-                          style={{ background: `linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%), ${headerColor}` }}
+                          style={{ backgroundColor: headerColor, backgroundImage: 'linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%)', transition: 'background-color 600ms ease' }}
                         >
                           <div
                             aria-hidden="true"
                             className="pointer-events-none absolute inset-x-0 top-full -z-10 h-64"
-                            style={{ background: `linear-gradient(${headerColor.replace('rgb(', 'rgba(').replace(')', ', 0.35)')}, transparent)` }}
+                            style={{ backgroundColor: headerColor, opacity: 0.35, maskImage: 'linear-gradient(black, transparent)', WebkitMaskImage: 'linear-gradient(black, transparent)', transition: 'background-color 600ms ease' }}
                           />
                           <div className="relative z-10 flex items-end gap-4 md:gap-6">
                             <div className={`relative p-1 rounded-full ${getAvatarOutlineClassesLarge(profile?.plan)} shadow-[0_4px_60px_rgba(0,0,0,0.5)] flex-shrink-0 group/avatar`}>

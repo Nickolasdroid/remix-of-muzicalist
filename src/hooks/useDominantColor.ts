@@ -3,7 +3,26 @@ import { useEffect, useState } from "react";
 /** Spotify's grey for artists without a usable photo. */
 export const DEFAULT_HEADER_COLOR = "rgb(83, 83, 83)";
 
-const cache = new Map<string, string>();
+// Remembered between visits, so a profile opens straight in its colour
+const STORE = "mz_header_colors";
+const cache = new Map<string, string>(
+  (() => {
+    try {
+      return Object.entries(JSON.parse(localStorage.getItem(STORE) || "{}")) as [string, string][];
+    } catch {
+      return [];
+    }
+  })(),
+);
+const remember = (url: string, c: string) => {
+  cache.set(url, c);
+  try {
+    const entries = [...cache].slice(-150);
+    localStorage.setItem(STORE, JSON.stringify(Object.fromEntries(entries)));
+  } catch {
+    /* storage full or blocked: memory only */
+  }
+};
 
 /**
  * The main colour of a photo, toned so white text stays readable on it (like the colour
@@ -52,7 +71,7 @@ export function useDominantColor(url?: string | null): string {
         const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
         const k = lum > 110 ? 110 / lum : lum < 60 ? 60 / Math.max(lum, 1) : 1;
         const c = `rgb(${Math.round(Math.min(255, r * k))}, ${Math.round(Math.min(255, g * k))}, ${Math.round(Math.min(255, b * k))})`;
-        cache.set(url, c);
+        remember(url, c);
         if (active) setColor(c);
       } catch {
         /* the photo's server doesn't allow reading it: keep the grey */

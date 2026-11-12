@@ -20,6 +20,7 @@ import VerifiedBadge from "@/components/VerifiedBadge";
 import { getEmbedInfo, providerLabel } from "@/lib/mediaEmbed";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Navigation from "@/components/Navigation";
+import PageLoading from "@/components/PageLoading";
 import { genreLabel } from "@/lib/genreLabel";
 import { LikeCountButton } from "@/components/LikesDialog";
 import { supabase } from "@/integrations/supabase/client";
@@ -980,15 +981,9 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
       {review.comment && <p className="text-sm text-muted-foreground flex-1 notranslate" data-user-content="true" data-no-translate="true" translate="no">{review.comment}</p>}
     </div>;
 
-  if (loading) {
-    return <div className={`min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''}`}>
-        <Navigation />
-        <div className={`pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20 px-4`}>
-          <div className="container mx-auto text-center">
-            <p className="text-lg md:text-xl text-muted-foreground">Loading artist profile...</p>
-          </div>
-        </div>
-      </div>;
+  // Own profile: stay on the loading frame while we move to the dashboard
+  if (loading || (currentUserId && currentUserId === id && !isReviewsView)) {
+    return <PageLoading overlay />;
   }
   if (!artist) {
     return <div className={`min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''}`}>
@@ -1465,12 +1460,12 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   the background coloured from the photo and fading into the page below */}
               <header
                 className="relative px-4 pb-5 pt-24 md:px-8 md:pb-6 md:pt-16 xl:pt-20"
-                style={{ background: `linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%), ${headerColor}` }}
+                style={{ backgroundColor: headerColor, backgroundImage: 'linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.5) 100%)', transition: 'background-color 600ms ease' }}
               >
                 <div
                   aria-hidden="true"
                   className="pointer-events-none absolute inset-x-0 top-full -z-10 h-64"
-                  style={{ background: `linear-gradient(${headerColor.replace('rgb(', 'rgba(').replace(')', ', 0.35)')}, transparent)` }}
+                  style={{ backgroundColor: headerColor, opacity: 0.35, maskImage: 'linear-gradient(black, transparent)', WebkitMaskImage: 'linear-gradient(black, transparent)', transition: 'background-color 600ms ease' }}
                 />
                 {isOwnProfile && (
                   <div className="absolute right-2 top-2 z-30 rounded-full bg-black/45 text-white transition-colors hover:bg-black/60 md:right-3 md:top-3">
