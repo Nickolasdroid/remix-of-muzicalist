@@ -590,7 +590,7 @@ const Feed = () => {
         description="Discover the latest posts, announcements and promotions from musical artists worldwide on Muzicalist."
         path="/feed"
       />
-      <Navigation />
+      <Navigation mobileHideOnScroll />
       
       <div className={`container mx-auto sm:px-4 pt-[60px] ${currentUserId ? 'md:pt-2' : 'md:pt-20'} pb-0 px-0`}>
         <div ref={contentRef} className="max-w-[500px] mx-auto space-y-2 sm:space-y-3">

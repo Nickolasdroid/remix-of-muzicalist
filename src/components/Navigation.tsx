@@ -78,6 +78,8 @@ interface NavigationProps {
   mobileOverlay?: boolean;
   /** With mobileOverlay: text shown in the middle once the page is scrolled (e.g. the name). */
   mobileScrollTitle?: string;
+  /** Feed on phones: the top bar slides away while scrolling down and comes back on scroll up. */
+  mobileHideOnScroll?: boolean;
 }
 
 /** Reserves body space for the fixed mobile bottom bar while it is rendered. */
@@ -90,12 +92,27 @@ const BottomNavSpacer = ({ active }: { active: boolean }) => {
   return null;
 };
 
-const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader, mobileAction, mobileExtraAction, hideMobileNotifications, mobileOverlay, mobileScrollTitle }: NavigationProps = {}) => {
+const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeader, mobileAction, mobileExtraAction, hideMobileNotifications, mobileOverlay, mobileScrollTitle, mobileHideOnScroll }: NavigationProps = {}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
   const currentLang = getCurrentLanguage();
   const skipAutoTranslate = currentLang === 'ro';
+  const [headerHidden, setHeaderHidden] = useState(false);
+  useEffect(() => {
+    if (!mobileHideOnScroll) return;
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      const d = y - last;
+      if (y < 56) setHeaderHidden(false);
+      else if (d > 6) setHeaderHidden(true);
+      else if (d < -6) setHeaderHidden(false);
+      if (Math.abs(d) > 6 || y < 56) last = y;
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [mobileHideOnScroll]);
   // The mobile/desktop top bar is marked data-no-translate so the DOM
   // auto-translator never double-translates the labels it already renders via
   // t(). But mobileTitle is frequently passed in as a hardcoded English string
@@ -532,7 +549,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
       )}
 
       {/* Mobile: Top Header Bar */}
-      <nav data-no-translate={skipAutoTranslate ? true : undefined} className={`fixed top-0 left-0 right-0 z-50 md:hidden ${mobileOverlay ? 'bg-transparent' : 'bg-black'} ${hideMobileHeader ? 'hidden' : ''}`}>
+      <nav data-no-translate={skipAutoTranslate ? true : undefined} className={`fixed top-0 left-0 right-0 z-50 md:hidden ${mobileOverlay ? 'bg-transparent' : 'bg-black'} ${hideMobileHeader ? 'hidden' : ''} ${mobileHideOnScroll ? `transition-transform duration-200 ease-out ${headerHidden ? '-translate-y-full' : ''}` : ''}`}>
         {/* Profiles: black fades in as the coloured header scrolls away */}
         {mobileOverlay && <div aria-hidden="true" className="absolute inset-0 bg-black" style={{ opacity: Math.min(1, overlayScroll / 180) }} />}
         <div className={`relative flex items-center justify-between h-14 ${user ? 'px-4' : 'gap-2 px-2 min-[375px]:px-4'}`}>
