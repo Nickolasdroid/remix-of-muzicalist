@@ -3232,6 +3232,13 @@ export type Database = {
           status: string
         }[]
       }
+      get_public_past_events: {
+        Args: { _profile_id: string }
+        Returns: {
+          event_month: string
+          event_type: string
+        }[]
+      }
       get_public_social_links: {
         Args: { _profile_id: string }
         Returns: {
