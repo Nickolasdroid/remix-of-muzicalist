@@ -22,6 +22,7 @@ import {
   Plus,
   Minus,
   AtSign,
+  Crown,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { knownUser } from "@/lib/knownUser";
@@ -83,6 +84,9 @@ const iconFor = (type: string, size = "h-5 w-5") => {
       return <Megaphone className={cn(base, "text-accent")} />;
     case "mention":
       return <AtSign className={cn(base, "text-accent")} />;
+    case "trial_ending":
+    case "trial_ended":
+      return <Crown className={cn(base, "text-accent")} />;
     case "collab_chosen":
       return <CheckCircle2 className={cn(base, "text-emerald-400")} />;
     case "collab_filled":
@@ -311,6 +315,7 @@ const Notifications = () => {
 
   const getRoute = (n: Notification): string | null => {
     const { reference_type: refType, type, reference_id: refId } = n;
+    if (type === "trial_ending" || type === "trial_ended") return "/my-plan";
     if (type === "follow" && n.actor_id) return `/artist/${n.actor_id}`;
     // Mentions always open the post they came from, regardless of account type.
     if (type === "mention" && refId) return `/feed?post=${refId}`;

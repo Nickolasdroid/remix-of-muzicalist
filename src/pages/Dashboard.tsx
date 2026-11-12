@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, lazy, Suspense } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback, lazy, Suspense } from "react";
 import { bandMembersLabel } from "@/lib/bandMembers";
 import MembersStepper from "@/components/dashboard/MembersStepper";
 import CollabStatusChip from "@/components/profile/CollabStatusChip";
@@ -11,6 +11,7 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import ReviewCard from "@/components/ReviewCard";
 import ReviewsSummary from "@/components/ReviewsSummary";
 import Navigation from "@/components/Navigation";
+import PremiumTrialDialogs from "@/components/PremiumTrialDialogs";
 import PageLoading from "@/components/PageLoading";
 import SocialStats from "@/components/SocialStats";
 import OfficialProfileHeader from "@/components/profile/OfficialProfileHeader";
@@ -314,6 +315,7 @@ const Dashboard = () => {
 
   // Announcement limits (plan-based). Server entitlements win when loaded.
   const currentPlan = profile?.plan;
+  const setTrialPlan = useCallback((plan: string) => setProfile((prev: any) => (prev ? { ...prev, plan } : prev)), []);
   const STANDARD_AD_LIMIT = isAdmin
     ? Number.POSITIVE_INFINITY
     : serverLimit(entitlements, 'announcements', getAdLimit(currentPlan));
@@ -1916,6 +1918,8 @@ const Dashboard = () => {
   const showSidePanel = activeTab === "profile" && !calendarOnly && !isAdmin;
 
   return <div className={`min-h-screen md:ml-[316px] lg:ml-[356px] bg-black md:py-2 md:pr-2 ${showSidePanel ? "md:flex md:items-start md:gap-2" : ""}`}>
+      {/* Free Premium month: welcome when it starts, summary once it has ended */}
+      <PremiumTrialDialogs plan={profile ? (profile.plan ?? null) : undefined} onPlanChange={setTrialPlan} />
       <Navigation 
         // Own profile on phones: see-through header over the coloured header, name once scrolled
         mobileOverlay={activeTab === "profile" && !calendarOnly}

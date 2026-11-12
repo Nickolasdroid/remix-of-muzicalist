@@ -114,6 +114,7 @@ const PlansPricing = () => {
             </Popover>
           </div>
           <p className="mt-2 text-sm text-muted-foreground md:text-base">Choose the plan that best fits your needs</p>
+          <p className="mt-1 text-sm text-muted-foreground md:text-base">New artists get Premium free for 30 days, without a card. At the end they go back to Free automatically; nothing is deleted.</p>
 
           <div className="mt-6">
             <BillingToggle annual={isAnnual} onChange={setIsAnnual} monthlyLabel="Monthly" annualLabel="Annual" saveLabel="Save ~17%" />

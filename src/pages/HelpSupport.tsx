@@ -200,6 +200,10 @@ const faqSections = [
         a: "Muzicalist offers Free, Standard and Premium. Higher plans give you more posts, a bigger gallery, stories and better placement in the feed and in search. See the Plans page for the full list and pricing.",
       },
       {
+        q: "Is there a free trial?",
+        a: "Yes. Every artist gets Premium free for 30 days, once, without a card. A week before the end you get a notification with what it brought you. At the end you go back to Free automatically: nothing is deleted, and content above the Free limits is only hidden until you choose a plan.",
+      },
+      {
         q: "How do I upgrade or manage my plan?",
         a: "Go to My Plan in the sidebar. You can compare plans, upgrade, or open the customer portal to manage billing.",
       },

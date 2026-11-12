@@ -11,6 +11,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { subscriptionPlans, formatPlanPrice } from "@/lib/subscriptionPlans";
+import { getMyTrial, trialDaysLeft, type PremiumTrial } from "@/lib/premiumTrial";
+import { TrialSummary } from "@/components/PremiumTrialDialogs";
 import { startCheckout, openCustomerPortal } from "@/lib/checkout";
 import {
   AlertDialog,
@@ -26,7 +28,7 @@ import {
 const MyPlan = () => {
   usePageTitle("My Plan");
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { toast } = useToast();
   const isMobile = useIsMobile();
   const [isLoading, setIsLoading] = useState(true);
@@ -34,6 +36,10 @@ const MyPlan = () => {
   const [isAnnual, setIsAnnual] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [downgradeTarget, setDowngradeTarget] = useState<'Free' | 'Standard' | 'Premium' | null>(null);
+  // Free Premium month: while it runs, the artist hasn't paid for anything yet, so
+  // Standard and Premium are both offered as subscriptions
+  const [trial, setTrial] = useState<PremiumTrial | null>(null);
+  const onTrial = trial?.status === "active";
 
   const performPlanAction = async (planId: 'Free' | 'Standard' | 'Premium', isDowngrade: boolean) => {
     if (planId === 'Free' || isDowngrade) {
@@ -117,6 +123,7 @@ const MyPlan = () => {
       if (profileData) {
         setCurrentPlan(profileData.plan || "Free");
       }
+      setTrial(await getMyTrial());
       setIsLoading(false);
     };
     checkAuth();
@@ -170,6 +177,28 @@ const MyPlan = () => {
             </div>
             <p className="mt-2 text-sm text-muted-foreground md:text-base">{t('myPlan.choosePlan')}</p>
 
+            {onTrial && trial && (
+              <div className="mt-6 max-w-2xl rounded-lg bg-foreground/[0.06] p-4 md:p-5">
+                <p className="text-base font-bold text-foreground notranslate" translate="no">
+                  {(() => {
+                    const n = trialDaysLeft(trial.endsAt);
+                    if (!(i18n.language || "").toLowerCase().startsWith("ro")) return `Free Premium: ${n} ${n === 1 ? "day" : "days"} left`;
+                    // Romanian: 1 zi rămasă, 2–19 zile rămase, 20+ de zile rămase
+                    return `Premium gratuit: ${n === 1 ? "1 zi rămasă" : `${n} ${n % 100 >= 20 || n % 100 === 0 ? "de " : ""}zile rămase`}`;
+                  })()}
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  At the end you go back to Free automatically, without paying anything. Choose a plan to keep what you have now.
+                </p>
+                {trial.views + trial.bookingRequests + trial.newFollowers > 0 && (
+                  <div className="mt-4">
+                    <p className="mb-2 text-sm text-muted-foreground">So far it brought you:</p>
+                    <TrialSummary trial={trial} />
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="mt-6">
               <BillingToggle
                 annual={isAnnual}
@@ -182,9 +211,11 @@ const MyPlan = () => {
 
             <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-5">
               {subscriptionPlans.map((plan) => {
-                const isCurrentPlan = currentPlan === plan.id;
+                // On the free Premium month nothing is paid yet: Free is where they'll land
+                const paidPlan = onTrial ? "Free" : currentPlan;
+                const isCurrentPlan = paidPlan === plan.id && !onTrial;
                 const rank: Record<string, number> = { Free: 1, Standard: 2, Premium: 3 };
-                const isDowngrade = (rank[plan.id] ?? 1) < (rank[currentPlan] ?? 1);
+                const isDowngrade = (rank[plan.id] ?? 1) < (rank[paidPlan] ?? 1);
                 return (
                   <PlanCard
                     key={plan.id}
@@ -195,7 +226,9 @@ const MyPlan = () => {
                     features={plan.features}
                     tagline={plan.tagline}
                     badge={
-                      isCurrentPlan
+                      onTrial && plan.id === "Premium"
+                        ? { text: "Free trial", tone: "current" }
+                        : isCurrentPlan
                         ? { text: t('myPlan.currentPlan'), tone: "current" }
                         : plan.highlighted
                         ? { text: t('myPlan.mostPopular', 'Most Popular'), tone: "popular" }
@@ -204,7 +237,7 @@ const MyPlan = () => {
                         : null
                     }
                     action={
-                      isCurrentPlan ? null : (
+                      isCurrentPlan || (onTrial && plan.id === "Free") ? null : (
                         <Button
                           disabled={actionLoading !== null}
                           onClick={() => handlePlanAction(plan.id, isDowngrade)}
@@ -212,6 +245,8 @@ const MyPlan = () => {
                         >
                           {actionLoading === plan.id
                             ? t('myPlan.redirecting')
+                            : onTrial && plan.id === "Premium"
+                            ? "Keep Premium"
                             : t(isDowngrade ? 'myPlan.downgradeTo' : 'myPlan.upgradeTo', { plan: plan.name })}
                         </Button>
                       )
