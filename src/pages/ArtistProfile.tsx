@@ -1472,6 +1472,18 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   className="pointer-events-none absolute inset-x-0 top-full -z-10 h-64"
                   style={{ backgroundColor: headerColor, opacity: 0.35, maskImage: 'linear-gradient(black, transparent)', WebkitMaskImage: 'linear-gradient(black, transparent)', transition: 'background-color 600ms ease' }}
                 />
+                {/* Share, report... top right, as on phones (where it sits in the top bar) */}
+                {!isOwnProfile && (
+                  <div className="absolute right-4 top-4 z-30 hidden text-white/80 transition-colors hover:text-white md:block [&_button]:h-10 [&_button]:w-10 [&_button:hover]:bg-black/30 [&_svg]:h-6 [&_svg]:w-6">
+                    <ProfileActionsMenu
+                      profileId={artist.id}
+                      profileName={artist.stage_name}
+                      isOwnProfile={false}
+                      currentUserId={currentUserId}
+                      isArtist={true}
+                    />
+                  </div>
+                )}
                 {isOwnProfile && (
                   <div className="absolute right-2 top-2 z-30 rounded-full bg-black/45 text-white transition-colors hover:bg-black/60 md:right-3 md:top-3">
                     <ProfileActionsMenu
@@ -1592,16 +1604,6 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   >
                     <MessageCircle className="h-5 w-5" />
                   </Button>
-                  {/* Share, report... (phones: in the top bar) */}
-                  <div className="hidden md:block shrink-0 text-muted-foreground hover:text-foreground [&_button]:h-12 [&_button]:w-12 [&_svg]:h-6 [&_svg]:w-6">
-                    <ProfileActionsMenu
-                      profileId={artist.id}
-                      profileName={artist.stage_name}
-                      isOwnProfile={isOwnProfile}
-                      currentUserId={currentUserId}
-                      isArtist={true}
-                    />
-                  </div>
                 </div>
               )}
 
