@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useMemo } from "react";
 import { savePromotionChoice } from "@/lib/promotionConsent";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { getMaxPhoneLength, getPhoneConfig, getPhonePrefix, validatePhoneNumber } from "@/lib/countryPhoneCodes";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -19,7 +20,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useTranslation } from "react-i18next";
 import { setManualLanguage } from "@/i18n";
 import { WORLD_LANGUAGES } from "@/lib/worldLanguages";
-import { getCountryName } from "@/lib/countryFlags";
+import { getCountryCode, getCountryName } from "@/lib/countryFlags";
 import VerificationCard from "@/components/VerificationCard";
 import ReportProblemForm from "@/components/ReportProblemForm";
 import BlockedUsersPanel from "@/components/BlockedUsersPanel";
@@ -1643,8 +1644,12 @@ const EditProfilePanel = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [savedPhone, setSavedPhone] = useState("");
   const [savingPhone, setSavingPhone] = useState(false);
+  const countryCode = getCountryCode(country) || country;
+  const phonePrefix = getPhonePrefix(countryCode);
   const phoneTrim = phone.trim();
-  const phoneValid = /^\+?[0-9][0-9 ()./-]{5,28}$/.test(phoneTrim);
+  const phoneValid = phonePrefix
+    ? phoneTrim.startsWith(phonePrefix) && validatePhoneNumber(phoneTrim, countryCode).valid
+    : /^\+[0-9]{7,15}$/.test(phoneTrim);
   const phoneChanged = phoneTrim !== savedPhone.trim();
   const savePhone = async () => {
     if (!userId || !phoneValid || !phoneChanged) return;
@@ -1669,8 +1674,12 @@ const EditProfilePanel = () => {
       const data = Array.isArray(rows) ? rows[0] : null;
       if (data) {
         setEmail((data as any).email || user.email || "");
-        setPhone((data as any).phone || "");
-        setSavedPhone((data as any).phone || "");
+        const savedP = ((data as any).phone || "").replace(/\s+/g, "");
+        const prefix = getPhonePrefix(getCountryCode((data as any).country) || (data as any).country || "");
+        // Old numbers saved without the country prefix ("0755…") are shown as "+40755…"
+        const shownP = prefix && savedP && !savedP.startsWith("+") ? prefix + savedP.replace(/^0+/, "") : savedP || prefix;
+        setPhone(shownP);
+        setSavedPhone(shownP);
         setFirstName((data as any).first_name || "");
         setLastName((data as any).last_name || "");
         setCountry((data as any).country || "");
@@ -1704,12 +1713,31 @@ const EditProfilePanel = () => {
             autoComplete="tel"
             maxLength={30}
             value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            placeholder="+40 7xx xxx xxx"
+            onChange={(e) => {
+              let v = e.target.value.replace(/[\s().-]+/g, "");
+              // A pasted national number ("0755…") becomes "+40755…"
+              if (phonePrefix && /^0\d+$/.test(v)) v = phonePrefix + v.slice(1);
+              if (phonePrefix) {
+                // The country prefix stays fixed, only the digits after it can be typed
+                if (!v.startsWith(phonePrefix)) return;
+                if (!/^\d*$/.test(v.slice(phonePrefix.length))) return;
+                if (v.length > getMaxPhoneLength(countryCode)) return;
+              } else if (!/^\+?\d*$/.test(v) || v.length > 16) return;
+              setPhone(v);
+            }}
+            placeholder={phonePrefix || "+"}
             className={SET_FIELD}
           />
-          {phoneTrim && !phoneValid && (
-            <p className="text-sm text-destructive">Enter a valid phone number.</p>
+          {phoneTrim && phoneTrim !== phonePrefix && !phoneValid && (
+            <p className="text-sm text-destructive notranslate" translate="no">
+              {(() => {
+                const cfg = getPhoneConfig(countryCode);
+                const ro = (i18n.language || "en").toLowerCase().startsWith("ro");
+                if (!cfg) return ro ? "Introdu un număr de telefon valid, cu prefixul țării." : "Enter a valid phone number with the country code.";
+                const n = cfg.minLength === cfg.maxLength ? `${cfg.minLength}` : `${cfg.minLength}–${cfg.maxLength}`;
+                return ro ? `Numărul trebuie să aibă ${n} cifre după ${cfg.prefix}.` : `The number must have ${n} digits after ${cfg.prefix}.`;
+              })()}
+            </p>
           )}
           {phoneChanged && (
             <Button onClick={savePhone} disabled={savingPhone || !phoneValid} className={`${SET_PRIMARY_BTN} mt-2 disabled:bg-foreground/10 disabled:text-muted-foreground disabled:opacity-100 disabled:hover:scale-100`}>
