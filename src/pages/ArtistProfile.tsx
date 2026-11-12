@@ -1378,7 +1378,11 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
         ]}
 
       />
-      {isReviewsView ? <Navigation mobileTitle="Reviews" onMobileBack={goBackFromReviews} mobileAction={writeReviewButton ?? <span />} /> : <Navigation mobileOverlay hideMobileNotifications />}
+      {isReviewsView ? <Navigation mobileTitle="Reviews" onMobileBack={goBackFromReviews} mobileAction={writeReviewButton ?? <span />} /> : <Navigation mobileOverlay hideMobileNotifications mobileExtraAction={!isOwnProfile ? (
+        <div className="text-foreground [&_button]:h-10 [&_button]:w-10 [&_svg]:h-6 [&_svg]:w-6">
+          <ProfileActionsMenu profileId={artist.id} profileName={artist.stage_name} isOwnProfile={false} currentUserId={currentUserId} isArtist={true} />
+        </div>
+      ) : undefined} />}
       
       {isReviewsView && (() => {
         const reviewLimit = getReviewDisplayLimit(artist?.plan);
@@ -1588,8 +1592,8 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   >
                     <MessageCircle className="h-5 w-5" />
                   </Button>
-                  {/* Share, report... */}
-                  <div className="shrink-0 text-muted-foreground hover:text-foreground [&_button]:h-12 [&_button]:w-12 [&_svg]:h-6 [&_svg]:w-6">
+                  {/* Share, report... (phones: in the top bar) */}
+                  <div className="hidden md:block shrink-0 text-muted-foreground hover:text-foreground [&_button]:h-12 [&_button]:w-12 [&_svg]:h-6 [&_svg]:w-6">
                     <ProfileActionsMenu
                       profileId={artist.id}
                       profileName={artist.stage_name}
