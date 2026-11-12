@@ -188,7 +188,7 @@ const About = () => {
             </div>
           ) : (
             <>
-              <Shelf title="Recommended artists" showAllHref={showAllHref} artists={recommended} round limit={Infinity} />
+              <Shelf title="Discover Artists" showAllHref={showAllHref} artists={recommended} round limit={Infinity} />
               <Shelf title="Top rated" showAllHref="/leaderboard" artists={topRated} showRating />
               <Shelf title="New on Muzicalist" showAllHref={showAllHref} artists={newest} />
             </>
