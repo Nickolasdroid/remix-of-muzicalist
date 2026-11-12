@@ -1999,6 +1999,10 @@ export type Database = {
           suspended_until: string | null
           suspension_reason: string | null
           tiktok_url: string | null
+          trial_end_seen_at: string | null
+          trial_ends_at: string | null
+          trial_reminder_sent_at: string | null
+          trial_started_at: string | null
           updated_at: string | null
           verification_status: string
           welcome_email_attempts: number
@@ -2060,6 +2064,10 @@ export type Database = {
           suspended_until?: string | null
           suspension_reason?: string | null
           tiktok_url?: string | null
+          trial_end_seen_at?: string | null
+          trial_ends_at?: string | null
+          trial_reminder_sent_at?: string | null
+          trial_started_at?: string | null
           updated_at?: string | null
           verification_status?: string
           welcome_email_attempts?: number
@@ -2121,6 +2129,10 @@ export type Database = {
           suspended_until?: string | null
           suspension_reason?: string | null
           tiktok_url?: string | null
+          trial_end_seen_at?: string | null
+          trial_ends_at?: string | null
+          trial_reminder_sent_at?: string | null
+          trial_started_at?: string | null
           updated_at?: string | null
           verification_status?: string
           welcome_email_attempts?: number
@@ -3199,6 +3211,10 @@ export type Database = {
           suspended_until: string | null
           suspension_reason: string | null
           tiktok_url: string | null
+          trial_end_seen_at: string | null
+          trial_ends_at: string | null
+          trial_reminder_sent_at: string | null
+          trial_started_at: string | null
           updated_at: string | null
           verification_status: string
           welcome_email_attempts: number
@@ -3212,6 +3228,18 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      get_my_trial: {
+        Args: never
+        Returns: {
+          booking_requests: number
+          end_seen: boolean
+          ends_at: string
+          new_followers: number
+          started_at: string
+          status: string
+          views: number
+        }[]
       }
       get_or_create_conversation: {
         Args: {
@@ -3268,6 +3296,10 @@ export type Database = {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["user_type"]
       }
+      has_running_subscription: {
+        Args: { p: Database["public"]["Tables"]["profiles"]["Row"] }
+        Returns: boolean
+      }
       is_account_active: { Args: { _user_id: string }; Returns: boolean }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
       is_blocked_between: { Args: { _a: string; _b: string }; Returns: boolean }
@@ -3308,6 +3340,7 @@ export type Database = {
         Args: { _booking_id: string }
         Returns: undefined
       }
+      mark_trial_end_seen: { Args: never; Returns: undefined }
       moderation_require_mod: { Args: never; Returns: string }
       move_to_dlq: {
         Args: {
@@ -3320,6 +3353,7 @@ export type Database = {
       }
       plan_limit: { Args: { _key: string; _user_id: string }; Returns: number }
       plan_limits: { Args: { _plan: string }; Returns: Json }
+      process_premium_trials: { Args: never; Returns: undefined }
       promote_announcement: {
         Args: { p_announcement_id: string }
         Returns: Json
@@ -3499,6 +3533,7 @@ export type Database = {
         Args: { _conversation_id: string }
         Returns: undefined
       }
+      start_my_trial: { Args: never; Returns: string }
       suspend_account: {
         Args: {
           _duration_key: string

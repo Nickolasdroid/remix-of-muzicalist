@@ -211,6 +211,13 @@
       "when": 1794514651113,
       "tag": "0029_leaderboard_bookings_followers",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1794515513566,
+      "tag": "0030_premium_trial",
+      "breakpoints": true
     }
   ]
 }
