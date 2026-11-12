@@ -1409,7 +1409,7 @@ const SettingsTab = ({
     {
       title: "Account",
       items: [
-        { id: "edit_profile", label: "Edit Profile", icon: User },
+        { id: "edit_profile", label: "Account details", icon: User },
         { id: "password", label: "Password & Security", icon: Lock },
         ...(accountType === "artist" ? [{ id: "verification" as SettingSection, label: "Identity Verification", icon: ShieldCheck }] : []),
         { id: "notifications", label: "Notifications", icon: Bell },
@@ -1631,6 +1631,7 @@ const ComingSoonPanel = ({
 );
 
 const EditProfilePanel = () => {
+  const { i18n } = useTranslation();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [email, setEmail] = useState("");
@@ -1667,7 +1668,7 @@ const EditProfilePanel = () => {
     <div className="space-y-6 animate-fade-in">
       <div>
         <p className="text-sm text-muted-foreground max-w-2xl">
-          Update your personal information. Email cannot be changed.
+          The details of your account. Email cannot be changed.
         </p>
       </div>
       <div className="max-w-xl space-y-5">
@@ -1681,7 +1682,7 @@ const EditProfilePanel = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label key="ep-country" className="text-sm font-bold" htmlFor="ep-country">Country</Label>
+            <Label className="text-sm font-bold notranslate" translate="no" htmlFor="ep-country">{(i18n.language || "en").toLowerCase().startsWith("ro") ? "Țară" : "Country"}</Label>
             <Input
               id="ep-country"
               value={country ? getCountryName(country) : ""}

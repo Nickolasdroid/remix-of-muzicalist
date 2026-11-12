@@ -947,6 +947,8 @@ export const RO_TEXT: Record<string, string> = {
   "Edit": "Editează",
   "Edit account": "Editează contul",
   "Edit Profile": "Editează profilul",
+  "Account details": "Detalii cont",
+  "The details of your account. Email cannot be changed.": "Datele contului tău. Emailul nu poate fi schimbat.",
   "Edit user": "Editează utilizatorul",
   "Editing creates a new version. Publishing makes it the active version used by campaigns and test sends.": "Editarea creează o versiune nouă. Publicarea o transformă în versiunea activă folosită de campanii și de trimiterile de test.",
   "Egypt": "Egipt",

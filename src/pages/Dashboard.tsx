@@ -178,7 +178,7 @@ const Dashboard = () => {
     help: "Help Center",
     about: "About Muzicalist",
     billing: "Billing & Subscription",
-    edit_profile: "Edit Profile",
+    edit_profile: "Account details",
     profile_visibility: "Profile Visibility",
     blocked_users: "Blocked Users",
     mentions_tags: "Mentions & Tags",
