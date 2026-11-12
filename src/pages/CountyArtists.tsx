@@ -1,6 +1,6 @@
 import Navigation from "@/components/Navigation";
 import SEO from "@/components/SEO";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -78,25 +78,25 @@ const CountyArtists = () => {
     {
       key: "singer",
       title: "Singers",
-      displayTitle: "SINGERS",
+      displayTitle: "Singers",
       href: `/counties/${county}/soloists`,
     },
     {
       key: "instrumentalist",
       title: "Instrumentalists",
-      displayTitle: "INSTRUMENTALISTS",
+      displayTitle: "Instrumentalists",
       href: `/counties/${county}/instrumentalists`,
     },
     {
       key: "dj",
       title: "DJs",
-      displayTitle: "DJS",
+      displayTitle: "DJs",
       href: `/counties/${county}/djs`,
     },
     {
       key: "band",
       title: "Bands",
-      displayTitle: "BANDS",
+      displayTitle: "Bands",
       href: `/counties/${county}/bands`,
     },
   ];
@@ -130,30 +130,30 @@ const CountyArtists = () => {
               if (categoryArtists.length === 0) return null;
               
               return (
-                <div key={category.key} className="space-y-4 md:space-y-8">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg md:text-xl font-sans font-bold uppercase text-white">
-                      {category.displayTitle} ({categoryArtists.length})
+                <div key={category.key} className="space-y-2 md:space-y-4">
+                  <div className="flex items-end justify-between gap-4">
+                    <h2 className="font-figtree text-[22px] font-bold leading-tight tracking-[-0.01em] text-white md:text-2xl">
+                      <span>{category.displayTitle}</span>{" "}
+                      <span className="tabular-nums notranslate" translate="no">({categoryArtists.length})</span>
                     </h2>
                     <Link
                       to={`/counties/${county}/${category.key}`}
-                      className="inline-flex items-center gap-1 text-[13px] md:text-sm font-medium text-accent hover:text-accent/80 active:opacity-70 transition-colors"
+                      className="shrink-0 text-sm font-bold text-white/60 transition-colors hover:text-white hover:underline"
                     >
-                      View all
-                      <ArrowRight className="h-4 w-4" />
+                      Show all
                     </Link>
                   </div>
                   
                   <Carousel
                     opts={{
                       align: "start",
-                      loop: true,
+                      loop: false,
                     }}
                     className="w-full max-w-7xl mx-auto"
                   >
                     <CarouselContent className="-ml-2 md:-ml-3">
                       {categoryArtists.map((artist) => (
-                        <CarouselItem key={artist.id} className="pl-2 md:pl-3 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5">
+                        <CarouselItem key={artist.id} className="pl-2 md:pl-3 basis-[44%] sm:basis-[29%] md:basis-1/4 lg:basis-1/5">
                           <ArtistProfileCard
                             id={artist.id}
                             stageName={artist.stage_name}
@@ -163,8 +163,9 @@ const CountyArtists = () => {
                         </CarouselItem>
                       ))}
                     </CarouselContent>
-                    <CarouselPrevious className="left-0" />
-                    <CarouselNext className="right-0" />
+                    {/* Phones swipe; the arrows are for mouse users */}
+                    <CarouselPrevious className="left-0 hidden md:flex md:disabled:hidden" />
+                    <CarouselNext className="right-0 hidden md:flex md:disabled:hidden" />
                   </Carousel>
                 </div>
               );
