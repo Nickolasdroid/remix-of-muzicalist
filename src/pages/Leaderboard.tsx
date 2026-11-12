@@ -2,6 +2,7 @@ import Navigation from "@/components/Navigation";
 import PageLoading from "@/components/PageLoading";
 import SEO from "@/components/SEO";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { fairRatingScore } from "@/lib/ranking";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
@@ -758,21 +759,11 @@ const Leaderboard = () => {
       filtered = filtered.filter(artist => artist.county === selectedCounty);
     }
 
-    // Sort by number of reviews (descending), then by rating (descending)
-    filtered.sort((a, b) => {
-      const reviewsA = artistReviewCounts[a.id] || 0;
-      const reviewsB = artistReviewCounts[b.id] || 0;
-      
-      // Primary sort: most reviews first
-      if (reviewsB !== reviewsA) {
-        return reviewsB - reviewsA;
-      }
-      
-      // Secondary sort: highest rating first
-      const ratingA = artistRatings[a.id] || 0;
-      const ratingB = artistRatings[b.id] || 0;
-      return ratingB - ratingA;
-    });
+    // Best first, weighing both the rating and how many reviews back it up
+    filtered.sort((a, b) =>
+      fairRatingScore(artistRatings[b.id], artistReviewCounts[b.id]) - fairRatingScore(artistRatings[a.id], artistReviewCounts[a.id]) ||
+      (artistReviewCounts[b.id] || 0) - (artistReviewCounts[a.id] || 0)
+    );
 
     return filtered;
   };

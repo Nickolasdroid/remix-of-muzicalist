@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { fairRatingScore, TOP_RATED_MIN_RATING, TOP_RATED_MIN_REVIEWS } from "@/lib/ranking";
 import { Star, User } from "lucide-react";
 import Footer from "@/components/Footer";
 import CategoryTile, { CATEGORY_TILES } from "@/components/CategoryTile";
@@ -129,9 +130,10 @@ const About = () => {
     const list = (all || []).filter((a) => !category || a.specialization === category);
     return {
       recommended: recommend(list, taste),
+      // Only artists with enough good reviews; the shelf hides itself when nobody qualifies
       topRated: list
-        .filter((a) => a.rating !== null)
-        .sort((x, y) => y.rating! - x.rating! || y.reviewCount - x.reviewCount),
+        .filter((a) => a.rating !== null && a.reviewCount >= TOP_RATED_MIN_REVIEWS && a.rating >= TOP_RATED_MIN_RATING)
+        .sort((x, y) => fairRatingScore(y.rating, y.reviewCount) - fairRatingScore(x.rating, x.reviewCount)),
       newest: [...list].sort((x, y) => (y.created_at || "").localeCompare(x.created_at || "")),
     };
   }, [all, category, taste]);
