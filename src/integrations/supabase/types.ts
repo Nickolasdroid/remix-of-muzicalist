@@ -1984,6 +1984,7 @@ export type Database = {
           pending_account_type: string | null
           phone: string
           plan: string
+          promotion_answered_at: string | null
           slug: string | null
           specialization:
             | Database["public"]["Enums"]["artist_specialization"]
@@ -2044,6 +2045,7 @@ export type Database = {
           pending_account_type?: string | null
           phone: string
           plan?: string
+          promotion_answered_at?: string | null
           slug?: string | null
           specialization?:
             | Database["public"]["Enums"]["artist_specialization"]
@@ -2104,6 +2106,7 @@ export type Database = {
           pending_account_type?: string | null
           phone?: string
           plan?: string
+          promotion_answered_at?: string | null
           slug?: string | null
           specialization?:
             | Database["public"]["Enums"]["artist_specialization"]
@@ -3065,6 +3068,20 @@ export type Database = {
           phone: string
         }[]
       }
+      get_leaderboard_most_booked: {
+        Args: never
+        Returns: {
+          profile_id: string
+          rank_position: number
+        }[]
+      }
+      get_leaderboard_most_followed: {
+        Args: never
+        Returns: {
+          followers: number
+          profile_id: string
+        }[]
+      }
       get_moderation_case_details: { Args: { _case_id: string }; Returns: Json }
       get_moderation_case_timeline: {
         Args: { _case_id: string }
@@ -3167,6 +3184,7 @@ export type Database = {
           pending_account_type: string | null
           phone: string
           plan: string
+          promotion_answered_at: string | null
           slug: string | null
           specialization:
             | Database["public"]["Enums"]["artist_specialization"]

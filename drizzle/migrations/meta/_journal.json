@@ -190,6 +190,27 @@
       "when": 1794218387625,
       "tag": "0026_grant_account_type_chosen_select",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1794514626960,
+      "tag": "0027_promotion_opt_in",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1794514638538,
+      "tag": "0028_public_past_events",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1794514651113,
+      "tag": "0029_leaderboard_bookings_followers",
+      "breakpoints": true
     }
   ]
 }
