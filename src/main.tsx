@@ -10,8 +10,11 @@ import "./i18n";
 import { startActivityTracking } from "@/lib/activityTracker";
 import { watchPasswordRecovery } from "@/lib/passwordRecovery";
 
+import { polyfillFlagEmoji } from "@/lib/flagEmojiPolyfill";
+
 startActivityTracking();
 watchPasswordRecovery();
+polyfillFlagEmoji();
 
 // iOS Safari ignores `user-scalable=no` in the viewport meta, so pinch-to-zoom
 // on the page is blocked here via the iOS-only `gesture*` events. These events

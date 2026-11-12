@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Search, ArrowLeft, Users, SlidersHorizontal } from "lucide-react";
 import ArtistProfileCard from "@/components/ArtistProfileCard";
 import { useInfiniteList } from "@/hooks/useInfiniteList";
+import GuestSidebar from "@/components/GuestSidebar";
 import { getCountryFlag, getCountryName, getCountryNameVariants } from "@/lib/countryFlags";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import {
@@ -180,6 +181,57 @@ const FilterButton = (props: FilterButtonProps & { placement: "header" | "page";
   );
 };
 
+/** Desktop: the filters as grey chips in a row (a chosen value turns the chip lighter). */
+const CHIP = "h-8 w-auto gap-1.5 rounded-full border-0 px-3.5 text-sm font-medium text-foreground focus:ring-0 focus:ring-offset-0 focus-visible:ring-2 focus-visible:ring-white/60 [&>svg]:opacity-70";
+const chipTone = (active: boolean) => (active ? "bg-foreground/[0.24]" : "bg-foreground/[0.07] hover:bg-foreground/[0.12]");
+
+const FilterChips = (props: FilterButtonProps) => (
+  <div className="hidden flex-wrap items-center gap-2 md:flex">
+    <Select value={props.filterCategory} onValueChange={props.setFilterCategory}>
+      <SelectTrigger className={`${CHIP} ${chipTone(props.filterCategory !== "all")}`} aria-label="Category">
+        <SelectValue placeholder="All Categories" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">All Categories</SelectItem>
+        <SelectItem value="Singer">Singer</SelectItem>
+        <SelectItem value="Instrumentalist">Instrumentalist</SelectItem>
+        <SelectItem value="DJ">DJ</SelectItem>
+        <SelectItem value="Band">Band</SelectItem>
+      </SelectContent>
+    </Select>
+    <Select value={props.filterCounty} onValueChange={props.setFilterCounty}>
+      <SelectTrigger className={`${CHIP} ${chipTone(props.filterCounty !== "all")}`} aria-label="Region">
+        <SelectValue placeholder="All Regions" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="all">All Regions</SelectItem>
+        {props.counties.map((c) => (
+          <SelectItem key={c} value={c}>{c}</SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+    <Select value={props.sortOrder} onValueChange={props.setSortOrder}>
+      <SelectTrigger className={`${CHIP} ${chipTone(props.sortOrder !== "none")}`} aria-label="Sort Alphabetically">
+        <SelectValue placeholder="Recommended" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="none">Recommended</SelectItem>
+        <SelectItem value="a-z">A to Z</SelectItem>
+        <SelectItem value="z-a">Z to A</SelectItem>
+      </SelectContent>
+    </Select>
+    {activeFilterCount(props) + (props.sortOrder !== "none" ? 1 : 0) > 0 && (
+      <button
+        type="button"
+        onClick={() => { props.setFilterCategory("all"); props.setFilterCounty("all"); props.setSortOrder("none"); }}
+        className="h-8 px-2 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground"
+      >
+        Clear All Filters
+      </button>
+    )}
+  </div>
+);
+
 interface Artist {
   id: string;
   stage_name: string;
@@ -314,67 +366,52 @@ const CountryArtists = () => {
   const filterProps = { filterCategory, setFilterCategory, filterCounty, setFilterCounty, sortOrder, setSortOrder, counties };
 
   return (
-    <div className={`min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''} bg-background`}>
+    <div className={`min-h-screen bg-black ${currentUserId ? 'md:ml-[316px] md:py-2 md:pr-2 lg:ml-[356px]' : 'md:flex md:items-start md:gap-2 md:px-2 md:pb-2 md:pt-[72px]'}`}>
       <SEO title={`${country} — Book Musical Artists | Muzicalist`} description={`Discover singers, bands, DJs and instrumentalists in ${country}. Compare profiles and book the perfect artist for your event on Muzicalist.`} path={`/countries/${encodeURIComponent(country ?? "")}`} />
-      <Navigation mobileTitle={displayName} mobileBackPath="/countries" mobileExtraAction={currentUserId ? <FilterButton placement="header" mobileInHeader {...filterProps} /> : undefined} hideMobileNotifications />
-      
-      <div className={`container mx-auto px-4 pt-20 ${currentUserId ? 'md:pt-8' : 'md:pt-24'} pb-6 md:pb-20`}>
-        <div className={`${currentUserId ? "hidden" : "flex"} md:flex items-center justify-between mb-4 md:mb-8`}>
-          <Link to="/countries" className="hidden md:block">
-            <Button variant="outline" size="sm" className="text-xs md:text-sm h-9 px-3">
-              <ArrowLeft className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-              Back
-            </Button>
-          </Link>
+      {/* Phone: the count sits next to the name in the top bar, e.g. "România (124)" */}
+      <Navigation mobileTitle={`${displayName}${loading ? "" : ` (${filteredArtists.length})`}`} mobileBackPath="/countries" mobileExtraAction={<FilterButton placement="header" mobileInHeader {...filterProps} />} hideMobileNotifications />
 
-          <div className="hidden md:flex items-center gap-2">
-            <span className="text-2xl md:text-3xl">{getCountryFlag(decodedCountry)}</span>
-            <h1 className="text-xl md:text-2xl font-display font-bold text-foreground">{displayName}</h1>
-          </div>
-
-          <div className="relative flex items-center justify-end gap-3 w-full md:w-auto">
-            <p className="md:hidden absolute left-1/2 -translate-x-1/2 text-sm text-muted-foreground pointer-events-none">
-              {`${filteredArtists.length} artist${filteredArtists.length !== 1 ? 's' : ''}`}
-            </p>
-            <FilterButton placement="page" mobileInHeader={!!currentUserId} {...filterProps} />
-          </div>
-        </div>
-
-        {urlDate && (
-          <div className="mb-4 p-3 rounded-xl bg-accent/10 border border-accent/20 text-center">
-            <p className="text-sm text-foreground font-medium">
-              Showing availability for: <span className="text-accent">{new Date(urlDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Available artists are shown first
-            </p>
-          </div>
-        )}
-
-        <div className="text-center mb-6 md:mb-8">
-          {/* key: a fresh node once loaded, so the translated "Loading…" text can't linger */}
-          <p key={loading ? "loading" : "count"} className="hidden md:block text-muted-foreground mb-4">
-            {loading ? "Loading artists..." : `${filteredArtists.length} artist${filteredArtists.length !== 1 ? 's' : ''}`}
-          </p>
-
-          <div className="max-w-xl mx-auto relative">
-            <Search className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none z-10" />
+      {!currentUserId && <GuestSidebar />}
+      <div className="min-h-screen min-w-0 flex-1 overflow-hidden bg-background pb-6 pt-14 md:min-h-[calc(100vh-80px)] md:rounded-lg md:pb-16 md:pt-0">
+      {/* Big title on the left, as on the category pages */}
+      <header
+        className="hidden px-8 pb-6 pt-16 md:block lg:pt-20"
+        style={{ background: "linear-gradient(rgba(0,0,0,0) 0%, rgba(0,0,0,0.45) 100%), rgb(83,83,83)" }}
+      >
+        <h1 className="flex items-center gap-4 font-figtree text-6xl font-black tracking-[-0.04em] text-white lg:text-8xl">
+          <span>{displayName}</span>
+          {!loading && (
+            <span className="align-baseline text-[0.5em] font-bold tracking-[-0.02em] text-white/70 tabular-nums notranslate" translate="no">
+              ({filteredArtists.length})
+            </span>
+          )}
+        </h1>
+      </header>
+      <div className="px-4 pt-4 md:px-8 md:pt-6" style={{ background: "linear-gradient(rgba(83,83,83,0.25) 0px, transparent 240px)" }}>
+        <div className="mb-4 flex flex-col gap-3 md:mb-6 md:flex-row md:items-center">
+          <div className="relative md:w-80">
+            <Search className="pointer-events-none absolute left-3 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Search by artist name..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="pl-10 md:pl-12 pr-3 md:pr-4 h-10 md:h-14 w-full text-base rounded-2xl md:rounded-full border-0 focus-visible:ring-0 focus-visible:ring-offset-0 bg-muted text-foreground placeholder:text-muted-foreground"
+              className="h-10 w-full rounded-full border-0 bg-foreground/[0.07] pl-10 pr-3 text-base text-foreground placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 md:text-sm"
             />
           </div>
+          <FilterChips {...filterProps} />
         </div>
 
+        {urlDate && (
+          <div className="mb-4 p-3 rounded-lg bg-accent/10 border border-accent/20 text-center">
+            <p className="text-sm text-muted-foreground">
+              Showing availability for <span className="font-semibold text-foreground">{new Date(urlDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            </p>
+          </div>
+        )}
+
         <div className="max-w-7xl mx-auto">
-          {loading ? (
-            <div className="text-center py-12">
-              <p className="text-muted-foreground">Loading artists...</p>
-            </div>
-          ) : filteredArtists.length > 0 ? (
+          {loading ? null : filteredArtists.length > 0 ? (
             <div className="-mx-2 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 md:-mx-3">
               {visible.map(artist => (
                 <ArtistProfileCard
@@ -401,6 +438,7 @@ const CountryArtists = () => {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

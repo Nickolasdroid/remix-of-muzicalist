@@ -14,9 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ['Figtree', 'Figtree Fallback', 'Inter', 'sans-serif'],
-        sans: ['Figtree', 'Figtree Fallback', 'Inter', 'sans-serif'],
-        figtree: ['Figtree', 'Inter', 'Inter Fallback', 'sans-serif'],
+        display: ['Twemoji Country Flags', 'Figtree', 'Figtree Fallback', 'Inter', 'sans-serif'],
+        sans: ['Twemoji Country Flags', 'Figtree', 'Figtree Fallback', 'Inter', 'sans-serif'],
+        figtree: ['Twemoji Country Flags', 'Figtree', 'Inter', 'Inter Fallback', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
