@@ -1357,7 +1357,7 @@ export const RO_TEXT: Record<string, string> = {
   "Premium gives you up to 30 posts a month, the biggest gallery, the top spot in search and artist lists, your posts highest in the feed, and statistics from profile views to requests and bookings.": "Premium îți dă până la 30 de postări pe lună, cea mai mare galerie, primul loc în căutări și în listele de artiști, postările cel mai sus în feed și statistici de la vizualizări la cereri și rezervări.",
   "Artist profile with bio and photos": "Profil de artist cu descriere și poze",
   "Display your estimated prices": "Afișează-ți prețurile estimative",
-  "On the Standard and Premium plans you can show up to 3 estimated prices on your profile, so organizers get a clear idea of your rates. On Free, visitors see “Prices on request”.": "Pe planurile Standard și Premium poți afișa pe profil până la 3 prețuri estimative, ca organizatorii să știe la ce să se aștepte. Pe Free, vizitatorii văd „Prețuri la cerere”.",
+  "On the Standard and Premium plans you can show up to 3 estimated prices on your profile, so organizers get a clear idea of your rates. On Free, the prices section doesn't appear on your profile.": "Pe planurile Standard și Premium poți afișa pe profil până la 3 prețuri estimative, ca organizatorii să știe la ce să se aștepte. Pe Free, secțiunea de prețuri nu apare pe profil.",
   "Number of profile views": "Numărul de vizualizări ale profilului",
   "See how many people visit your profile with Standard or Premium.": "Vezi câți oameni îți vizitează profilul cu Standard sau Premium.",
   "Publish stories, visible for 24 hours": "Publică story-uri, vizibile timp de 24 de ore",

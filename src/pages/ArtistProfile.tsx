@@ -1658,16 +1658,10 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                         )}
                       </div>
 
-                      <div>
-                        <SectionHeaderWithUsage title="Estimated Prices" className="mb-4" />
-                        <div className="space-y-1 md:space-y-2 text-left">
-                          {canSetEstimatedPrice(artist.plan) ? (
-                            <PricingEntriesDisplay profileId={artist.id} />
-                          ) : (
-                            <p className="text-muted-foreground text-sm">Contact for pricing</p>
-                          )}
-                        </div>
-                      </div>
+                      {/* Shown only when the artist has prices to show (no "Prices on request" filler) */}
+                      {canSetEstimatedPrice(artist.plan) && (
+                        <PricingEntriesDisplay profileId={artist.id} header={<SectionHeaderWithUsage title="Estimated Prices" className="mb-4" />} />
+                      )}
                     {/* Events played through Muzicalist (type and month), like Spotify's discography */}
                     <PastEvents profileId={artist.id} title={<SectionHeaderWithUsage title="Events on Muzicalist" className="mb-3" />} />
                     {/* Below xl the side panel's cards sit here, before similar artists */}

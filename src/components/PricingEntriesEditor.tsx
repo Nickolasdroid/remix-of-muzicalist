@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -362,7 +362,8 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
   );
 }
 
-export function PricingEntriesDisplay({ profileId }: { profileId: string }) {
+/** The artist's estimated prices; with `header`, the whole section (header included) is left out when there are none. */
+export function PricingEntriesDisplay({ profileId, header }: { profileId: string; header?: ReactNode }) {
   const { i18n } = useTranslation();
   const lang = i18n.language || i18n.resolvedLanguage || "ro";
   const [entries, setEntries] = useState<PricingEntry[]>([]);
@@ -382,14 +383,15 @@ export function PricingEntriesDisplay({ profileId }: { profileId: string }) {
 
   if (loading) return null;
   if (entries.length === 0) {
-    return <p className="text-muted-foreground text-sm">Contact for pricing</p>;
+    return header ? null : <p className="text-muted-foreground text-sm">Contact for pricing</p>;
   }
 
-  return (
+  const chips = (
     <div className="flex flex-wrap gap-2">
       {entries.map((e) => (
         <PriceChip key={e.id} entry={e} lang={lang} />
       ))}
     </div>
   );
+  return header ? <div>{header}{chips}</div> : chips;
 }

@@ -102,7 +102,7 @@ const faqSections = [
       },
       {
         q: "Can I set my pricing?",
-        a: "On the Standard and Premium plans you can show up to 3 estimated prices on your profile, so organizers get a clear idea of your rates. On Free, visitors see “Prices on request”.",
+        a: "On the Standard and Premium plans you can show up to 3 estimated prices on your profile, so organizers get a clear idea of your rates. On Free, the prices section doesn't appear on your profile.",
       },
     ],
   },
