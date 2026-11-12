@@ -1,6 +1,5 @@
 {
   "rewrites": [
-    { "source": "/~oauth/:path*", "destination": "https://groove-guide-central.lovable.app/~oauth/:path*" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

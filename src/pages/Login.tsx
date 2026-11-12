@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import logo from "@/assets/logo.webp";
 import AuthShell, { authButtonClass, authInputClass } from "@/components/AuthShell";
@@ -27,19 +26,19 @@ const Login = () => {
     try {
       // Logging in, not signing up: no account type preselected (a new Google account is asked on /welcome)
       try { localStorage.removeItem("signup_intent"); } catch { /* storage unavailable */ }
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+      // Native Supabase OAuth: the browser is redirected to Google, then back to the app.
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: window.location.origin },
       });
-      if (result.error) {
+      if (error) {
         toast({
           title: "Google sign-in failed",
-          description: result.error.message || "Please try again.",
+          description: error.message || "Please try again.",
           variant: "destructive",
         });
         setGoogleLoading(false);
-        return;
       }
-      if (result.redirected) return;
     } catch (err: any) {
       toast({
         title: "Google sign-in failed",
