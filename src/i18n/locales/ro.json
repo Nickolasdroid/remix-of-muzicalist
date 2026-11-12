@@ -441,6 +441,9 @@
     "addToPost": "Adaugă la postare"
   },
   "social": {
+    "followersCount_one": "Urmăritor",
+    "followersCount_few": "Urmăritori",
+    "followersCount_other": "Urmăritori",
     "followers": "Urmăritori",
     "following": "Urmărești",
     "followingThirdPerson": "Urmărește",

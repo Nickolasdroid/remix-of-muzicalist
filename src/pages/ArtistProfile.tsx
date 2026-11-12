@@ -1529,7 +1529,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
                   </div>
                   {collabStatus && <CollabStatusChip status={collabStatus} className="mt-1.5" />}
                   <SocialStats
-                    className="mt-1.5 md:mt-2 flex-nowrap"
+                    className="mt-1.5 md:mt-2"
                     followersCount={followersCount}
                     followingCount={followingCount}
                     onFollowersClick={currentUserId ? () => openConnections("followers") : undefined}

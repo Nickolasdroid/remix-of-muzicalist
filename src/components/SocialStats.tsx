@@ -35,9 +35,9 @@ const SocialStats = ({
         type="button"
         onClick={onFollowersClick}
         disabled={!onFollowersClick}
-        className="hover:text-foreground transition-colors disabled:cursor-default"
+        className="whitespace-nowrap hover:text-foreground transition-colors disabled:cursor-default"
       >
-        <span className="font-semibold text-foreground">{followersCount}</span> {t("social.followers")}
+        <span className="font-semibold text-foreground">{followersCount}</span> {t("social.followersCount", { count: followersCount })}
       </button>
       {!showFollowButton && (
         <>
@@ -59,7 +59,7 @@ const SocialStats = ({
           onClick={onFollowToggle}
           variant={isFollowing ? "outline" : "secondary"}
           size="sm"
-          className={`ml-auto md:ml-2 rounded-full px-4 md:px-5 transition-all ${
+          className={`h-8 shrink-0 rounded-full px-3.5 text-[13px] md:ml-2 md:h-9 md:px-5 md:text-sm transition-all ${
             isFollowing
               ? "border-border bg-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               : "bg-secondary text-foreground hover:bg-secondary/80 hover:scale-[1.03]"

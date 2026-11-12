@@ -438,6 +438,8 @@
     "addToPost": "Add to your post"
   },
   "social": {
+    "followersCount_one": "Follower",
+    "followersCount_other": "Followers",
     "followers": "Followers",
     "following": "Following",
     "followingThirdPerson": "Following",
