@@ -91,7 +91,12 @@ const AllArtists = () => {
   }, []);
 
   // Signed in: the page sits to the right of the left sidebar
-  const [currentUserId] = useState<string | null>(knownUserId);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(knownUserId);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setCurrentUserId(data.session?.user?.id ?? null));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setCurrentUserId(session?.user?.id ?? null));
+    return () => sub.subscription.unsubscribe();
+  }, []);
 
   return (
     <div className={`min-h-screen bg-background ${currentUserId ? "md:ml-[316px] lg:ml-[356px]" : ""}`}>
