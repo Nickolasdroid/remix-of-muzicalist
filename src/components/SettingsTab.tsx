@@ -1641,6 +1641,24 @@ const EditProfilePanel = () => {
   const [country, setCountry] = useState("");
   const [county, setCounty] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
+  const [savedPhone, setSavedPhone] = useState("");
+  const [savingPhone, setSavingPhone] = useState(false);
+  const phoneTrim = phone.trim();
+  const phoneValid = /^\+?[0-9][0-9 ()./-]{5,28}$/.test(phoneTrim);
+  const phoneChanged = phoneTrim !== savedPhone.trim();
+  const savePhone = async () => {
+    if (!userId || !phoneValid || !phoneChanged) return;
+    setSavingPhone(true);
+    const { error } = await supabase.from("profiles").update({ phone: phoneTrim } as any).eq("id", userId);
+    setSavingPhone(false);
+    if (error) {
+      toast({ title: "Error", description: "Could not save the phone number.", variant: "destructive" });
+      return;
+    }
+    setPhone(phoneTrim);
+    setSavedPhone(phoneTrim);
+    toast({ title: "Saved", description: "Phone number updated." });
+  };
 
   useEffect(() => {
     (async () => {
@@ -1652,6 +1670,7 @@ const EditProfilePanel = () => {
       if (data) {
         setEmail((data as any).email || user.email || "");
         setPhone((data as any).phone || "");
+        setSavedPhone((data as any).phone || "");
         setFirstName((data as any).first_name || "");
         setLastName((data as any).last_name || "");
         setCountry((data as any).country || "");
@@ -1668,7 +1687,7 @@ const EditProfilePanel = () => {
     <div className="space-y-6 animate-fade-in">
       <div>
         <p className="text-sm text-muted-foreground max-w-2xl">
-          The details of your account. Email cannot be changed.
+          The details of your account. Only the phone number can be changed here.
         </p>
       </div>
       <div className="max-w-xl space-y-5">
@@ -1678,7 +1697,26 @@ const EditProfilePanel = () => {
         </div>
         <div className="space-y-2">
           <Label className="text-sm font-bold" htmlFor="ep-phone">Phone</Label>
-          <Input id="ep-phone" type="tel" value={phone} disabled readOnly className={SET_FIELD} />
+          <Input
+            id="ep-phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            maxLength={30}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="+40 7xx xxx xxx"
+            className={SET_FIELD}
+          />
+          {phoneTrim && !phoneValid && (
+            <p className="text-sm text-destructive">Enter a valid phone number.</p>
+          )}
+          {phoneChanged && (
+            <Button onClick={savePhone} disabled={savingPhone || !phoneValid} className={`${SET_PRIMARY_BTN} mt-2 disabled:bg-foreground/10 disabled:text-muted-foreground disabled:opacity-100 disabled:hover:scale-100`}>
+              {savingPhone && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Save phone number
+            </Button>
+          )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
