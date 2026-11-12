@@ -9,6 +9,7 @@ import ArtistCardStatusBadge from "@/components/ArtistCardStatusBadge";
 import { getThumbUrl } from "@/lib/imageUrl";
 
 import Navigation from "@/components/Navigation";
+import { knownUserId } from "@/lib/knownUser";
 import SEO from "@/components/SEO";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -89,12 +90,15 @@ const AllArtists = () => {
     fetchArtists();
   }, []);
 
+  // Signed in: the page sits to the right of the left sidebar
+  const [currentUserId] = useState<string | null>(knownUserId);
+
   return (
-    <div className="min-h-screen">
+    <div className={`min-h-screen bg-background ${currentUserId ? "md:ml-[316px] lg:ml-[356px]" : ""}`}>
       <SEO title="All Artists — Browse & Book Musicians | Muzicalist" description="Browse every artist on Muzicalist: singers, bands, DJs and instrumentalists. Filter by category, location and availability, then book directly." path="/artists" />
       <Navigation mobileTitle="Discover Artists" mobileBackPath="/" hideMobileNotifications />
 
-      <div className="container mx-auto px-4 md:px-8 pt-20 md:pt-24 pb-6 md:pb-20">
+      <div className={`container mx-auto px-4 md:px-8 pt-20 ${currentUserId ? "md:pt-10" : "md:pt-24"} pb-6 md:pb-20`}>
         <div className="hidden md:flex items-center gap-3 mb-6 md:mb-10">
           <Link to="/">
             <Button variant="ghost" size="icon" className="rounded-full">
