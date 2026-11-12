@@ -14,6 +14,7 @@ import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import SEO from "@/components/SEO";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUserId } from "@/lib/knownUser";
 import {
   Accordion,
   AccordionContent,
@@ -97,7 +98,7 @@ const ruleCategories: readonly RuleCategory[] = [
 
 const Rules = () => {
   const { t, i18n } = useTranslation();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => !!knownUserId());
   const currentLanguage = i18n.resolvedLanguage?.split("-")[0] === "ro" ? "ro" : "en";
 
   useEffect(() => {

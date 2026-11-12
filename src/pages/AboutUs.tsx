@@ -6,6 +6,7 @@ import CategoryTile, { CATEGORY_TILES } from "@/components/CategoryTile";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUserId } from "@/lib/knownUser";
 import { Search, GitCompare, MessageCircle, TrendingUp, Check, X } from "lucide-react";
 import logo from "@/assets/logo.webp";
 import heroConcert from "@/assets/about-hero-concert.webp";
@@ -58,7 +59,7 @@ const Actions = () => (
  * (how it works, why, numbers per artist type, story). Guests also get the sign-up buttons.
  */
 const AboutUs = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(() => (knownUserId() ? true : null));
   const { stats } = usePlatformStats();
 
   useEffect(() => {

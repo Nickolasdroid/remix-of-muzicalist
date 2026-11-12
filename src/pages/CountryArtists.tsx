@@ -4,6 +4,7 @@ import { useParams, Link, useSearchParams } from "react-router-dom";
 import { sortByPlanPriority } from "@/lib/planLimits";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUserId } from "@/lib/knownUser";
 import { Button } from "@/components/ui/button";
 import HeaderFilterTrigger from "@/components/HeaderFilterTrigger";
 import { Input } from "@/components/ui/input";
@@ -208,7 +209,7 @@ const CountryArtists = () => {
   const [filterCounty, setFilterCounty] = useState<string>(urlRegion || "all");
   
   const [sortOrder, setSortOrder] = useState<string>("none");
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(knownUserId);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {

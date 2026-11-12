@@ -11,6 +11,7 @@ import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Loader2, Plus } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUserId } from "@/lib/knownUser";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
@@ -41,7 +42,7 @@ const Announcements = ({ embeddedKind }: { embeddedKind?: "gig" | "collab" } = {
   const [loading, setLoading] = useState(true);
   const [requestError, setRequestError] = useState<string | null>(null);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(knownUserId);
   
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);

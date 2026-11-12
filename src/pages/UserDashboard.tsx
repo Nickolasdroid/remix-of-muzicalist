@@ -6,6 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import SettingsTab, { SettingSection } from "@/components/SettingsTab";
 import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
+import PageLoading from "@/components/PageLoading";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -17,6 +18,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUser } from "@/lib/knownUser";
 import { Megaphone, Plus, Trash2, Upload, Clock, CalendarCheck, Send, Camera, User, X, AlertCircle, Euro, MapPin, Calendar as CalendarIcon, CheckCircle2, XCircle, Sparkles, ChevronRight, Image as ImageIcon, Users, Ban } from "lucide-react";
 import { isAdExpired, getDaysRemaining } from "@/lib/adExpiration";
 import { ORGANIZER_OPEN_LIMIT } from "@/lib/opportunities";
@@ -51,7 +53,7 @@ const UserDashboard = () => {
   const [settingsSection, setSettingsSection] = useState<SettingSection>('main');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(knownUser);
   const [profile, setProfile] = useState<any>(null);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
 
@@ -355,10 +357,7 @@ const UserDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen md:ml-[316px] lg:ml-[356px] bg-card flex items-center justify-center">
-        <Navigation />
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
-      </div>
+      <PageLoading />
     );
   }
 

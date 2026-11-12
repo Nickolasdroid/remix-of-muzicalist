@@ -24,6 +24,7 @@ import PageLoading from "@/components/PageLoading";
 import { genreLabel } from "@/lib/genreLabel";
 import { LikeCountButton } from "@/components/LikesDialog";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUserId } from "@/lib/knownUser";
 import CountryFlagIcon from "@/components/CountryFlagIcon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -234,7 +235,7 @@ const ArtistProfile = ({ artistId, view }: { artistId?: string; view?: "reviews"
     rating: 5,
     comment: ""
   });
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(knownUserId);
   // Known once the session check finished, so the guest bar never flashes for members
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [reportTarget, setReportTarget] = useState<{ id: string; type: ReportableType } | null>(null);

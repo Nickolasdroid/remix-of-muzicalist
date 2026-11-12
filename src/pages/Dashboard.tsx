@@ -31,6 +31,7 @@ import { useToast } from "@/hooks/use-toast";
 import { genreLabel } from "@/lib/genreLabel";
 import { MUSIC_GENRES } from "@/lib/musicGenres";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUser } from "@/lib/knownUser";
 import { translateSpecialization } from "@/lib/specializationLabel";
 import FeedPostCard from "@/components/FeedPostCard";
 import FeedAnnouncementCard from "@/components/FeedAnnouncementCard";
@@ -123,7 +124,7 @@ const Dashboard = () => {
   const { entitlements, refresh: refreshEntitlements } = useEntitlements();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(knownUser);
   const [commentsTarget, setCommentsTarget] = useState<{ id: string; type: "post" | "announcement" } | null>(null);
   const [postsViewMode, setPostsViewMode] = usePostsViewMode();
   const [profile, setProfile] = useState<any>(null);

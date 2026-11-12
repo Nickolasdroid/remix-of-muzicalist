@@ -24,6 +24,7 @@ import {
   AtSign,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUser } from "@/lib/knownUser";
 import { formatDistanceToNow } from "date-fns";
 import { ro as roLocale } from "date-fns/locale";
 import i18n, { translateTextsSync, translateTexts } from "@/i18n";
@@ -174,7 +175,7 @@ const Notifications = () => {
   const [freshIds, setFreshIds] = useState<Set<string>>(new Set());
   const [dictReady, setDictReady] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(knownUser);
   const [userType, setUserType] = useState<string | null>(null);
   const [notificationPrefs, setNotificationPrefs] = useState<Record<string, boolean> | null>(null);
   const [actorAvatars, setActorAvatars] = useState<Record<string, string | null>>({});

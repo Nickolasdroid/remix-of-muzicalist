@@ -2,9 +2,10 @@ import { useState, useEffect } from "react";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUser } from "@/lib/knownUser";
 
 const PrivacyPolicy = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(knownUser);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user ?? null));

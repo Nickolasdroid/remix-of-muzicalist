@@ -5,6 +5,7 @@ import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUserId } from "@/lib/knownUser";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import { sortByPlanPriority } from "@/lib/planLimits";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -39,7 +40,7 @@ const CountySpecializationArtists = () => {
   const { county, specialization } = useParams<{ county: string; specialization: string }>();
   const [artists, setArtists] = useState<Artist[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(knownUserId);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {

@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import GuestSidebar from "@/components/GuestSidebar";
 import PlaceTile from "@/components/PlaceTile";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUserId } from "@/lib/knownUser";
 import { getCountryDisplay } from "@/lib/countryFlags";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 
@@ -22,7 +23,7 @@ const Countries = () => {
   const [countries, setCountries] = useState<CountryData[]>([]);
   const [userCountry, setUserCountry] = useState<CountryData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(knownUserId);
 
   useEffect(() => {
     const fetchCountriesAndUser = async () => {

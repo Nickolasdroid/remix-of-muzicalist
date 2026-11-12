@@ -8,6 +8,7 @@ import { useSearchParams, useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUser } from "@/lib/knownUser";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -129,7 +130,7 @@ const Messages = () => {
   } = useTranslation();
   const adTitle = (ad?: AnnouncementContext | null) => (ad ? opportunityDisplayTitle(ad as any, i18n.language || "ro") : "");
   usePageTitle("Messages");
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(knownUser);
   const [loading, setLoading] = useState(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
@@ -566,7 +567,7 @@ const Messages = () => {
           </span>
         </div>
       )}
-      {list.length === 0 ? (forAd ? <div className="p-4 text-center text-sm text-muted-foreground">No replies yet</div> : (
+      {list.length === 0 && loading ? null : list.length === 0 ? (forAd ? <div className="p-4 text-center text-sm text-muted-foreground">No replies yet</div> : (
         // Empty inbox: say what will show up here and give a way to start
         <div className="flex flex-col items-center px-6 pb-10 pt-16 text-center md:pt-20">
           <span className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-foreground/[0.07]">

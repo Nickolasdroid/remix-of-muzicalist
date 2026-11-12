@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUser } from "@/lib/knownUser";
 
 type TermsSection = {
   title: string;
@@ -292,7 +293,7 @@ const getStoredTermsLanguage = () => {
 };
 
 const TermsOfService = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(knownUser);
   const { i18n } = useTranslation();
   const activeLanguage = getStoredTermsLanguage() || i18n.language;
   const lang = activeLanguage?.split("-")[0]?.toLowerCase() === "ro" ? "ro" : "en";

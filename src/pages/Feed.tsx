@@ -22,6 +22,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { toast } from "@/hooks/use-toast";
 import { LikeCountButton } from "@/components/LikesDialog";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUserId } from "@/lib/knownUser";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PostComposerDialog from "@/components/post/PostComposerDialog";
 import InstagramZoomPreview from "@/components/InstagramZoomPreview";
@@ -132,7 +133,7 @@ const Feed = () => {
   const [feedItems, setFeedItems] = useState<FeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [mediaPreview, setMediaPreview] = useState<MediaPreview | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(knownUserId);
   const [deletePostId, setDeletePostId] = useState<string | null>(null);
   const [deleteAnnouncementId, setDeleteAnnouncementId] = useState<string | null>(null);
   

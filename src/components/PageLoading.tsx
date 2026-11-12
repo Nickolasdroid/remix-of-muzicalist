@@ -1,21 +1,13 @@
 import Navigation from "@/components/Navigation";
 import GuestSidebar from "@/components/GuestSidebar";
-
-/** Signed-in users have their sidebar profile cached by Navigation. */
-const looksSignedIn = () => {
-  try {
-    return !!sessionStorage.getItem("nav_profile");
-  } catch {
-    return false;
-  }
-};
+import { knownUserId } from "@/lib/knownUser";
 
 /**
  * What shows while a page loads: the same black frame, menus and empty panel as the
  * finished page, so moving between pages doesn't flash a blank screen or a spinner.
  */
 const PageLoading = ({ overlay = false }: { overlay?: boolean }) => {
-  const guest = !looksSignedIn();
+  const guest = !knownUserId();
   return (
     <div
       className={`min-h-screen bg-black ${

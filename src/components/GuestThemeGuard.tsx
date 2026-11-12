@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUserId } from "@/lib/knownUser";
 
 /**
  * Forces the dark theme for any unauthenticated visitor,
@@ -7,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
  * preferred theme (light class) once they sign in.
  */
 const GuestThemeGuard = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(() => (knownUserId() ? true : null));
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Navigation from "@/components/Navigation";
+import PageLoading from "@/components/PageLoading";
 import SEO from "@/components/SEO";
 import CategoryTile, { CATEGORY_TILES } from "@/components/CategoryTile";
 import { Mic, Guitar, Headphones } from "lucide-react";
 import BandIcon from "@/components/icons/BandIcon";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUserId } from "@/lib/knownUser";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import CountryPickerButton from "@/components/CountryPickerButton";
 import { getCountryNameVariants } from "@/lib/countryFlags";
@@ -15,7 +17,7 @@ const Categories = () => {
   const navigate = useNavigate();
   const [isAuthChecked, setIsAuthChecked] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(knownUserId);
   const [counts, setCounts] = useState({
     Singer: 0,
     Instrumentalist: 0,
@@ -87,7 +89,7 @@ const Categories = () => {
 
   const countryParam = selectedCountry ? `?country=${encodeURIComponent(selectedCountry)}` : '';
   if (!isAuthChecked) {
-    return null;
+    return <PageLoading />;
   }
 
   return <div className={`min-h-screen ${currentUserId ? 'md:ml-[316px] lg:ml-[356px]' : ''} bg-background relative`}>

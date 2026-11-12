@@ -8,13 +8,14 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUserId } from "@/lib/knownUser";
 import { subscriptionPlans as plans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import { startCheckout, openCustomerPortal } from "@/lib/checkout";
 import { setPlanIntent, clearPlanIntent } from "@/lib/planIntent";
 
 const PlansPricing = () => {
   const navigate = useNavigate();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(() => (knownUserId() ? true : null));
   const [isAnnual, setIsAnnual] = useState(false);
   const [currentPlan, setCurrentPlan] = useState<string | null>(null);
   const [isArtist, setIsArtist] = useState(false);

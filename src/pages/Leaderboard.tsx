@@ -1,4 +1,5 @@
 import Navigation from "@/components/Navigation";
+import PageLoading from "@/components/PageLoading";
 import SEO from "@/components/SEO";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -797,9 +798,7 @@ const Leaderboard = () => {
   // Show loading while checking auth
   if (!isAuthChecked) {
     return (
-      <div className="min-h-screen md:ml-[316px] lg:ml-[356px] bg-background flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-accent" />
-      </div>
+      <PageLoading />
     );
   }
 

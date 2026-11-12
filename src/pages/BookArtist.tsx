@@ -6,6 +6,7 @@ import { useNavigate, useParams, useSearchParams, Link } from "react-router-dom"
 import { ArrowLeft } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUserId } from "@/lib/knownUser";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ArtistAvailabilityCalendar } from "@/components/ArtistAvailabilityCalendar";
@@ -48,7 +49,7 @@ const BookArtist = () => {
   const [artist, setArtist] = useState<ArtistLite | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(knownUserId);
   const [currentUserProfile, setCurrentUserProfile] = useState<{
     first_name: string; last_name: string; email: string; phone: string;
   } | null>(null);

@@ -24,6 +24,7 @@ import {
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUser } from "@/lib/knownUser";
 import { getCurrentLanguage, translateTextsSync } from "@/i18n";
 import logo from "@/assets/logo.webp";
 import CountrySelector from "./CountrySelector";
@@ -109,7 +110,7 @@ const Navigation = ({ mobileTitle, mobileBackPath, onMobileBack, hideMobileHeade
     const translated = translateTextsSync(currentLang, [mobileTitle])[mobileTitle.trim()];
     return translated || mobileTitle;
   })();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(knownUser);
   const [profile, setProfile] = useState<any>(() => {
     // Seed from cache so a remount (Navigation is mounted per-page) doesn't
     // start from null and flash the sidebar without cached-dependent items.

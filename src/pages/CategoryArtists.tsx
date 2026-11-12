@@ -12,6 +12,7 @@ import { CATEGORY_TILES } from "@/components/CategoryTile";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { knownUserId } from "@/lib/knownUser";
 import { fetchArtistIds } from "@/hooks/use-artist-ids";
 import { getCountryName, getCountryNameVariants } from "@/lib/countryFlags";
 import { sortByPlanPriority } from "@/lib/planLimits";
@@ -241,7 +242,7 @@ const CategoryArtists = () => {
   
   const [sortOrder, setSortOrder] = useState<string>("none");
   const [userCountry, setUserCountry] = useState<string | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(knownUserId);
   const [availableCountries, setAvailableCountries] = useState<string[]>([]);
   const [availableCounties, setAvailableCounties] = useState<string[]>([]);
   const urlDate = searchParams.get('date');
