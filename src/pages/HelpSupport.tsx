@@ -169,7 +169,7 @@ const faqSections = [
       },
       {
         q: "What is the Leaderboard?",
-        a: "The Leaderboard ranks artists based on reviews and engagement. Artists with an average rating above 4.5 also display a Top Rated badge.",
+        a: "The Leaderboard has three rankings: Top rated (reviews, counting both the rating and how many reviews there are), Most booked (bookings confirmed through Muzicalist in the last 30 days) and Most followed. Artists with an average rating above 4.5 also display a Top Rated badge.",
       },
       {
         q: "Can I filter artists by location?",

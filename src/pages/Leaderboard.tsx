@@ -640,11 +640,24 @@ const EMPTY_COPY: Record<string, { title: string; cta: string; path: string }> =
   bands: { title: "No reviewed bands yet", cta: "See all bands", path: "Bands" },
 };
 
+type Metric = "rated" | "booked" | "followed";
+
+/** The three rankings: by reviews, by bookings through Muzicalist (last 30 days), by followers. */
+const METRICS: { value: Metric; label: string; subtitle: string; column: string; empty: string }[] = [
+  { value: "rated", label: "Top rated", subtitle: "Artists with the best reviews from their clients.", column: "Reviews", empty: "" },
+  { value: "booked", label: "Most booked artists", subtitle: "Artists booked most often through Muzicalist in the last 30 days.", column: "", empty: "No bookings through Muzicalist in the last 30 days yet" },
+  { value: "followed", label: "Most followed", subtitle: "Artists with the most followers on Muzicalist.", column: "Followers", empty: "No followed artists yet" },
+];
+
 const Leaderboard = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [selectedCounty, setSelectedCounty] = useState<string>("All Regions");
   const [selectedCategory, setSelectedCategory] = useState<string>("singers");
+  const [metric, setMetric] = useState<Metric>("rated");
+  // Most booked: order only (the counts stay private). Most followed: follower counts.
+  const [bookedPosition, setBookedPosition] = useState<Record<string, number>>({});
+  const [followerCounts, setFollowerCounts] = useState<Record<string, number>>({});
   const [regionDrawerOpen, setRegionDrawerOpen] = useState(false);
   const [artists, setArtists] = useState<Artist[]>([]);
   const [artistRatings, setArtistRatings] = useState<ArtistRating>({});
@@ -748,11 +761,26 @@ const Leaderboard = () => {
     fetchRatings();
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      const safe = (name: string) => (supabase as any).rpc(name).then((r: any) => r, () => ({ data: [] }));
+      const [booked, followed] = await Promise.all([safe("get_leaderboard_most_booked"), safe("get_leaderboard_most_followed")]);
+      const pos: Record<string, number> = {};
+      (booked?.data || []).forEach((r: { profile_id: string; rank_position: number }) => { pos[r.profile_id] = r.rank_position; });
+      const fol: Record<string, number> = {};
+      (followed?.data || []).forEach((r: { profile_id: string; followers: number }) => { fol[r.profile_id] = r.followers; });
+      setBookedPosition(pos);
+      setFollowerCounts(fol);
+    })();
+  }, []);
+
   const getArtistsBySpecialization = (specialization: string) => {
     let filtered = artists.filter(artist => artist.specialization?.toLowerCase() === specialization.toLowerCase());
 
-    // Only include artists who have at least one review (rating > 0)
-    filtered = filtered.filter(artist => artistRatings[artist.id] && artistRatings[artist.id] > 0);
+    // Each ranking lists only artists who have something to rank by
+    if (metric === "rated") filtered = filtered.filter(artist => artistRatings[artist.id] && artistRatings[artist.id] > 0);
+    else if (metric === "booked") filtered = filtered.filter(artist => bookedPosition[artist.id] !== undefined);
+    else filtered = filtered.filter(artist => (followerCounts[artist.id] || 0) > 0);
 
     // Filter by county
     if (selectedCounty !== "All Regions") {
@@ -760,6 +788,8 @@ const Leaderboard = () => {
     }
 
     // Best first, weighing both the rating and how many reviews back it up
+    if (metric === "booked") return filtered.sort((a, b) => bookedPosition[a.id] - bookedPosition[b.id]);
+    if (metric === "followed") return filtered.sort((a, b) => (followerCounts[b.id] || 0) - (followerCounts[a.id] || 0));
     filtered.sort((a, b) =>
       fairRatingScore(artistRatings[b.id], artistReviewCounts[b.id]) - fairRatingScore(artistRatings[a.id], artistReviewCounts[a.id]) ||
       (artistReviewCounts[b.id] || 0) - (artistReviewCounts[a.id] || 0)
@@ -780,7 +810,7 @@ const Leaderboard = () => {
   // Progressive rendering of the complete ranking (data is already loaded in one query).
   const PAGE_SIZE = 20;
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
-  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [selectedCategory, selectedCounty, selectedCountry]);
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [selectedCategory, selectedCounty, selectedCountry, metric]);
   const { loadMoreRef } = useInfiniteScroll(
     async () => setVisibleCount((c) => c + PAGE_SIZE),
     visibleCount < currentArtists.length,
@@ -817,7 +847,24 @@ const Leaderboard = () => {
       <div className="relative z-10 mx-auto max-w-4xl px-4 pb-10 pt-16 md:px-8 md:pb-20 md:pt-10">
         {/* Header, like a Spotify chart */}
         <h1 className="hidden text-4xl font-display font-bold tracking-[-0.03em] text-foreground md:block md:text-6xl">Leaderboard</h1>
-        <p className="mt-1 text-sm text-muted-foreground md:mt-3 md:text-base">Artists with the best reviews from their clients.</p>
+        {/* Which ranking: text tabs, the chosen one white and underlined */}
+        <div className="-mx-4 mt-3 flex gap-4 overflow-x-auto border-b border-border px-4 [scrollbar-width:none] md:mx-0 md:mt-6 md:gap-7 md:px-0 [&::-webkit-scrollbar]:hidden" role="tablist" aria-label="Ranking">
+          {METRICS.map((m) => (
+            <button
+              key={m.value}
+              type="button"
+              role="tab"
+              aria-selected={metric === m.value}
+              onClick={() => setMetric(m.value)}
+              className={`-mb-px shrink-0 border-b-2 pb-2.5 text-sm font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 md:text-base ${
+                metric === m.value ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+        <p key={metric} className="mt-3 text-sm text-muted-foreground md:text-base">{METRICS.find((m) => m.value === metric)!.subtitle}</p>
 
         {/* Filters: artist type, then country and region */}
         <div className="-mx-4 mt-5 flex gap-2 overflow-x-auto px-4 [scrollbar-width:none] md:mx-0 md:mt-8 md:px-0 [&::-webkit-scrollbar]:hidden" role="tablist" aria-label="Artist type">
@@ -884,7 +931,7 @@ const Leaderboard = () => {
               <div className="hidden grid-cols-[3rem_1fr_auto] gap-4 border-b border-border px-3 pb-2 text-sm text-muted-foreground md:grid">
                 <span className="text-right">#</span>
                 <span>Artist</span>
-                <span>Reviews</span>
+                <span key={metric}>{METRICS.find((m) => m.value === metric)!.column}</span>
               </div>
               <ol className="mt-2">
                 {currentArtists.slice(0, visibleCount).map((artist, index) => (
@@ -907,10 +954,14 @@ const Leaderboard = () => {
                           </span>
                         </span>
                       </span>
-                      <ArtistCardStatusBadge
-                        rating={artistReviewCounts[artist.id] > 0 ? artistRatings[artist.id] ?? null : null}
-                        reviewCount={artistReviewCounts[artist.id] || 0}
-                      />
+                      {metric === "rated" ? (
+                        <ArtistCardStatusBadge
+                          rating={artistReviewCounts[artist.id] > 0 ? artistRatings[artist.id] ?? null : null}
+                          reviewCount={artistReviewCounts[artist.id] || 0}
+                        />
+                      ) : metric === "followed" ? (
+                        <span className="text-sm text-muted-foreground tabular-nums">{followerCounts[artist.id]}</span>
+                      ) : <span />}
                     </Link>
                   </li>
                 ))}
@@ -922,8 +973,8 @@ const Leaderboard = () => {
               )}
             </>
           ) : (
-            <p className="border-t border-border pt-6 text-base text-muted-foreground">
-              <span>{EMPTY_COPY[selectedCategory]?.title ?? "No reviewed artists yet"}</span>
+            <p key={metric} className="border-t border-border pt-6 text-base text-muted-foreground">
+              <span>{metric === "rated" ? (EMPTY_COPY[selectedCategory]?.title ?? "No reviewed artists yet") : METRICS.find((m) => m.value === metric)!.empty}</span>
               <span>. </span>
               <Link
                 to={`/categories/${EMPTY_COPY[selectedCategory]?.path ?? "Singers"}${selectedCountry ? `?country=${encodeURIComponent(selectedCountry)}` : ""}`}
