@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useReveal } from "@/hooks/useReveal";
 import singerImg from "@/assets/singer-silhouette.png";
 import instrumentalistImg from "@/assets/instrumentalist-silhouette.png";
 import djImg from "@/assets/dj-silhouette.png";
@@ -18,7 +19,10 @@ export const CATEGORY_TILES: { value: ArtistCategoryValue; statKey: string; path
 /** A colored category tile: name top left, artist count under it, silhouette tilted in the corner. */
 const CategoryTile = ({ tile, href, count }: { tile: (typeof CATEGORY_TILES)[number]; href?: string; count?: number }) => {
   const { t } = useTranslation();
+  // Fades and rises in the first time it scrolls into view, like the artist tiles
+  const reveal = useReveal<HTMLDivElement>();
   return (
+    <div ref={reveal.ref} className={reveal.className} style={reveal.style}>
     <Link
       to={href ?? tile.path}
       className="relative block aspect-[16/10] overflow-hidden rounded-lg p-4 transition-[filter] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60 md:p-5"
@@ -32,6 +36,7 @@ const CategoryTile = ({ tile, href, count }: { tile: (typeof CATEGORY_TILES)[num
       )}
       <img src={tile.img} alt="" loading="lazy" decoding="async" className="absolute bottom-0 right-2 h-[78%] object-contain opacity-90" />
     </Link>
+    </div>
   );
 };
 
