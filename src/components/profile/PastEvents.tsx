@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CalendarCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { isKnownEventType, EVENT_TYPE_RO } from "@/lib/eventTypes";
 
 interface PastEvent {
   event_type: string | null;
@@ -30,7 +31,11 @@ const PastEvents = ({ profileId, title }: { profileId: string; title: React.Reac
   }, [profileId]);
 
   if (events.length === 0) return null;
-  const locale = (i18n.language || "ro").startsWith("ro") ? "ro-RO" : "en-GB";
+  const ro = (i18n.language || "ro").startsWith("ro");
+  const locale = ro ? "ro-RO" : "en-GB";
+  // Only the types from the list. What an organizer typed under "Other" stays private.
+  const typeLabel = (t: string | null) =>
+    t && isKnownEventType(t) && t !== "Other" ? (ro ? EVENT_TYPE_RO[t] : t) : ro ? "Alt eveniment" : "Other event";
   const month = (ymd: string) => {
     const [y, m] = ymd.split("-").map(Number);
     const s = new Date(y, m - 1, 1).toLocaleDateString(locale, { month: "long", year: "numeric" });
@@ -47,7 +52,7 @@ const PastEvents = ({ profileId, title }: { profileId: string; title: React.Reac
               <CalendarCheck className="h-5 w-5 text-muted-foreground" />
             </span>
             <span className="min-w-0">
-              <span className="block truncate text-[15px] font-medium text-foreground">{e.event_type || "Event"}</span>
+              <span className="block truncate text-[15px] font-medium text-foreground notranslate" translate="no">{typeLabel(e.event_type)}</span>
               <span className="block truncate text-sm text-muted-foreground notranslate" translate="no">
                 {month(e.event_month)}
               </span>
