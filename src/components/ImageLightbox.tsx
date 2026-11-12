@@ -121,9 +121,9 @@ const ImageLightbox = ({ src, alt = "Full size preview", onClose }: ImageLightbo
   return (
     <DialogPrimitive.Root open={!!src} onOpenChange={(o) => !o && onClose()}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-[100] bg-black/85 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <DialogPrimitive.Content
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 data-[state=open]:animate-in data-[state=open]:zoom-in-95 data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=closed]:fade-out-0"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 data-[state=open]:animate-in data-[state=open]:zoom-in-95 data-[state=open]:fade-in-0 data-[state=closed]:animate-out data-[state=closed]:zoom-out-95 data-[state=closed]:fade-out-0"
           onClick={onClose}
           onOpenAutoFocus={(e) => e.preventDefault()}
           aria-describedby={undefined}
@@ -136,14 +136,18 @@ const ImageLightbox = ({ src, alt = "Full size preview", onClose }: ImageLightbo
               onClose();
             }}
             aria-label="Close"
-            className="absolute top-4 right-4 z-50 p-2 rounded-full bg-black/70 text-white hover:bg-black/90 transition-colors"
+            className="absolute top-4 right-4 z-10 p-2.5 rounded-full bg-black/70 text-white hover:bg-black/90 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
 
           <div
             className="relative flex items-center justify-center w-full h-full overflow-hidden select-none"
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              // A tap on the dark area around the picture closes it
+              if (e.target === e.currentTarget && scale <= 1) onClose();
+            }}
             onWheel={handleWheel}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}

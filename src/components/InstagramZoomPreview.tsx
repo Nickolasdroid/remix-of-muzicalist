@@ -30,9 +30,9 @@ const InstagramZoomPreview = ({ media, onClose }: InstagramZoomPreviewProps) => 
   return (
     <DialogPrimitive.Root open={!!media} onOpenChange={onClose}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-[100] bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <DialogPrimitive.Content
-          className="fixed inset-0 z-50 flex items-center justify-center p-2"
+          className="fixed inset-0 z-[100] flex items-center justify-center p-2"
           onClick={onClose}
           onOpenAutoFocus={(e) => e.preventDefault()}
           aria-describedby={undefined}
@@ -42,7 +42,7 @@ const InstagramZoomPreview = ({ media, onClose }: InstagramZoomPreviewProps) => 
           <button
             onClick={(e) => { e.stopPropagation(); onClose(); }}
             aria-label="Close"
-            className="absolute top-3 right-3 z-50 p-1.5 rounded-full bg-black/70 text-white hover:bg-black/90 transition-colors"
+            className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-black/70 text-white hover:bg-black/90 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
