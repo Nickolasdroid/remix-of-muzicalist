@@ -33,6 +33,7 @@
   "artistCard": {
     "newArtist": "New artist",
     "noReviews": "No reviews",
+    "noReviewsYet": "New",
     "reviewCount_one": "{{count}} review",
     "reviewCount_other": "{{count}} reviews"
   },

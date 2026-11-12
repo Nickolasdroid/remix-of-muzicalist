@@ -25,7 +25,7 @@ const ArtistCardStatusBadge = ({ rating, reviewCount, className }: ArtistCardSta
           <span className="tabular-nums">({t("artistCard.reviewCount", { count: reviewCount })})</span>
         </>
       ) : (
-        <span className="tabular-nums">{t("artistCard.reviewCount", { count: 0 })}</span>
+        <span>{t("artistCard.noReviewsYet", "New")}</span>
       )}
     </span>
   );
