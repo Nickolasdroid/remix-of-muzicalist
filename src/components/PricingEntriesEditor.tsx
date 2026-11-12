@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { DollarSign, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useToast } from "@/hooks/use-toast";
 import EventTypePicker from "@/components/EventTypePicker";
@@ -104,6 +104,9 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
 
   const atLimit = maxEntries !== undefined && entries.length >= maxEntries;
   const left = maxEntries !== undefined ? Math.max(0, maxEntries - entries.length) : null;
+
+  // Gold only once there is something to save
+  const canSave = !!newEventType.trim() && !!newAmount;
 
   const resetForm = () => {
     setEditingId(null);
@@ -218,10 +221,7 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
   // Dialog body: saved prices, then the add form
   return (
     <div>
-      <div className="mb-4 flex flex-col items-center gap-2 text-center">
-        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-accent/15">
-          <DollarSign className="h-5 w-5 text-accent" />
-        </div>
+      <div className="mb-4 flex flex-col items-center gap-2 pt-2 text-center">
         <h2 className="text-lg font-bold">Estimated Prices</h2>
         <p className="text-[13px] leading-snug text-muted-foreground">
           What you usually charge per event type. Organizers see them on your profile.
@@ -235,7 +235,7 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
               key={e.id}
               className={cn(
                 "flex items-center gap-1 rounded-xl bg-secondary/50 py-1 pr-1 ring-1 ring-transparent transition-colors",
-                editingId === e.id && "bg-accent/10 ring-accent/50",
+                editingId === e.id && "bg-foreground/[0.1] ring-foreground/30",
               )}
             >
               <button
@@ -245,10 +245,9 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
                 aria-label="Edit price"
               >
                 <span className="min-w-0 flex-1 truncate text-[14px] font-semibold">{e.event_type}</span>
-                <span className="shrink-0 text-[14px] font-bold text-accent notranslate tabular-nums" translate="no">
+                <span className="shrink-0 text-[14px] font-bold text-foreground notranslate tabular-nums" translate="no">
                   {formatAmount(e.amount, lang)} {e.currency}
                 </span>
-                <Pencil className="ml-1 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
               </button>
               <Button
                 size="sm"
@@ -267,7 +266,7 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
       {!atLimit || editingId ? (
         <div className={cn(entries.length > 0 && "mt-4 border-t border-border pt-1")}>
           {editingId && (
-            <p className="mt-3 text-[13px] font-semibold text-accent">Edit price</p>
+            <p className="mt-3 text-[13px] font-semibold text-foreground">Edit price</p>
           )}
           <label className="mb-1.5 mt-3 block text-[13.5px] font-semibold">Event type</label>
           <EventTypePicker
@@ -310,9 +309,12 @@ export default function PricingEntriesEditor({ profileId, country, editable, max
           </div>
 
           <Button
-            className="mt-5 h-12 w-full rounded-xl text-[15px] font-bold"
+            className={cn(
+              "mt-5 h-12 w-full rounded-full text-[15px] font-bold",
+              !canSave && "disabled:bg-foreground/10 disabled:text-muted-foreground disabled:opacity-100",
+            )}
             onClick={saveEntry}
-            disabled={saving}
+            disabled={saving || !canSave}
           >
             {saving ? (
               <Loader2 className="h-4 w-4 animate-spin" />

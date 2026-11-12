@@ -2276,7 +2276,10 @@ const Dashboard = () => {
                                     if (!open) setPricingRefreshKey((k) => k + 1);
                                   }}
                                 >
-                                  <DialogContent className="max-w-md rounded-lg">
+                                  <DialogContent
+                                    className="max-w-md rounded-lg [&>button:last-child]:text-muted-foreground [&>button:last-child]:opacity-100 [&>button:last-child]:data-[state=open]:bg-transparent [&>button:last-child]:hover:text-foreground [&>button:last-child]:focus:ring-0 [&>button:last-child]:focus:ring-offset-0 [&>button:last-child]:focus-visible:ring-2 [&>button:last-child]:focus-visible:ring-white/60"
+                                    onOpenAutoFocus={(e) => e.preventDefault()}
+                                  >
                                     <DialogTitle className="sr-only">Estimated Prices</DialogTitle>
                                     <PricingEntriesEditor
                                       key={`pricing-edit-${pricingDialogOpen}`}
