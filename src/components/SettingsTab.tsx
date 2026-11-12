@@ -839,13 +839,13 @@ const SettingsTab = ({
                 onClick={() => requestLanguageChange(lang.code, lang.label)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg border-2 transition-colors ${
                   isActive
-                    ? "border-accent/50 bg-accent/10 text-accent"
+                    ? "border-foreground/40 bg-foreground/[0.08] text-foreground"
                     : "border-border text-foreground hover:border-muted-foreground/50"
                 }`}
               >
                 <span className="text-xl">{lang.flag}</span>
                 <span className="flex-1 text-left font-medium">{lang.label}</span>
-                {isActive && <CheckCircle className="h-5 w-5 text-accent" />}
+                {isActive && <CheckCircle className="h-5 w-5 text-foreground" />}
               </button>
             );
           })}
