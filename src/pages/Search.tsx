@@ -79,6 +79,24 @@ const writeRecent = (list: string[]) => {
   }
 };
 
+/**
+ * How well a name matches what was typed, best first:
+ * exact name > the name starts with it as a whole word ("Alex Balea" for "alex") >
+ * another word is exactly it ("Dj Alex") > the name starts with it ("Alexandra") >
+ * another word starts with it > it appears anywhere.
+ */
+const nameMatchScore = (name: string | null, term: string) => {
+  if (!term) return 0;
+  const n = norm(name || "");
+  const words = n.split(/[^a-z0-9]+/).filter(Boolean);
+  if (n === term) return 6;
+  if (words[0] === term) return 5;
+  if (words.includes(term)) return 4;
+  if (n.startsWith(term)) return 3;
+  if (words.some((w) => w.startsWith(term))) return 2;
+  return n.includes(term) ? 1 : 0;
+};
+
 const Search = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -125,7 +143,16 @@ const Search = () => {
         req = parsed.type || parsed.county ? req.ilike("stage_name", like) : req.or(`stage_name.ilike.${like},county.ilike.${like}`);
       }
       const { data } = await req;
-      setResults([...((data as Result[]) || [])].sort((a, b) => sortByPlanPriority(a as any, b as any)));
+      // Closest name first; the plan only breaks ties between equally good matches
+      const term = norm(parsed.name || "").trim();
+      setResults(
+        [...((data as Result[]) || [])].sort(
+          (a, b) =>
+            nameMatchScore(b.stage_name, term) - nameMatchScore(a.stage_name, term) ||
+            sortByPlanPriority(a as any, b as any) ||
+            (a.stage_name || "").length - (b.stage_name || "").length,
+        ),
+      );
       setType(parsed.type);
       setLoading(false);
     }, 300);
