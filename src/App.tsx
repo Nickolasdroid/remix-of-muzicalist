@@ -10,6 +10,8 @@ import ScrollToTop from "./components/ScrollToTop";
 import GuestThemeGuard from "./components/GuestThemeGuard";
 import AdminRoute from "./components/AdminRoute";
 import MetaPixel from "./components/MetaPixel";
+import CookieConsentBanner from "./components/CookieConsentBanner";
+import OfflineBanner from "./components/OfflineBanner";
 import ChunkErrorBoundary from "./components/ChunkErrorBoundary";
 import { Capacitor } from "@capacitor/core";
 import { lazyWithPreload } from "@/lib/lazyWithPreload";
@@ -64,6 +66,7 @@ const AdminModeration = lazyWithPreload(() => import("./pages/AdminModeration"))
 const BookingRequests = lazyWithPreload(() => import("./pages/BookingRequests"));
 const Rules = lazyWithPreload(() => import("./pages/Rules"));
 const NotFound = lazyWithPreload(() => import("./pages/NotFound"));
+const DeleteAccount = lazyWithPreload(() => import("./pages/DeleteAccount"));
 
 // Leagă fiecare path public de preload-ul lui, ca PrefetchLink (hover/focus)
 // și prefetch-ul la idle să știe ce chunk să ceară.
@@ -128,6 +131,8 @@ const App = () => (
       <BrowserRouter future={{ v7_startTransition: true }}>
         <ScrollToTop />
         <MetaPixel />
+        <CookieConsentBanner />
+        <OfflineBanner />
         <GuestThemeGuard />
         <OnboardingGate />
         <PromotionConsentPrompt />
@@ -177,6 +182,7 @@ const App = () => (
             <Route path="/analytics" element={<ArtistAnalytics />} />
             <Route path="/connections/:profileId" element={<Connections />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/delete-account" element={<DeleteAccount />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
             <Route path="/plans" element={<PlansPricing />} />
             <Route path="/my-plan" element={<MyPlan />} />

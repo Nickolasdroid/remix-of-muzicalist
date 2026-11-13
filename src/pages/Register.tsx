@@ -83,6 +83,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [name, setName] = useState("");
   const [accountType, setAccountType] = useState<AccountType | null>(preset === "artist" || preset === "user" ? preset : null);
+  const [adultConfirmed, setAdultConfirmed] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -375,6 +376,15 @@ const Register = () => {
         {step === 3 && (
           <div className="space-y-4">
             <AccountTypeChoice value={accountType} onChange={setAccountType} />
+            <label className="flex cursor-pointer items-start gap-3 text-sm leading-snug text-foreground">
+              <input
+                type="checkbox"
+                checked={adultConfirmed}
+                onChange={(e) => setAdultConfirmed(e.target.checked)}
+                className="mt-0.5 h-5 w-5 shrink-0 accent-[#f5b301]"
+              />
+              <span>I am at least 18 years old.</span>
+            </label>
             <p className="text-xs leading-relaxed text-muted-foreground">
               <span>By signing up you agree to the</span>{" "}
               <Link to="/terms-of-service" target="_blank" className="underline underline-offset-2 hover:text-foreground">Terms and Conditions</Link>{" "}
@@ -382,7 +392,7 @@ const Register = () => {
               <Link to="/privacy-policy" target="_blank" className="underline underline-offset-2 hover:text-foreground">Privacy Policy</Link>
               <span>.</span>
             </p>
-            <Button type="button" onClick={createAccount} disabled={!typeValid || submitting} className={authButtonClass}>
+            <Button type="button" onClick={createAccount} disabled={!typeValid || !adultConfirmed || submitting} className={authButtonClass}>
               {submitting ? "Creating your account…" : "Create account"}
             </Button>
           </div>

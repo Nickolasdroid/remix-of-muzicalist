@@ -1,6 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { Capacitor } from "@capacitor/core";
 import { subscriptionPlans } from "@/lib/subscriptionPlans";
+import { CONSENT_EVENT, hasMarketingConsent } from "@/lib/cookieConsent";
 
 const PIXEL_ID = "1819508862155121";
 const PENDING_PURCHASE_KEY = "muzicalist_pixel_pending_purchase";
@@ -17,6 +19,8 @@ declare global {
 
 const loadPixel = () => {
   if (typeof window === "undefined" || window.fbq) return;
+  // Marketing tracking only with the visitor's consent, and never inside the native app.
+  if (Capacitor.isNativePlatform() || !hasMarketingConsent()) return;
 
   /* eslint-disable */
   // Standard Meta Pixel bootstrap snippet
@@ -118,12 +122,20 @@ const MetaPixel = () => {
   const location = useLocation();
   const initialized = useRef(false);
 
+  const [consentTick, setConsentTick] = useState(0);
+
   useEffect(() => {
     loadPixel();
+    const onConsent = () => {
+      loadPixel();
+      setConsentTick((n) => n + 1);
+    };
+    window.addEventListener(CONSENT_EVENT, onConsent);
+    return () => window.removeEventListener(CONSENT_EVENT, onConsent);
   }, []);
 
   useEffect(() => {
-    if (!window.fbq) return;
+    if (!window.fbq || !hasMarketingConsent()) return;
     // Fire PageView on initial mount and every subsequent route change.
     // The snippet does not auto-track a PageView so this is the single source.
     window.fbq("track", "PageView");
@@ -132,19 +144,9 @@ const MetaPixel = () => {
     // After PageView, check for a completed Stripe checkout redirect and
     // fire the Purchase event exactly once per successful payment.
     firePurchaseIfSuccess(location.search);
-  }, [location.pathname, location.search]);
+  }, [location.pathname, location.search, consentTick]);
 
-  return (
-    <noscript>
-      <img
-        height="1"
-        width="1"
-        style={{ display: "none" }}
-        alt=""
-        src={`https://www.facebook.com/tr?id=${PIXEL_ID}&ev=PageView&noscript=1`}
-      />
-    </noscript>
-  );
+  return null;
 };
 
 export default MetaPixel;
@@ -162,12 +164,9 @@ export const trackPixelEvent = (
   // until fbevents.js finishes loading. Without this, an event fired on a
   // page where <MetaPixel /> hasn't mounted yet (or before its effect ran)
   // would silently no-op.
+  if (!hasMarketingConsent()) return;
   loadPixel();
-  if (!window.fbq) {
-    console.warn(`[MetaPixel] fbq unavailable, dropping event: ${event}`);
-    return;
-  }
-  console.log(`[MetaPixel] ${event} fired`, params ?? "");
+  if (!window.fbq) return;
   if (params) {
     window.fbq("track", event, params);
   } else {

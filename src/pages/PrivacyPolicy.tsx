@@ -25,7 +25,7 @@ const PrivacyPolicy = () => {
           
           <div className="prose prose-sm md:prose-lg dark:prose-invert max-w-none space-y-6 md:space-y-8 text-muted-foreground">
             <p className="text-sm text-muted-foreground">
-              Last updated: {new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              Last updated: November 13, 2026
             </p>
 
             <section className="space-y-4">
@@ -154,6 +154,61 @@ const PrivacyPolicy = () => {
                 <a href="mailto:contact@muzicalist.com" className="text-accent hover:underline">
                   contact@muzicalist.com
                 </a>
+              </p>
+            </section>
+
+            <section className="space-y-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">12. Why We Process Your Data (Legal Bases)</h2>
+              <ul className="list-disc pl-6 space-y-2">
+                <li><strong className="text-foreground">Contract:</strong> to create and run your account, show your profile, handle booking requests, offers and contracts, and process subscription payments.</li>
+                <li><strong className="text-foreground">Legitimate interest:</strong> to keep the platform secure, prevent abuse and fraud, moderate content, and measure how the platform is used with our own first-party statistics.</li>
+                <li><strong className="text-foreground">Consent:</strong> for marketing cookies (Meta Pixel) and for marketing emails. You can decline cookies in the banner and withdraw consent at any time.</li>
+                <li><strong className="text-foreground">Legal obligation:</strong> to keep contracts and billing records as required by accounting and tax law.</li>
+              </ul>
+            </section>
+
+            <section className="space-y-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">13. Service Providers and Where Data Is Stored</h2>
+              <p>We use the following providers to run Muzicalist. They process data only on our instructions:</p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li><strong className="text-foreground">Supabase</strong>: database, authentication, file storage and server functions. Our project is hosted in the European Union (Paris).</li>
+                <li><strong className="text-foreground">Stripe</strong>: subscription payments. Card details go directly to Stripe and are never stored by us.</li>
+                <li><strong className="text-foreground">Vercel</strong>: hosting of the website.</li>
+                <li><strong className="text-foreground">Hostico</strong>: our email mailboxes and the sending of service emails (account confirmation, password reset, notifications).</li>
+                <li><strong className="text-foreground">Google</strong>: optional sign-in with your Google account.</li>
+                <li><strong className="text-foreground">Meta Platforms</strong>: advertising measurement (Meta Pixel), only if you accept marketing cookies.</li>
+              </ul>
+              <p>
+                Some of these providers (for example Stripe, Vercel, Google and Meta) may process data outside the European
+                Economic Area. Such transfers rely on safeguards such as the European Commission&apos;s standard contractual clauses.
+              </p>
+            </section>
+
+            <section className="space-y-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">14. How Long We Keep Data</h2>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Account and profile data: until you delete your account.</li>
+                <li>Usage statistics: detailed sessions for up to 180 days, daily aggregates for up to 24 months.</li>
+                <li>Email delivery logs: up to 180 days.</li>
+                <li>Contracts generated through the platform and the billing records linked to them: kept as long as the law requires, even after account deletion.</li>
+                <li>Identity verification documents and selfies: stored in a private area visible only to you and our administrators, and deleted together with your account.</li>
+              </ul>
+            </section>
+
+            <section className="space-y-4">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground">15. Deleting Your Account and Your Rights</h2>
+              <p>
+                You can delete your account at any time from Settings, or follow the steps on our{" "}
+                <a href="/delete-account" className="text-accent hover:underline">account deletion page</a>. Deleting your account
+                cancels your subscription, removes your profile, content, messages and files, and anonymises what you wrote
+                that remains visible to others (for example reviews and booking requests).
+              </p>
+              <p>
+                You also have the right to access, correct, export and restrict the processing of your data, and to object to it.
+                Write to{" "}
+                <a href="mailto:contact@muzicalist.com" className="text-accent hover:underline">contact@muzicalist.com</a>{" "}
+                and we will answer within one month. You can also lodge a complaint with the Romanian data protection authority
+                (ANSPDCP, <a href="https://www.dataprotection.ro" className="text-accent hover:underline" target="_blank" rel="noreferrer">dataprotection.ro</a>).
               </p>
             </section>
           </div>

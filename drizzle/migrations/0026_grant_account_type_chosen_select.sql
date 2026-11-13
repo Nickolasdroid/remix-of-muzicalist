@@ -1,1 +1,0 @@
-GRANT SELECT (account_type_chosen) ON public.profiles TO authenticated;

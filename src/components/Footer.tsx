@@ -121,6 +121,9 @@ const Footer = ({ embedded = false }: { embedded?: boolean }) => {
             <Link to="/terms-of-service" className={linkClass}>
               {t("footer.termsConditions", "Terms & Conditions")}
             </Link>
+            <Link to="/delete-account" className={linkClass}>
+              {t("footer.deleteAccount", "Delete account")}
+            </Link>
           </div>
         </div>
       </div>
