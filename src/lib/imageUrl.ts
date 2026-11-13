@@ -13,6 +13,13 @@
 const PUBLIC_OBJECT_SEGMENT = "/storage/v1/object/public/";
 const RENDER_SEGMENT = "/storage/v1/render/image/public/";
 
+/**
+ * Supabase Image Transformation is a Pro-plan feature: on the Free plan the render endpoint
+ * answers 403 and every thumbnail breaks. Set VITE_IMAGE_TRANSFORMS=true (Vercel env) once the
+ * project is on Pro to serve resized thumbnails; until then the original file is served.
+ */
+const TRANSFORMS_ENABLED = import.meta.env.VITE_IMAGE_TRANSFORMS === "true";
+
 export function isPublicStorageUrl(url?: string | null): boolean {
   return !!url && url.includes(PUBLIC_OBJECT_SEGMENT);
 }
@@ -28,7 +35,7 @@ export function getThumbUrl(
   quality = 72
 ): string | undefined {
   if (!url) return undefined;
-  if (!isPublicStorageUrl(url)) return url;
+  if (!TRANSFORMS_ENABLED || !isPublicStorageUrl(url)) return url;
 
   const dpr =
     typeof window !== "undefined" && window.devicePixelRatio
@@ -43,7 +50,7 @@ export function getThumbUrl(
 
 /** srcSet with 1x/2x variants for a square thumbnail box of `size` CSS px. */
 export function getThumbSrcSet(url?: string | null, size = 320, quality = 72) {
-  if (!url || !isPublicStorageUrl(url)) return undefined;
+  if (!TRANSFORMS_ENABLED || !url || !isPublicStorageUrl(url)) return undefined;
   const one = getThumbUrlAt(url, size, quality);
   const two = getThumbUrlAt(url, size * 2, quality);
   return `${one} 1x, ${two} 2x`;
