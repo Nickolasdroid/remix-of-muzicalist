@@ -65,6 +65,8 @@ const ERROR_TEXT: Record<string, string> = {
   BOOKING_NOT_OPEN: "This booking request is no longer open.",
   BOOKING_DATE_PASSED: "The event date has already passed.",
   BOOKING_NO_OPEN_OFFER: "There is no open offer for this booking.",
+  BOOKING_DATE_TAKEN: "The artist already has a confirmed booking on these dates.",
+  BOOKING_ALREADY_ACCEPTED: "This booking is already confirmed. It can only be cancelled.",
   OFFER_INVALID_PRICE: "Please enter a valid price.",
   OFFER_INVALID_CURRENCY: "Please choose a currency.",
   OFFER_NOTE_TOO_LONG: "The note must be 500 characters or fewer.",

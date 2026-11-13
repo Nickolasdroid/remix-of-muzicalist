@@ -59,6 +59,16 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Remove or anonymise personal data kept in the other tables (one transaction in the database).
+    const { error: purgeErr } = await admin.rpc("purge_user_data", { _user_id: targetId });
+    if (purgeErr) {
+      console.error("delete-my-account: purge_user_data failed", purgeErr);
+      return new Response(JSON.stringify({ error: "Could not remove the account data. Nothing else was deleted." }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     // Best-effort cleanup of public schema rows tied to the user.
     await admin.from("posts").delete().eq("profile_id", targetId);
     await admin.from("announcements").delete().eq("profile_id", targetId);

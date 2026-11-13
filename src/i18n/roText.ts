@@ -3007,6 +3007,8 @@ export const RO_TEXT: Record<string, string> = {
   "This booking request could not be found.": "Cererea de rezervare nu a fost găsită.",
   "This booking request is no longer open.": "Această cerere de rezervare nu mai este deschisă.",
   "The event date has already passed.": "Data evenimentului a trecut deja.",
+  "The artist already has a confirmed booking on these dates.": "Artistul are deja o rezervare confirmată în aceste zile.",
+  "This booking is already confirmed. It can only be cancelled.": "Această rezervare este deja confirmată. Poate fi doar anulată.",
   "There is no open offer for this booking.": "Nu există o ofertă deschisă pentru această rezervare.",
   "Please enter a valid price.": "Introdu un preț valid.",
   "Please choose a currency.": "Alege o monedă.",
