@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   CommunicationDispatcher,
 } from "../../../supabase/functions/_shared/dispatcher/index.ts";
-import { ResendEmailProvider } from "../../../supabase/functions/_shared/dispatcher/providers/email.ts";
+import { SmtpEmailProvider } from "../../../supabase/functions/_shared/dispatcher/providers/email.ts";
 import { NoopSmsProvider } from "../../../supabase/functions/_shared/dispatcher/providers/placeholders.ts";
 import type {
   CommunicationPayload,
@@ -68,20 +68,12 @@ describe("CommunicationDispatcher", () => {
   });
 });
 
-describe("ResendEmailProvider", () => {
-  const provider = new ResendEmailProvider({
-    lovableApiKey: "lov",
-    resendApiKey: "res",
-  });
-
-  beforeEach(() => {
-    vi.stubGlobal("fetch", vi.fn());
-  });
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
+describe("SmtpEmailProvider", () => {
+  const okSend = () => vi.fn().mockResolvedValue({ messageId: "msg_1" });
 
   it("fails with COMM_RECIPIENT_INVALID when email is missing", async () => {
+    const send = okSend();
+    const provider = new SmtpEmailProvider({ send });
     const r = await provider.send({
       recipient: { email: null },
       payload: basePayload,
@@ -90,80 +82,55 @@ describe("ResendEmailProvider", () => {
     expect((r.metadata as Record<string, unknown>).error_code).toBe(
       "COMM_RECIPIENT_INVALID",
     );
-    expect(fetch).not.toHaveBeenCalled();
+    expect(send).not.toHaveBeenCalled();
   });
 
-  it("posts to the Resend gateway with the expected headers/body", async () => {
-    (fetch as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-      ok: true,
-      json: async () => ({ id: "msg_1" }),
-      text: async () => "",
-    });
+  it("sends through the SMTP sender with the expected fields", async () => {
+    const send = okSend();
+    const provider = new SmtpEmailProvider({ send });
     const r = await provider.send({
       recipient: { email: "a@b.co", name: "A" },
       payload: basePayload,
     });
     expect(r.success).toBe(true);
+    expect(r.provider).toBe("smtp");
     expect(r.message_id).toBe("msg_1");
-    const [, init] = (fetch as unknown as ReturnType<typeof vi.fn>).mock.calls[0];
-    expect(init.headers.Authorization).toBe("Bearer lov");
-    expect(init.headers["X-Connection-Api-Key"]).toBe("res");
-    const body = JSON.parse(init.body);
-    expect(body.to).toEqual(["a@b.co"]);
-    expect(body.subject).toBe("Hi");
-    expect(body.html).toBe("<p>Hi</p>");
+    expect(send).toHaveBeenCalledOnce();
+    const arg = send.mock.calls[0][0];
+    expect(arg.to).toBe("a@b.co");
+    expect(arg.subject).toBe("Hi");
+    expect(arg.html).toBe("<p>Hi</p>");
+    expect(arg.text).toBe("Hi");
+    expect(arg.from).toContain("muzicalist.com");
+    expect(arg.replyTo).toContain("muzicalist.com");
   });
 
-  it("returns COMM_DELIVERY_FAILED with http_status on non-2xx", async () => {
-    (fetch as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-      ok: false,
-      status: 422,
-      json: async () => ({}),
-      text: async () => "invalid",
-    });
+  it("catches send failures and returns a failed DeliveryResult", async () => {
+    const send = vi.fn().mockRejectedValue(new Error("connection refused"));
+    const provider = new SmtpEmailProvider({ send });
     const r = await provider.send({
       recipient: { email: "a@b.co" },
       payload: basePayload,
     });
     expect(r.success).toBe(false);
-    expect(r.error).toContain("422");
-    expect((r.metadata as Record<string, unknown>).http_status).toBe(422);
-    expect((r.metadata as Record<string, unknown>).error_code).toBe(
-      "COMM_DELIVERY_FAILED",
-    );
-  });
-
-  it("catches fetch throws and returns a failed DeliveryResult", async () => {
-    (fetch as unknown as ReturnType<typeof vi.fn>).mockRejectedValue(
-      new Error("network down"),
-    );
-    const r = await provider.send({
-      recipient: { email: "a@b.co" },
-      payload: basePayload,
-    });
-    expect(r.success).toBe(false);
-    expect(r.error).toBe("network down");
+    expect(r.error).toBe("connection refused");
     expect((r.metadata as Record<string, unknown>).error_code).toBe(
       "COMM_DELIVERY_FAILED",
     );
   });
 
   it("honors payload.metadata.from and reply_to overrides", async () => {
-    (fetch as unknown as ReturnType<typeof vi.fn>).mockResolvedValue({
-      ok: true,
-      json: async () => ({ id: "x" }),
-      text: async () => "",
-    });
+    const send = okSend();
+    const provider = new SmtpEmailProvider({ send });
     await provider.send({
       recipient: { email: "a@b.co" },
       payload: {
         ...basePayload,
-        metadata: { from: "X <x@y.co>", reply_to: "r@y.co" },
+        metadata: { from: "X <x@muzicalist.com>", reply_to: "r@muzicalist.com" },
       },
     });
-    const [, init] = (fetch as unknown as ReturnType<typeof vi.fn>).mock.calls[0];
-    const body = JSON.parse(init.body);
-    expect(body.from).toBe("X <x@y.co>");
-    expect(body.reply_to).toBe("r@y.co");
+    const arg = send.mock.calls[0][0];
+    expect(arg.from).toBe("X <x@muzicalist.com>");
+    expect(arg.replyTo).toBe("r@muzicalist.com");
   });
 });

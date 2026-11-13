@@ -1,6 +1,7 @@
 // Premium relaunch/marketing email for legacy MUZICALIST artists.
 // Input: { "name": "Artist Name", "email": "artist@email.com" }
 // Admin-only: sends a branded marketing email to an arbitrary address.
+import { sendMail, smtpConfigured } from "../_shared/smtp.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -13,7 +14,7 @@ const corsHeaders = {
 const SITE_URL = "https://muzicalist.com";
 const FROM = "Muzicalist <contact@muzicalist.com>";
 const LOGO_URL =
-  "https://muzicalist.com/__l5e/assets-v1/4023aaf1-cafa-4e98-b2ad-2daef180891b/muzicalist-logo.png";
+  "https://muzicalist.com/muzicalist-logo.png";
 const GOLD = "#f5b301";
 
 const BRAND_REGEX = /\bMusicalist\b/g;
@@ -241,9 +242,8 @@ Deno.serve(async (req) => {
     const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       global: { headers: { Authorization: authHeader } },
     });
-    const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims?.sub) {
+    const { data: userData, error: userError } = await userClient.auth.getUser();
+    if (userError || !userData?.user?.id) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -251,7 +251,7 @@ Deno.serve(async (req) => {
     }
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
     const { data: isAdminData, error: isAdminError } = await admin.rpc("is_admin", {
-      _user_id: claimsData.claims.sub,
+      _user_id: userData.user.id,
     });
     if (isAdminError || !isAdminData) {
       return new Response(JSON.stringify({ error: "Forbidden: admin access required" }), {
@@ -260,11 +260,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-
-    if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
-      console.error("Missing email gateway credentials");
+    if (!smtpConfigured()) {
+      console.error("Missing SMTP credentials (SMTP_HOST, SMTP_USER, SMTP_PASS)");
       return new Response(JSON.stringify({ error: "email_not_configured" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -287,30 +284,18 @@ Deno.serve(async (req) => {
 
     const { subject, html } = renderEmail(name);
 
-    const resp = await fetch(
-      "https://connector-gateway.lovable.dev/resend/emails",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "X-Connection-Api-Key": RESEND_API_KEY,
-        },
-        body: JSON.stringify({
-          from: FROM,
-          to: [email],
-          subject,
-          reply_to: "contact@muzicalist.com",
-          html,
-        }),
-      }
-    );
-
-    if (!resp.ok) {
-      const text = await resp.text();
-      console.error("Resend send failed", resp.status, text);
+    try {
+      await sendMail({
+        from: FROM,
+        to: email,
+        subject,
+        html,
+        replyTo: "contact@muzicalist.com",
+      });
+    } catch (err) {
+      console.error("SMTP send failed", err);
       return new Response(
-        JSON.stringify({ error: "send_failed", status: resp.status, details: text }),
+        JSON.stringify({ error: "send_failed" }),
         { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }

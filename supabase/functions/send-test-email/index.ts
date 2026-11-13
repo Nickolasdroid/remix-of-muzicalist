@@ -2,7 +2,7 @@
 // Sends a single preview email using the selected template's ACTIVE version.
 // Fetches subject + html_content from email_template_versions, substitutes
 // safe demo variables, then delivers through the shared CommunicationDispatcher
-// -> ResendEmailProvider. Does NOT create a campaign or write statistics.
+// -> SmtpEmailProvider. Does NOT create a campaign or write statistics.
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders } from "npm:@supabase/supabase-js@2/cors";
@@ -10,6 +10,7 @@ import {
   buildDefaultDispatcher,
   CommunicationPayload,
 } from "../_shared/dispatcher/index.ts";
+import { smtpConfigured } from "../_shared/smtp.ts";
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -40,8 +41,6 @@ Deno.serve(async (req) => {
   const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
   const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
   const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
   const authHeader = req.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer ")) {
@@ -87,8 +86,8 @@ Deno.serve(async (req) => {
     }, 400);
   }
 
-  if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
-    return json({ code: "COMM_CONFIG_MISSING", error: "Email gateway not configured" }, 500);
+  if (!smtpConfigured()) {
+    return json({ code: "COMM_CONFIG_MISSING", error: "Email (SMTP) is not configured" }, 500);
   }
 
   // Fetch the selected template's ACTIVE version so the test email renders
@@ -145,10 +144,7 @@ Deno.serve(async (req) => {
     },
   };
 
-  const dispatcher = buildDefaultDispatcher({
-    lovableApiKey: LOVABLE_API_KEY,
-    resendApiKey: RESEND_API_KEY,
-  });
+  const dispatcher = buildDefaultDispatcher();
 
   const result = await dispatcher.dispatch({
     channel: "email",

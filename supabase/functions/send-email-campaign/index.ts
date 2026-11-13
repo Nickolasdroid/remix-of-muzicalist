@@ -5,6 +5,7 @@ import {
   CommunicationDispatcher,
   CommunicationPayload,
 } from "../_shared/dispatcher/index.ts";
+import { smtpConfigured } from "../_shared/smtp.ts";
 
 function substituteVars(input: string, vars: Record<string, string>): string {
   return input.replace(/\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}/g, (_m, key) =>
@@ -127,8 +128,6 @@ Deno.serve(async (req) => {
   const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
   const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
   const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
 
   // --- Auth ---
   const authHeader = req.headers.get("Authorization");
@@ -163,8 +162,8 @@ Deno.serve(async (req) => {
     return json({ error: "campaign_id is required and must be a valid UUID" }, 400);
   }
 
-  if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
-    return json({ error: "Email gateway not configured" }, 500);
+  if (!smtpConfigured()) {
+    return json({ error: "Email (SMTP) is not configured" }, 500);
   }
 
   // --- Atomic lock: only proceed if we can flip Pending -> Sending
@@ -241,10 +240,7 @@ Deno.serve(async (req) => {
   let failedDeltaTotal = 0;
 
   // Communication Dispatcher — the only place aware of concrete providers.
-  const dispatcher: CommunicationDispatcher = buildDefaultDispatcher({
-    lovableApiKey: LOVABLE_API_KEY,
-    resendApiKey: RESEND_API_KEY,
-  });
+  const dispatcher: CommunicationDispatcher = buildDefaultDispatcher();
 
   try {
     while (true) {

@@ -4,6 +4,7 @@
 //
 // Any request without a valid `x-welcome-trigger-secret` header is rejected.
 // Deduplication is enforced atomically via `profiles.welcome_email_sent_at`.
+import { sendMail, smtpConfigured } from "../_shared/smtp.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { notifyAdminNewAccount } from "../_shared/adminNotify.ts";
 
@@ -17,7 +18,7 @@ const corsHeaders = {
 const SITE_URL = "https://muzicalist.com";
 const FROM = "Muzicalist <noreply@muzicalist.com>";
 const LOGO_URL =
-  "https://muzicalist.com/__l5e/assets-v1/4023aaf1-cafa-4e98-b2ad-2daef180891b/muzicalist-logo.png";
+  "https://muzicalist.com/muzicalist-logo.png";
 
 // Deterministic brand-name safeguard for email content.
 //
@@ -153,13 +154,11 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
-    if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
-      console.error("Missing email gateway credentials");
+    if (!smtpConfigured()) {
+      console.error("Missing SMTP credentials (SMTP_HOST, SMTP_USER, SMTP_PASS)");
       return new Response(JSON.stringify({ error: "email_not_configured" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -370,33 +369,21 @@ Deno.serve(async (req) => {
       });
     }
 
-    const resp = await fetch(
-      "https://connector-gateway.lovable.dev/resend/emails",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${LOVABLE_API_KEY}`,
-          "X-Connection-Api-Key": RESEND_API_KEY,
-        },
-        body: JSON.stringify({
-          from: FROM,
-          to: [email],
-          subject: normalizeBrand(subject),
-          html,
-        }),
-      }
-    );
-
-    if (!resp.ok) {
-      const text = await resp.text();
-      console.error("Resend send failed", resp.status, text);
+    try {
+      await sendMail({
+        from: FROM,
+        to: email,
+        subject: normalizeBrand(subject),
+        html,
+      });
+    } catch (err) {
+      console.error("SMTP send failed", err);
       await admin
         .from("profiles")
         .update({ welcome_email_sent_at: null })
         .eq("id", userId);
       return new Response(
-        JSON.stringify({ error: "send_failed", status: resp.status }),
+        JSON.stringify({ error: "send_failed" }),
         {
           status: 502,
           headers: { ...corsHeaders, "Content-Type": "application/json" },

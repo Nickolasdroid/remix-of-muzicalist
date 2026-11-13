@@ -11,6 +11,10 @@ export default defineConfig({
     ],
   },
   resolve: {
-    alias: { "@": path.resolve(__dirname, "./src") },
+    alias: [
+      { find: "@", replacement: path.resolve(__dirname, "./src") },
+      // edge functions import nodemailer through Deno's npm: scheme
+      { find: /^npm:nodemailer.*$/, replacement: path.resolve(__dirname, "./src/test/nodemailerStub.ts") },
+    ],
   },
 });

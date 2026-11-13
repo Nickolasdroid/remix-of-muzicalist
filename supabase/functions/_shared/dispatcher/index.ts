@@ -11,7 +11,8 @@ import {
   Recipient,
 } from "./types.ts";
 import { commError } from "./errors.ts";
-import { ResendEmailProvider } from "./providers/email.ts";
+import { SmtpEmailProvider } from "./providers/email.ts";
+import { smtpConfigured } from "../smtp.ts";
 import {
   NoopInAppProvider,
   NoopPushProvider,
@@ -57,24 +58,14 @@ export class CommunicationDispatcher {
   }
 }
 
-export interface BuildOptions {
-  lovableApiKey?: string;
-  resendApiKey?: string;
-}
-
 /**
- * Default dispatcher wiring — Resend for email, placeholders for other
+ * Default dispatcher wiring — SMTP (Hostico mailbox) for email, placeholders for other
  * channels. Swap or add providers here as new integrations land.
  */
-export function buildDefaultDispatcher(opts: BuildOptions = {}): CommunicationDispatcher {
+export function buildDefaultDispatcher(): CommunicationDispatcher {
   const d = new CommunicationDispatcher();
-  if (opts.lovableApiKey && opts.resendApiKey) {
-    d.register(
-      new ResendEmailProvider({
-        lovableApiKey: opts.lovableApiKey,
-        resendApiKey: opts.resendApiKey,
-      }),
-    );
+  if (smtpConfigured()) {
+    d.register(new SmtpEmailProvider());
   }
   d.register(new NoopSmsProvider());
   d.register(new NoopPushProvider());

@@ -1,5 +1,6 @@
-// Shared helper: send an admin notification email via the existing
-// Resend connector. Fire-and-forget from callers; failures are logged
+import { sendMail, smtpConfigured } from "./smtp.ts";
+// Shared helper: send an admin notification email via the platform's
+// SMTP mailbox. Fire-and-forget from callers; failures are logged
 // but never break the caller's flow.
 const ADMIN_EMAIL = "muzicalist01@gmail.com";
 const FROM = "Muzicalist <noreply@muzicalist.com>";
@@ -42,31 +43,17 @@ export async function sendAdminNotification(opts: {
   headline: string;
   rows: Array<[string, string | null | undefined]>;
 }): Promise<void> {
-  const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-  const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-  if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
-    console.warn("[adminNotify] missing credentials, skipping");
+  if (!smtpConfigured()) {
+    console.warn("[adminNotify] SMTP not configured, skipping");
     return;
   }
   try {
-    const resp = await fetch("https://connector-gateway.lovable.dev/resend/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "X-Connection-Api-Key": RESEND_API_KEY,
-      },
-      body: JSON.stringify({
-        from: FROM,
-        to: [ADMIN_EMAIL],
-        subject: opts.subject,
-        html: renderEmail(opts.headline, opts.rows),
-      }),
+    await sendMail({
+      from: FROM,
+      to: ADMIN_EMAIL,
+      subject: opts.subject,
+      html: renderEmail(opts.headline, opts.rows),
     });
-    if (!resp.ok) {
-      const text = await resp.text();
-      console.error("[adminNotify] send failed", resp.status, text);
-    }
   } catch (e) {
     console.error("[adminNotify] error", e);
   }

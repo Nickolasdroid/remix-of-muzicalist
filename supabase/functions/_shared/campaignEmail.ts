@@ -4,7 +4,7 @@
 const SITE_URL = "https://muzicalist.com";
 export const CAMPAIGN_FROM = "Muzicalist <contact@muzicalist.com>";
 const LOGO_URL =
-  "https://muzicalist.com/__l5e/assets-v1/4023aaf1-cafa-4e98-b2ad-2daef180891b/muzicalist-logo.png";
+  "https://muzicalist.com/muzicalist-logo.png";
 
 const BRAND_REGEX = /\bMusicalist\b/g;
 const BRAND_REGEX_UPPER = /\bMUSICALIST\b/g;
@@ -118,6 +118,6 @@ export function renderCampaignEmail(opts: {
   return { subject: normalizeBrand(campaignName), html };
 }
 
-// Resend-specific delivery has moved to
+// SMTP delivery lives in
 // supabase/functions/_shared/dispatcher/providers/email.ts.
 

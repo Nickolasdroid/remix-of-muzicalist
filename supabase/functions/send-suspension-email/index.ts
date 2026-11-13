@@ -1,5 +1,6 @@
 // Sends suspension / reactivation emails to end users.
 // Called from the admin dashboard after a suspend_account / reactivate_account RPC.
+import { sendMail, smtpConfigured } from "../_shared/smtp.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const corsHeaders = {
@@ -11,7 +12,7 @@ const corsHeaders = {
 const SITE_URL = "https://muzicalist.com";
 const FROM = "Muzicalist <noreply@muzicalist.com>";
 const LOGO_URL =
-  "https://muzicalist.com/__l5e/assets-v1/4023aaf1-cafa-4e98-b2ad-2daef180891b/muzicalist-logo.png";
+  "https://muzicalist.com/muzicalist-logo.png";
 
 const REASON_LABELS: Record<string, string> = {
   spam: "Spam or unwanted content",
@@ -84,12 +85,11 @@ ${cta}
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
     const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const AUTH = req.headers.get("Authorization");
 
-    if (!RESEND_API_KEY) {
+    if (!smtpConfigured()) {
       return new Response(JSON.stringify({ error: "email_not_configured" }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -190,23 +190,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: FROM,
-        to: [profile.email],
-        subject,
-        html,
-      }),
-    });
-    if (!res.ok) {
-      const t = await res.text();
-      console.error("Resend send failed", t);
-      return new Response(JSON.stringify({ error: "send_failed", detail: t }), {
+    try {
+      await sendMail({ from: FROM, to: profile.email, subject, html });
+    } catch (err) {
+      console.error("SMTP send failed", err);
+      return new Response(JSON.stringify({ error: "send_failed" }), {
         status: 502,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
