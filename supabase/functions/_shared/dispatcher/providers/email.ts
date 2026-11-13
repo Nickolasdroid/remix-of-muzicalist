@@ -10,8 +10,8 @@ import {
 import { commError } from "../errors.ts";
 import { sendMail } from "../../smtp.ts";
 
-const DEFAULT_FROM = "Muzicalist <admin@muzicalist.com>";
-const DEFAULT_REPLY_TO = "admin@muzicalist.com";
+const DEFAULT_FROM = "Muzicalist <contact@muzicalist.com>";
+const DEFAULT_REPLY_TO = "contact@muzicalist.com";
 
 export interface SmtpEmailProviderOptions {
   from?: string;

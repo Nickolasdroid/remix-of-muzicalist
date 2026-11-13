@@ -1,15 +1,21 @@
-// The one place that sends email: Muzicalist's own mailbox (Hostico) over SMTP.
+// The one place that sends email: Muzicalist's own mailboxes (Hostico) over SMTP.
 // No third-party email service, no gateway.
 //
-// Secrets (Supabase → Edge Functions → Secrets):
-//   SMTP_HOST      mail server, e.g. glc56.hostico.ro
-//   SMTP_PORT      465 (SSL). Supabase Edge Functions block ports 25 and 587.
-//   SMTP_USER      the mailbox, e.g. admin@muzicalist.com
-//   SMTP_PASS      that mailbox's password
-//   SMTP_FROM      optional "Muzicalist <admin@muzicalist.com>". Many mail servers only accept
-//                  a From address that belongs to the mailbox you log in with, so when this is
-//                  set it always wins over the From a caller passes.
-//   SMTP_REPLY_TO  optional default Reply-To
+// Two sending mailboxes, picked by the From address a caller asks for:
+//   noreply@muzicalist.com  automatic mail (welcome, suspension, admin notifications)  -> default
+//   contact@muzicalist.com  mail people can answer (campaigns, legacy artists)         -> optional
+//
+// Secrets (Supabase -> Edge Functions -> Secrets):
+//   SMTP_HOST            mail server, e.g. glc56.hostico.ro
+//   SMTP_PORT            465 (SSL). Supabase Edge Functions block ports 25 and 587.
+//   SMTP_USER / SMTP_PASS                the default mailbox (noreply@muzicalist.com)
+//   SMTP_CONTACT_USER / SMTP_CONTACT_PASS  optional second mailbox (contact@muzicalist.com);
+//                                        without it, everything is sent from the default one
+//   SMTP_REPLY_TO        optional default Reply-To (falls back to contact@muzicalist.com)
+//
+// The From address is always the mailbox that logs in: mail servers reject a From that doesn't
+// belong to the authenticated mailbox, so a caller's From address only selects which mailbox
+// to use and supplies the display name.
 
 // @ts-ignore: `npm:` specifiers are resolved by Deno at runtime, not by the app's tsc
 import nodemailer from "npm:nodemailer@6.9.16";
@@ -23,7 +29,7 @@ export interface MailInput {
   subject: string;
   html: string;
   text?: string;
-  /** Used only when SMTP_FROM is not set. */
+  /** e.g. `Muzicalist <contact@muzicalist.com>`. Selects the mailbox; see the note above. */
   from?: string;
   replyTo?: string;
 }
@@ -33,53 +39,87 @@ export interface MailResult {
 }
 
 type Transport = ReturnType<typeof nodemailer.createTransport>;
-let transport: Transport | null = null;
+interface Mailbox {
+  user: string;
+  pass: string;
+}
 
-function config() {
+const DEFAULT_REPLY_TO = "contact@muzicalist.com";
+const DEFAULT_NAME = "Muzicalist";
+const transports = new Map<string, Transport>();
+
+function server() {
   const host = Deno.env.get("SMTP_HOST");
+  const port = Number(Deno.env.get("SMTP_PORT") ?? "465");
+  if (!host || !Number.isFinite(port)) return null;
+  return { host, port };
+}
+
+function mailboxes(): { primary: Mailbox | null; contact: Mailbox | null } {
   const user = Deno.env.get("SMTP_USER");
   const pass = Deno.env.get("SMTP_PASS");
-  const port = Number(Deno.env.get("SMTP_PORT") ?? "465");
-  if (!host || !user || !pass || !Number.isFinite(port)) return null;
-  return { host, user, pass, port };
+  const cUser = Deno.env.get("SMTP_CONTACT_USER");
+  const cPass = Deno.env.get("SMTP_CONTACT_PASS");
+  return {
+    primary: user && pass ? { user, pass } : null,
+    contact: cUser && cPass ? { user: cUser, pass: cPass } : null,
+  };
 }
 
-/** True when the mailbox secrets are present. Callers use this to answer "email_not_configured". */
+/** True when the server and the default mailbox are configured. */
 export function smtpConfigured(): boolean {
-  return config() !== null;
+  return server() !== null && mailboxes().primary !== null;
 }
 
-function getTransport(): Transport {
-  if (transport) return transport;
-  const cfg = config();
-  if (!cfg) throw new Error("SMTP is not configured (SMTP_HOST, SMTP_USER, SMTP_PASS)");
-  transport = nodemailer.createTransport({
-    host: cfg.host,
-    port: cfg.port,
-    secure: cfg.port === 465, // implicit TLS on 465; other ports negotiate STARTTLS
-    auth: { user: cfg.user, pass: cfg.pass },
+function parseFrom(from: string | undefined): { name: string; address: string | null } {
+  if (!from) return { name: DEFAULT_NAME, address: null };
+  const m = /^\s*(.*?)\s*<([^>]+)>\s*$/.exec(from);
+  if (m) return { name: m[1].replace(/^"|"$/g, "") || DEFAULT_NAME, address: m[2].trim().toLowerCase() };
+  return { name: DEFAULT_NAME, address: from.trim().toLowerCase() };
+}
+
+/** Picks the mailbox whose address matches the requested From; otherwise the default one. */
+function pickMailbox(address: string | null): Mailbox {
+  const { primary, contact } = mailboxes();
+  if (!primary) throw new Error("SMTP is not configured (SMTP_HOST, SMTP_USER, SMTP_PASS)");
+  if (address && contact && contact.user.toLowerCase() === address) return contact;
+  return primary;
+}
+
+function getTransport(mailbox: Mailbox): Transport {
+  const srv = server();
+  if (!srv) throw new Error("SMTP is not configured (SMTP_HOST, SMTP_PORT)");
+  const key = `${srv.host}:${srv.port}:${mailbox.user}`;
+  const existing = transports.get(key);
+  if (existing) return existing;
+  const created = nodemailer.createTransport({
+    host: srv.host,
+    port: srv.port,
+    secure: srv.port === 465, // implicit TLS on 465; other ports negotiate STARTTLS
+    auth: { user: mailbox.user, pass: mailbox.pass },
     connectionTimeout: 15_000,
     greetingTimeout: 15_000,
     socketTimeout: 30_000,
   });
-  return transport;
+  transports.set(key, created);
+  return created;
 }
 
 /** Sends one email. Throws on any failure, so callers decide how to report it. */
 export async function sendMail(input: MailInput): Promise<MailResult> {
-  const cfg = config();
-  if (!cfg) throw new Error("SMTP is not configured (SMTP_HOST, SMTP_USER, SMTP_PASS)");
+  if (!smtpConfigured()) throw new Error("SMTP is not configured (SMTP_HOST, SMTP_USER, SMTP_PASS)");
 
-  const from = Deno.env.get("SMTP_FROM") ?? input.from ?? `Muzicalist <${cfg.user}>`;
-  const replyTo = input.replyTo ?? Deno.env.get("SMTP_REPLY_TO") ?? undefined;
+  const { name, address } = parseFrom(input.from);
+  const mailbox = pickMailbox(address);
+  const replyTo = input.replyTo ?? Deno.env.get("SMTP_REPLY_TO") ?? DEFAULT_REPLY_TO;
 
-  const info = await getTransport().sendMail({
-    from,
+  const info = await getTransport(mailbox).sendMail({
+    from: { name, address: mailbox.user },
     to: input.to,
     subject: input.subject,
     html: input.html,
     ...(input.text ? { text: input.text } : {}),
-    ...(replyTo ? { replyTo } : {}),
+    replyTo,
   });
   return { messageId: (info as { messageId?: string }).messageId ?? null };
 }

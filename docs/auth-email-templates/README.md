@@ -6,7 +6,7 @@ the Muzicalist mailbox. There is no email hook, queue or third-party service any
 ## One-time setup (Supabase dashboard → Authentication)
 
 1. **Emails → SMTP Settings** → enable custom SMTP:
-   - Sender email: the mailbox (e.g. `admin@muzicalist.com`), Sender name: `Muzicalist`
+   - Sender email: `noreply@muzicalist.com`, Sender name: `Muzicalist`
    - Host: the Hostico mail server, Port: `465`, Username: the mailbox, Password: its password
 2. **Emails → Templates**: for each template below paste the HTML file as the message body
    and set the subject.
@@ -26,9 +26,25 @@ The files use Supabase's placeholders (`{{ .ConfirmationURL }}`, `{{ .Token }}`,
 `{{ .NewEmail }}`, `{{ .SiteURL }}`). The logo is `https://muzicalist.com/muzicalist-logo.png`
 (served from `public/`).
 
+## Mailboxes (Hostico) and what each is for
+
+| Mailbox | Used for |
+|---|---|
+| `noreply@muzicalist.com` | Everything automatic: account emails (Supabase Auth SMTP), welcome, suspension, admin notifications |
+| `contact@muzicalist.com` | The public support inbox shown on the site; sender of campaign and legacy-artist emails; Reply-To of every email |
+| `admin@muzicalist.com` | Internal: owner of the Google / Supabase / Vercel accounts; can receive admin notifications |
+
 ## Other emails
 
 Welcome, admin notifications, suspension, legacy-artist and campaign emails are sent by the
 edge functions through `supabase/functions/_shared/smtp.ts` using these secrets
-(Supabase → Edge Functions → Secrets): `SMTP_HOST`, `SMTP_PORT` (465), `SMTP_USER`, `SMTP_PASS`,
-and optionally `SMTP_FROM` / `SMTP_REPLY_TO`.
+(Supabase -> Edge Functions -> Secrets):
+
+| Secret | Value |
+|---|---|
+| `SMTP_HOST` | Hostico mail server (e.g. `glc56.hostico.ro`) |
+| `SMTP_PORT` | `465` |
+| `SMTP_USER` / `SMTP_PASS` | `noreply@muzicalist.com` and its password |
+| `SMTP_CONTACT_USER` / `SMTP_CONTACT_PASS` | `contact@muzicalist.com` and its password (optional: without it everything is sent from `noreply@`) |
+| `SMTP_REPLY_TO` | optional, defaults to `contact@muzicalist.com` |
+| `ADMIN_NOTIFY_EMAIL` | optional, where admin notifications go (currently `muzicalist01@gmail.com`) |

@@ -2,7 +2,8 @@ import { sendMail, smtpConfigured } from "./smtp.ts";
 // Shared helper: send an admin notification email via the platform's
 // SMTP mailbox. Fire-and-forget from callers; failures are logged
 // but never break the caller's flow.
-const ADMIN_EMAIL = "muzicalist01@gmail.com";
+// Where admin notifications go. Override with the ADMIN_NOTIFY_EMAIL secret (no code change).
+const ADMIN_EMAIL = Deno.env.get("ADMIN_NOTIFY_EMAIL") ?? "muzicalist01@gmail.com";
 const FROM = "Muzicalist <noreply@muzicalist.com>";
 
 function escapeHtml(v: string) {
