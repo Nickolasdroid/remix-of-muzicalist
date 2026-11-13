@@ -63,6 +63,9 @@ export class SmtpEmailProvider implements CommunicationProvider {
         html: payload.html,
         ...(payload.text ? { text: payload.text } : {}),
         replyTo,
+        ...(payload.metadata?.["headers"]
+          ? { headers: payload.metadata["headers"] as Record<string, string> }
+          : {}),
       });
 
       return {

@@ -6,11 +6,25 @@ import {
   CommunicationPayload,
 } from "../_shared/dispatcher/index.ts";
 import { smtpConfigured } from "../_shared/smtp.ts";
+import { escapeHtml } from "../_shared/campaignEmail.ts";
+import { getOrCreateUnsubscribeToken, unsubscribeUrl } from "../_shared/unsubscribe.ts";
 
-function substituteVars(input: string, vars: Record<string, string>): string {
+function substituteVars(input: string, vars: Record<string, string>, escape = false): string {
   return input.replace(/\{\{\s*([a-zA-Z0-9_.]+)\s*\}\}/g, (_m, key) =>
-    Object.prototype.hasOwnProperty.call(vars, key) ? vars[key] : `{{${key}}}`,
+    Object.prototype.hasOwnProperty.call(vars, key) ? (escape ? escapeHtml(vars[key]) : vars[key]) : `{{${key}}}`,
   );
+}
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Adds the unsubscribe footer when the template does not place the link itself. */
+function withUnsubscribeFooter(html: string, hasVariable: boolean): string {
+  if (hasVariable) return html;
+  const footer =
+    `<div style="max-width:560px;margin:24px auto 0;padding:0 24px 24px;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.5;color:#8a8a95;text-align:center">` +
+    `Dacă nu mai dorești să primești aceste emailuri, <a href="{{system.unsubscribe_url}}" style="color:#8a8a95">dezabonează-te aici</a>. ` +
+    `/ If you no longer want to receive these emails, <a href="{{system.unsubscribe_url}}" style="color:#8a8a95">unsubscribe here</a>.</div>`;
+  return /<\/body>/i.test(html) ? html.replace(/<\/body>/i, footer + "</body>") : html + footer;
 }
 
 
@@ -19,6 +33,11 @@ interface RequestBody {
 }
 
 const BATCH_SIZE = 50;
+// A shared mailbox has an hourly sending limit: send in small runs with a pause between emails,
+// and stop before the function time limit. Press Send again to continue a paused campaign.
+const RUN_LIMIT = Number(Deno.env.get("CAMPAIGN_RUN_LIMIT") ?? "100");
+const SEND_DELAY_MS = Number(Deno.env.get("CAMPAIGN_SEND_DELAY_MS") ?? "800");
+const TIME_BUDGET_MS = 110_000;
 const MAX_ATTEMPTS = 3;
 
 const json = (body: unknown, status = 200) =>
@@ -234,6 +253,21 @@ Deno.serve(async (req) => {
   const templateSubject = version.subject ?? campaignName;
   const templateHtml = version.html_content;
   const templateText = version.text_content ?? "";
+  const hasUnsubVar = /\{\{\s*system\.unsubscribe_url\s*\}\}/.test(templateHtml);
+  const html0 = withUnsubscribeFooter(templateHtml, hasUnsubVar);
+
+  // Recipients left in "Sending" by a run that crashed are safe to send again: the lock above
+  // guarantees nobody else is processing this campaign.
+  await admin
+    .from("email_campaign_recipients")
+    .update({ status: "Pending" })
+    .eq("campaign_id", campaignId)
+    .eq("status", "Sending");
+
+  const { data: suppressedRows } = await admin.from("suppressed_emails").select("email");
+  const suppressed = new Set((suppressedRows ?? []).map((r: { email: string }) => r.email.trim().toLowerCase()));
+  const runStartedAt = Date.now();
+  let sentThisRun = 0;
 
   let totalProcessed = 0;
   let sentDeltaTotal = 0;
@@ -268,6 +302,32 @@ Deno.serve(async (req) => {
       let batchFailed = 0;
 
       for (const recipient of batch) {
+        if (suppressed.has(recipient.recipient_email.trim().toLowerCase())) {
+          await admin
+            .from("email_campaign_recipients")
+            .update({ status: "Skipped", error_message: "unsubscribed" })
+            .eq("id", recipient.id);
+          continue;
+        }
+
+        if (sentThisRun >= RUN_LIMIT || Date.now() - runStartedAt > TIME_BUDGET_MS) {
+          await persistCampaignProgress(admin, campaignId, batchSent, batchFailed);
+          sentDeltaTotal += batchSent;
+          failedDeltaTotal += batchFailed;
+          await admin
+            .from("email_campaigns")
+            .update({ status: "Pending", last_error: "Paused (send limit for this run). Press Send again to continue.", finished_at: null })
+            .eq("id", campaignId);
+          return json({
+            campaign_id: campaignId,
+            total_processed: totalProcessed,
+            sent_count: sentDeltaTotal,
+            failed_count: failedDeltaTotal,
+            final_status: "Pending",
+            stopped: "run_limit",
+          });
+        }
+
         const claimed = await markRecipientSending(admin, recipient);
         if (!claimed) continue; // already picked up by another run
 
@@ -282,8 +342,11 @@ Deno.serve(async (req) => {
           "system.dashboard_url": "https://muzicalist.com/dashboard",
           "campaign.name": campaignName,
         };
+        const unsubToken = await getOrCreateUnsubscribeToken(admin, recipient.recipient_email);
+        const unsubLink = unsubscribeUrl(unsubToken);
+        vars["system.unsubscribe_url"] = unsubLink;
         const subject = substituteVars(templateSubject, vars);
-        const html = substituteVars(templateHtml, vars);
+        const html = substituteVars(html0, vars, true);
         const text = templateText ? substituteVars(templateText, vars) : "";
 
         const payload: CommunicationPayload = {
@@ -294,6 +357,10 @@ Deno.serve(async (req) => {
           metadata: {
             template_id: tpl.id,
             template_version_id: tpl.active_version_id,
+            headers: {
+              "List-Unsubscribe": `<${unsubLink}>`,
+              "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+            },
           },
         };
 
@@ -310,6 +377,8 @@ Deno.serve(async (req) => {
         if (result.success) {
           await markSent(admin, recipient.id);
           batchSent++;
+          sentThisRun++;
+          await sleep(SEND_DELAY_MS);
         } else {
           const errMsg = result.error ?? "Unknown delivery error";
           console.error(`Send failed for ${recipient.recipient_email}: ${errMsg}`);
@@ -379,18 +448,16 @@ Deno.serve(async (req) => {
     const failedCount = finalCampaign?.failed_count ?? failedDeltaTotal;
     const sentCount = finalCampaign?.sent_count ?? sentDeltaTotal;
 
-    const finalStatus =
-      (retriableCount ?? 0) > 0
-        ? "Sending"
-        : failedCount === 0
-          ? "Completed"
-          : "CompletedWithErrors";
+    // Failed recipients are only retried by the explicit "Retry Failed" action, so the campaign
+    // is finished here (it used to stay "Sending" forever while retriable failures existed).
+    void retriableCount;
+    const finalStatus = failedCount === 0 ? "Completed" : "CompletedWithErrors";
 
     await admin
       .from("email_campaigns")
       .update({
         status: finalStatus,
-        finished_at: finalStatus === "Sending" ? null : new Date().toISOString(),
+        finished_at: new Date().toISOString(),
         last_error: null,
       })
       .eq("id", campaignId);

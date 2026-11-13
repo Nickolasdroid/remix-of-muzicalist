@@ -32,6 +32,8 @@ export interface MailInput {
   /** e.g. `Muzicalist <contact@muzicalist.com>`. Selects the mailbox; see the note above. */
   from?: string;
   replyTo?: string;
+  /** Extra message headers, e.g. List-Unsubscribe. */
+  headers?: Record<string, string>;
 }
 
 export interface MailResult {
@@ -120,6 +122,7 @@ export async function sendMail(input: MailInput): Promise<MailResult> {
     html: input.html,
     ...(input.text ? { text: input.text } : {}),
     replyTo,
+    ...(input.headers ? { headers: input.headers } : {}),
   });
   return { messageId: (info as { messageId?: string }).messageId ?? null };
 }

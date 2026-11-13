@@ -134,3 +134,22 @@ describe("SmtpEmailProvider", () => {
     expect(arg.replyTo).toBe("r@muzicalist.com");
   });
 });
+
+describe("SmtpEmailProvider custom headers", () => {
+  it("passes List-Unsubscribe headers from the payload metadata to the sender", async () => {
+    let seen: Record<string, unknown> | undefined;
+    const provider = new SmtpEmailProvider({
+      send: async (input) => {
+        seen = input as unknown as Record<string, unknown>;
+        return { messageId: "m1" };
+      },
+    });
+    const headers = { "List-Unsubscribe": "<https://example.test/u?token=x>", "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" };
+    const res = await provider.send({
+      recipient: { email: "a@b.ro" },
+      payload: { channel: "email", subject: "s", html: "<p>x</p>", metadata: { headers } },
+    });
+    expect(res.success).toBe(true);
+    expect(seen?.headers).toEqual(headers);
+  });
+});

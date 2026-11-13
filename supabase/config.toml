@@ -15,4 +15,7 @@ verify_jwt = false
 [functions.sitemap]
 verify_jwt = false
 
+[functions.unsubscribe]
+verify_jwt = false
+
 
