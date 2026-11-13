@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { deleteAllUserStorage } from "../_shared/deleteUserStorage.ts";
+import { cancelStripeSubscriptions } from "../_shared/stripeCancel.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -39,6 +40,24 @@ Deno.serve(async (req) => {
 
     const targetId = userData.user.id;
     const admin = createClient(SUPABASE_URL, SERVICE_ROLE);
+
+    // Stop billing first. If the subscription cannot be cancelled, nothing is deleted.
+    const { data: billingRow } = await admin
+      .from("profiles")
+      .select("stripe_customer_id")
+      .eq("id", targetId)
+      .maybeSingle();
+    try {
+      await cancelStripeSubscriptions(billingRow?.stripe_customer_id);
+    } catch (e) {
+      console.error("delete-my-account: Stripe cancellation failed", e);
+      return new Response(
+        JSON.stringify({
+          error: "Could not cancel your subscription, so the account was not deleted. Please try again or contact support.",
+        }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      );
+    }
 
     // Best-effort cleanup of public schema rows tied to the user.
     await admin.from("posts").delete().eq("profile_id", targetId);

@@ -82,6 +82,10 @@ const AutoTranslatePageText = () => {
   const rafRef = useRef<number | null>(null);
   const asyncTimeoutRef = useRef<number | null>(null);
   const pendingMissing = useRef<Set<string>>(new Set());
+  // Texts already sent for translation in this session. A text that stays untranslated
+  // (a name, "5 comments", ...) is tried once and then left as is; without this, runSync ->
+  // flushAsync -> runSync looped forever on any string that has no translation.
+  const attemptedMissing = useRef<Set<string>>(new Set());
   const runSyncRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
@@ -197,6 +201,7 @@ const AutoTranslatePageText = () => {
       }
       const missing = [...pendingMissing.current];
       pendingMissing.current.clear();
+      missing.forEach((m) => attemptedMissing.current.add(m));
       if (!missing.length) {
         revealBody();
         return;
@@ -244,7 +249,7 @@ const AutoTranslatePageText = () => {
 
         let hasMissing = false;
         originals.forEach((o) => {
-          if (!map[o]) {
+          if (!map[o] && !attemptedMissing.current.has(o)) {
             pendingMissing.current.add(o);
             hasMissing = true;
           }
@@ -284,6 +289,7 @@ const AutoTranslatePageText = () => {
     }
     const onLanguageChanged = () => {
       pendingMissing.current.clear();
+      attemptedMissing.current.clear();
       if (getCurrentLanguage() === "en") {
         stopObserver();
         restoreEnglish();

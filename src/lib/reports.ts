@@ -116,11 +116,10 @@ export async function submitReport({ type, title, description, file }: SubmitRep
   if (!user) throw new Error("You must be signed in to submit a report.");
 
   const [{ data: profile }, { data: roleRow }] = await Promise.all([
-    supabase
-      .from("profiles")
-      .select("stage_name, first_name, last_name, email, country, specialization")
-      .eq("id", user.id)
-      .maybeSingle(),
+    // Own full profile through the RPC: `email` is not readable with a plain select on profiles.
+    (supabase as any)
+      .rpc("get_my_full_profile")
+      .then(({ data }: { data: unknown }) => ({ data: Array.isArray(data) ? data[0] : data })),
     supabase.from("user_roles").select("user_type").eq("user_id", user.id).maybeSingle(),
   ]);
 

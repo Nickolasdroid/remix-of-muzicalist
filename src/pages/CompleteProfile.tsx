@@ -86,11 +86,12 @@ const CompleteProfile = () => {
         navigate("/", { replace: true });
         return;
       }
-      const { data: p } = await supabase
-        .from("profiles")
-        .select("stage_name, first_name, last_name, phone, country, county, avatar_url")
-        .eq("id", session.user.id)
-        .maybeSingle();
+      // Own full profile through the RPC: `phone` is not readable with a plain select on profiles.
+      const { data: profileRows } = await (supabase as any).rpc("get_my_full_profile");
+      const p = (Array.isArray(profileRows) ? profileRows[0] : profileRows) as
+        | { stage_name?: string; first_name?: string; last_name?: string; phone?: string; country?: string; county?: string; avatar_url?: string }
+        | null
+        | undefined;
       const code = getCountryCodeByName(p?.country) || "RO";
       setCountry(code);
       setCounty(p?.county || "");

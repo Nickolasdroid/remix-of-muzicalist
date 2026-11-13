@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { deleteAllUserStorage } from "../_shared/deleteUserStorage.ts";
+import { cancelStripeSubscriptions } from "../_shared/stripeCancel.ts";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -71,6 +72,22 @@ Deno.serve(async (req) => {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         },
+      );
+    }
+
+    // Stop billing first. If the subscription cannot be cancelled, nothing is deleted.
+    const { data: billingRow } = await admin
+      .from("profiles")
+      .select("stripe_customer_id")
+      .eq("id", targetId)
+      .maybeSingle();
+    try {
+      await cancelStripeSubscriptions(billingRow?.stripe_customer_id);
+    } catch (e) {
+      console.error("admin-delete-user: Stripe cancellation failed", e);
+      return new Response(
+        JSON.stringify({ error: "Could not cancel the user's Stripe subscription, so the account was not deleted." }),
+        { status: 502, headers: { ...corsHeaders, "Content-Type": "application/json" } },
       );
     }
 

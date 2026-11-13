@@ -444,7 +444,11 @@ export const translateTexts = async (targetLang: string, texts: string[]): Promi
           },
           body: JSON.stringify({ targetLang: base, sourceLang: 'auto', texts: batch }),
         });
-        if (!res.ok) continue;
+        if (!res.ok) {
+          // Server error: stop asking for a while instead of hammering the function.
+          pauseAiTranslation();
+          break;
+        }
         const data = await res.json();
         if (data?.degraded) {
           pauseAiTranslation();
