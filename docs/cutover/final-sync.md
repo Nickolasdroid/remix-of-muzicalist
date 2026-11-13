@@ -98,6 +98,21 @@ Also check: users, identities, storage object count/bytes, function count, cron 
 - Schema: 155 functions in `public` on the destination (the 6 old email-queue functions were removed
   on purpose); everything else matches the source.
 
+## 5b. Pre-sync done on 2026-11-13 (before the freeze)
+Applied to the destination only (the source was only read): activity statistics (`activity_daily`,
+`activity_event_counts`, `activity_sessions`), 217 UI translations, 1 follower swapped (old row removed,
+new one added), its notification, the profile row `22eb40e1`, and the 14 `pending_artist_registrations`
+whose `avatar_base64` had one extra trailing newline. Triggers were disabled only inside each
+transaction and are all enabled again.
+
+Result of the re-run report: **55 of 59 tables identical**. Still different, all expected:
+- `activity_daily` (+1 row) and `activity_sessions` (+2 rows): traffic generated on the test site;
+- `activity_event_dedupe`: deliberately not copied (an anti-duplicate cache pruned daily by a cron);
+- `email_template_versions`: intentional edits in the destination.
+Auth users and identities identical; storage 846 of 850 objects (the 4 videos).
+
+The final pass after the freeze only has to catch what changed since this run.
+
 ## 6. Rollback
 The source is never modified, so rolling back means pointing the site's `VITE_SUPABASE_*` values
 back at the old project. If a table was synced wrongly, re-run the upsert for that table from the
