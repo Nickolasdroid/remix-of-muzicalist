@@ -59,11 +59,11 @@ const GoogleSignInButton = ({ text, onBeforeSignIn, onSignedIn, onError, fallbac
         const width = Math.min(400, Math.max(200, Math.round(container.clientWidth || 320)));
         window.google.accounts.id.renderButton(container, {
           type: "standard",
-          theme: "filled_black",
+          theme: "outline",
           size: "large",
           text,
           shape: "pill",
-          logo_alignment: "left",
+          logo_alignment: "center",
           width,
         });
         setMode("google");
@@ -79,16 +79,34 @@ const GoogleSignInButton = ({ text, onBeforeSignIn, onSignedIn, onError, fallbac
 
   return (
     <>
-      <div
-        ref={containerRef}
-        className={
-          mode === "google" ? "flex min-h-11 w-full justify-center" : mode === "loading" ? "h-0 w-full overflow-hidden" : "hidden"
-        }
-      />
-      {mode === "loading" && <div className="h-11 w-full animate-pulse rounded-full border border-[#292929]" aria-hidden="true" />}
+      <div className={mode === "fallback" ? "hidden" : "group relative mx-auto h-11 w-full max-w-[400px]"}>
+        {/* What people see: the site's own button. It is not clickable by itself. */}
+        <div
+          aria-hidden="true"
+          className={`pointer-events-none flex h-11 w-full items-center justify-center gap-3 rounded-full border border-[#727272] text-base font-bold text-foreground transition-colors group-hover:border-foreground group-focus-within:ring-2 group-focus-within:ring-white/70 ${
+            mode === "loading" ? "opacity-60" : ""
+          }`}
+        >
+          <GoogleLogo />
+          <span>Continue with Google</span>
+        </div>
+        {/* What people click: Google's real button, invisible, stretched over ours. */}
+        <div className="absolute inset-0 overflow-hidden rounded-full opacity-[0.01]">
+          <div ref={containerRef} className="flex h-full w-full origin-center scale-y-[1.15] items-center justify-center" />
+        </div>
+      </div>
       {mode === "fallback" && fallback}
     </>
   );
 };
+
+const GoogleLogo = () => (
+  <svg className="h-5 w-5" viewBox="0 0 24 24" aria-hidden="true">
+    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z" />
+    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z" />
+    <path fill="#FBBC05" d="M5.84 14.1A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.44.34-2.1V7.06H2.18A11 11 0 0 0 1 12c0 1.78.43 3.45 1.18 4.94l3.66-2.84z" />
+    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z" />
+  </svg>
+);
 
 export default GoogleSignInButton;
