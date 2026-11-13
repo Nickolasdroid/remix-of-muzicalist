@@ -67,7 +67,7 @@ export async function fetchStoryGroups(
   }
 
   // Resolve image URLs through signed links so stories display whether the
-  // "stories" bucket is public or private (Lovable creates buckets private).
+  // "stories" bucket is public or private (buckets can be created private).
   const signed = await supabase.storage
     .from("stories")
     .createSignedUrls(rows.map((r) => r.storage_path), 60 * 60 * 24);

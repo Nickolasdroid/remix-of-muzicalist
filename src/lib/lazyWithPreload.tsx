@@ -15,7 +15,7 @@ import { lazy, ComponentType } from "react";
 export type PreloadableComponent<T extends ComponentType<any>> =
   React.LazyExoticComponent<T> & { preload: () => Promise<{ default: T }> };
 
-const RELOAD_FLAG = "lovable:chunk-reload";
+const RELOAD_FLAG = "app:chunk-reload";
 
 function isChunkLoadError(error: unknown) {
   const msg = error instanceof Error ? error.message : String(error ?? "");
