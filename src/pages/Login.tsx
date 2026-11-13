@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 import { supabase } from "@/integrations/supabase/client";
 import GoogleSignInButton from "@/components/GoogleSignInButton";
 import { Eye, EyeOff, Mail, Lock } from "lucide-react";
@@ -151,11 +152,43 @@ const Login = () => {
         navigate('/dashboard');
       }
     } catch (error: any) {
-      toast({
-        title: "Login Failed",
-        description: error.message || "Invalid email or password.",
-        variant: "destructive",
-      });
+      const message: string = error?.message || "";
+      if (/not confirmed/i.test(message)) {
+        const email = formData.email.trim();
+        toast({
+          title: "Confirm your email first",
+          description: "We sent you a confirmation link when you registered. Check your inbox (and spam), or ask for a new one.",
+          variant: "destructive",
+          action: (
+            <ToastAction
+              altText="Resend confirmation email"
+              onClick={async () => {
+                const { error: resendError } = await supabase.auth.resend({ type: "signup", email });
+                toast(
+                  resendError
+                    ? { title: "Could not send the email", description: "Please try again in a minute.", variant: "destructive" }
+                    : { title: "Email sent", description: "Check your inbox for the new confirmation link." },
+                );
+              }}
+            >
+              Resend email
+            </ToastAction>
+          ),
+        });
+      } else if (/banned/i.test(message)) {
+        toast({
+          title: "Account suspended",
+          description:
+            "Your Muzicalist account has been suspended. Please contact contact@muzicalist.com if you believe this is a mistake.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Login Failed",
+          description: message || "Invalid email or password.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }

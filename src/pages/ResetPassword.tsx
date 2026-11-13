@@ -111,6 +111,14 @@ const ResetPassword = () => {
       });
       return;
     }
+    if (password.length < 8) {
+      toast({
+        title: "Password too short",
+        description: "Your password must have at least 8 characters.",
+        variant: "destructive",
+      });
+      return;
+    }
     if (getPasswordScore(password) < 3) {
       toast({
         title: "Weak password",
@@ -136,7 +144,8 @@ const ResetPassword = () => {
       } catch {
         /* storage unavailable */
       }
-      await supabase.auth.signOut({ scope: "local" });
+      // "global": a new password also ends every other session that might still be open.
+      await supabase.auth.signOut({ scope: "global" });
       navigate("/login");
     } catch (error: any) {
       toast({
