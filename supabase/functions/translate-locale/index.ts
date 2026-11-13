@@ -1,94 +1,37 @@
-// Translates a locale JSON dictionary into a target language using Lovable AI.
-// Public edge function (no JWT required).
+// Serves the platform's stored UI translations (table: ui_text_translations).
+// Public edge function (no extra secrets). It does NOT call any AI service: strings that have
+// no stored translation come back unchanged and the response is flagged `degraded`, which makes
+// the app stop asking for new translations for a while (see src/i18n/index.ts).
 //
-// Request body:
-//   { targetLang: "fr", sourceLang?: "en", source: { key: "value", nested: { ... } } }
-//   { targetLang: "fr", sourceLang?: "auto", texts: ["Home", "Search"] }
+// Request bodies:
+//   { dump: true, targetLang: "ro" }                       -> every stored translation for a language
+//   { targetLang: "ro", texts: ["Home", "Search"] }         -> stored translations for those strings
+//   { targetLang: "ro", sourceLang?: "en", source: {...} }  -> a whole locale file: not available
+//                                                              without AI, answered as degraded
 //
-// Response:
-//   { translations: { ...same shape as source, all string leaves translated... } }
+// Response: { translations: ..., degraded?: true, reason?: "ai_disabled" }
+
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-
-// Global server-side translation cache (table: ui_text_translations).
-// Every UI string is AI-translated ONCE per language, platform-wide.
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 const admin = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
 );
 const normLang = (l: string) => (l || "en").split("-")[0].toLowerCase();
 
-// Avoid an error storm when the workspace AI allowance is exhausted. Edge
-// runtimes reuse isolates, so this also protects subsequent requests handled
-// by the same instance while the billing limit is being adjusted.
-const CREDIT_LIMIT_COOLDOWN_MS = 15 * 60 * 1000;
-let gatewayBlockedUntil = 0;
+const json = (body: unknown, status = 200) =>
+  new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
 
-const isCreditLimitResponse = (status: number, body: string) =>
-  (status === 402 || status === 403) &&
-  (body.includes("credit_limit_reached") || body.includes("Workspace credit limit reached"));
-
-const degradedResponse = (translations: unknown) =>
-  new Response(
-    JSON.stringify({
-      translations,
-      degraded: true,
-      reason: "credit_limit_reached",
-    }),
-    { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-  );
-
-// Deterministic brand-name safeguard. Narrowly scoped: ONLY rewrites the
-// single translation-induced mutation we have observed ("Musicalist" /
-// "MUSICALIST") back to the canonical brand spelling. Unrelated words and
-// other fuzzy variants (e.g. Muzikalist) are never touched.
-const BRAND_REGEX = /\bMusicalist\b/g;
-const BRAND_REGEX_UPPER = /\bMUSICALIST\b/g;
-function restoreBrand(s: string): string {
-  if (typeof s !== "string" || !s) return s;
-  return s.replace(BRAND_REGEX_UPPER, "MUZICALIST").replace(BRAND_REGEX, "Muzicalist");
-}
-
-function flattenLeaves(obj: any, prefix = "", out: Record<string, string> = {}) {
-  for (const [k, v] of Object.entries(obj)) {
-    const path = prefix ? `${prefix}.${k}` : k;
-    if (v && typeof v === "object" && !Array.isArray(v)) {
-      flattenLeaves(v, path, out);
-    } else if (typeof v === "string") {
-      out[path] = v;
-    }
-  }
-  return out;
-}
-
-function unflatten(map: Record<string, string>) {
-  const out: any = {};
-  for (const [path, val] of Object.entries(map)) {
-    const parts = path.split(".");
-    let cur = out;
-    for (let i = 0; i < parts.length - 1; i++) {
-      cur[parts[i]] ??= {};
-      cur = cur[parts[i]];
-    }
-    cur[parts[parts.length - 1]] = val;
-  }
-  return out;
-}
-
-function safeJsonParse(content: string) {
-  try {
-    return JSON.parse(content);
-  } catch {
-    const match = content.match(/\{[\s\S]*\}|\[[\s\S]*\]/);
-    return match ? JSON.parse(match[0]) : null;
-  }
-}
+const degraded = (translations: unknown) =>
+  json({ translations, degraded: true, reason: "ai_disabled" });
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -96,18 +39,10 @@ Deno.serve(async (req) => {
   }
 
   try {
-    if (!LOVABLE_API_KEY) {
-      return new Response(JSON.stringify({ error: "Missing LOVABLE_API_KEY" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+    const { targetLang, texts, source, dump } = await req.json();
 
-    const { targetLang, sourceLang = "en", source, texts, dump } = await req.json();
-
-    // Dump mode: return the ENTIRE cached dictionary for a language in one
-    // call. The client uses this at startup to seed its local cache, making
-    // repeat languages near-instant for every visitor.
+    // Dump mode: the ENTIRE stored dictionary for a language in one call. The client uses this
+    // at startup to seed its local cache.
     if (dump === true && targetLang) {
       const lang = normLang(targetLang);
       const out: Record<string, string> = {};
@@ -122,17 +57,13 @@ Deno.serve(async (req) => {
         for (const row of data ?? []) out[row.source_text] = row.translated_text;
         if (!data || data.length < BATCH) break;
       }
-      return new Response(JSON.stringify({ translations: out }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ translations: out });
     }
 
     if (!targetLang || typeof targetLang !== "string") {
-      return new Response(JSON.stringify({ error: "targetLang required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ error: "targetLang required" }, 400);
     }
+
     if (Array.isArray(texts)) {
       const cleanTexts = texts
         .filter((value) => typeof value === "string")
@@ -140,201 +71,33 @@ Deno.serve(async (req) => {
         .filter(Boolean)
         .slice(0, 120);
 
-      if (cleanTexts.length === 0) {
-        return new Response(JSON.stringify({ translations: [] }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+      if (cleanTexts.length === 0) return json({ translations: [] });
 
-      // 1) Global cache lookup — translations already computed for ANY past
-      //    visitor are served straight from the database, no AI involved.
       const lang = normLang(targetLang);
-      const cached: Record<string, string> = {};
+      const stored: Record<string, string> = {};
       try {
         const { data } = await admin
           .from("ui_text_translations")
           .select("source_text, translated_text")
           .eq("lang", lang)
           .in("source_text", cleanTexts);
-        for (const row of data ?? []) cached[row.source_text] = row.translated_text;
+        for (const row of data ?? []) stored[row.source_text] = row.translated_text;
       } catch (e) {
-        console.error("cache lookup failed (continuing with AI)", e);
+        console.error("translation lookup failed", e);
       }
 
-      const missingTexts = cleanTexts.filter((t) => !(t in cached));
-      if (missingTexts.length === 0) {
-        return new Response(
-          JSON.stringify({ translations: cleanTexts.map((t) => cached[t]) }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-        );
-      }
-
-      if (Date.now() < gatewayBlockedUntil) {
-        return degradedResponse(cleanTexts.map((text) => cached[text] ?? text));
-      }
-
-      const systemPrompt =
-        `You are a professional website localization translator. Translate each UI string to ${targetLang}. ` +
-        `The source strings may be English, mixed languages, or already in ${targetLang}; if already correct, return it unchanged. ` +
-        `CRITICAL: "Muzicalist" and "MUZICALIST" are registered brand names. NEVER translate, transliterate, spell-correct, or change them. Do not output "Musicalist", "Muzikalist", "Musikalist" or any variant — always keep the exact spelling "Muzicalist" (or "MUZICALIST" when the source is uppercase). ` +
-        `Preserve people's names, country/place names when appropriate, emojis, numbers, URLs, email addresses, placeholders like {{name}}, {0}, %s, and HTML tags exactly. ` +
-        `Return ONLY JSON in this exact shape: {"translations":["..."]}. Keep the same order and count.`;
-
-      const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${LOVABLE_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: JSON.stringify({ texts: missingTexts }) },
-          ],
-          response_format: { type: "json_object" },
-        }),
-      });
-
-      if (!aiRes.ok) {
-        const text = await aiRes.text();
-        console.error("AI gateway error", aiRes.status, text);
-        if (isCreditLimitResponse(aiRes.status, text)) {
-          gatewayBlockedUntil = Date.now() + CREDIT_LIMIT_COOLDOWN_MS;
-          return degradedResponse(cleanTexts.map((value) => cached[value] ?? value));
-        }
-        return new Response(JSON.stringify({ error: "AI gateway error", status: aiRes.status, detail: text }), {
-          status: aiRes.status,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-
-      const aiJson = await aiRes.json();
-      const content: string = aiJson?.choices?.[0]?.message?.content ?? "{}";
-      const parsed = safeJsonParse(content);
-      const translated = Array.isArray(parsed?.translations) ? parsed.translations : [];
-
-      // 2) Persist freshly AI-translated pairs into the global cache so no
-      //    future visitor ever pays for these strings again.
-      const freshRows = missingTexts.map((text, index) => ({
-        lang,
-        source_text: text,
-        translated_text: restoreBrand(
-          typeof translated[index] === "string" && translated[index].trim()
-            ? translated[index]
-            : text,
-        ),
-      }));
-      try {
-        await admin.from("ui_text_translations").upsert(freshRows, {
-          onConflict: "lang,source_text",
-        });
-      } catch (e) {
-        console.error("cache upsert failed (non-fatal)", e);
-      }
-
-      const fresh: Record<string, string> = {};
-      for (const row of freshRows) fresh[row.source_text] = row.translated_text;
-      const ordered = cleanTexts.map((t) => cached[t] ?? fresh[t] ?? t);
-
-      return new Response(JSON.stringify({ translations: ordered }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      const ordered = cleanTexts.map((t) => stored[t] ?? t);
+      if (cleanTexts.every((t) => t in stored)) return json({ translations: ordered });
+      return degraded(ordered);
     }
 
     if (!source || typeof source !== "object") {
-      return new Response(JSON.stringify({ error: "source object required" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ error: "source object required" }, 400);
     }
-
-    const flat = flattenLeaves(source);
-    const keys = Object.keys(flat);
-    if (keys.length === 0) {
-      return new Response(JSON.stringify({ translations: {} }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const systemPrompt =
-      `You are a professional UI localization translator. Translate UI strings from ${sourceLang} to ${targetLang}. ` +
-      `CRITICAL: "Muzicalist" and "MUZICALIST" are registered brand names. NEVER translate, transliterate, or spell-correct them. Do not output "Musicalist", "Muzikalist", "Musikalist" or any variant — always keep the exact spelling "Muzicalist" (or "MUZICALIST" if the source is uppercase). ` +
-      `Preserve placeholders like {{name}}, {0}, %s exactly. Preserve HTML tags. ` +
-      `Keep tone friendly and concise, suitable for a web app. ` +
-      `Return ONLY a JSON object that maps each input key to its translated string. ` +
-      `Do NOT add or remove keys. Do NOT add commentary.`;
-
-    const userPayload = JSON.stringify(flat);
-
-    if (Date.now() < gatewayBlockedUntil) {
-      return degradedResponse(null);
-    }
-
-    const aiRes = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: userPayload },
-        ],
-        response_format: { type: "json_object" },
-      }),
-    });
-
-    if (!aiRes.ok) {
-      const text = await aiRes.text();
-      console.error("AI gateway error", aiRes.status, text);
-      if (isCreditLimitResponse(aiRes.status, text)) {
-        gatewayBlockedUntil = Date.now() + CREDIT_LIMIT_COOLDOWN_MS;
-        return degradedResponse(null);
-      }
-      return new Response(
-        JSON.stringify({ error: "AI gateway error", status: aiRes.status, detail: text }),
-        { status: aiRes.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
-
-    const aiJson = await aiRes.json();
-    const content: string = aiJson?.choices?.[0]?.message?.content ?? "{}";
-
-    let translatedFlat: Record<string, string>;
-    try {
-      const parsed = safeJsonParse(content);
-      translatedFlat = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
-    } catch (e) {
-      console.error("Failed to parse AI JSON", content);
-      return new Response(JSON.stringify({ error: "Invalid AI response" }), {
-        status: 502,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    // Fill any missing keys with the source string as a safe fallback, and
-    // apply the deterministic brand-name safeguard on every value.
-    for (const k of keys) {
-      const val =
-        typeof translatedFlat[k] === "string" && translatedFlat[k].trim()
-          ? translatedFlat[k]
-          : flat[k];
-      translatedFlat[k] = restoreBrand(val);
-    }
-
-    const translations = unflatten(translatedFlat);
-
-    return new Response(JSON.stringify({ translations }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    // Translating a whole locale file needs an AI service; there is none.
+    return degraded(null);
   } catch (e) {
     console.error("translate-locale error", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : String(e) }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: e instanceof Error ? e.message : String(e) }, 500);
   }
 });
