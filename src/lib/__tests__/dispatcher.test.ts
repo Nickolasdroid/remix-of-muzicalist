@@ -147,7 +147,7 @@ describe("SmtpEmailProvider custom headers", () => {
     const headers = { "List-Unsubscribe": "<https://example.test/u?token=x>", "List-Unsubscribe-Post": "List-Unsubscribe=One-Click" };
     const res = await provider.send({
       recipient: { email: "a@b.ro" },
-      payload: { channel: "email", subject: "s", html: "<p>x</p>", metadata: { headers } },
+      payload: { channel: "email", subject: "s", html: "<p>x</p>", text: "", metadata: { headers } },
     });
     expect(res.success).toBe(true);
     expect(seen?.headers).toEqual(headers);
