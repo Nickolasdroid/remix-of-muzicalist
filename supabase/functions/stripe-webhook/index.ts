@@ -59,9 +59,12 @@ async function syncSubscription(subscription: Stripe.Subscription, fallbackProfi
 
   const status = subscription.status;
   const isActive = status === "active" || status === "trialing" || status === "past_due"; // past_due grace handled by effective_plan()
-  const periodEnd = subscription.current_period_end
-    ? new Date(subscription.current_period_end * 1000).toISOString()
-    : null;
+  // Older Stripe API versions put the period end on the subscription; newer ones (2025-03-31+)
+  // moved it onto the subscription items. Accept both so the endpoint's API version doesn't matter.
+  const rawPeriodEnd =
+    (subscription as unknown as { current_period_end?: number }).current_period_end ??
+    (item as unknown as { current_period_end?: number } | undefined)?.current_period_end;
+  const periodEnd = rawPeriodEnd ? new Date(rawPeriodEnd * 1000).toISOString() : null;
 
   const update: Record<string, unknown> = {
     stripe_customer_id: customerId,
@@ -292,8 +295,13 @@ Deno.serve(async (req) => {
       case "invoice.paid":
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
-        if (invoice.subscription) {
-          const subId = typeof invoice.subscription === "string" ? invoice.subscription : invoice.subscription.id;
+        // `invoice.subscription` (older API versions) or `invoice.parent.subscription_details.subscription` (newer)
+        const invoiceSub =
+          invoice.subscription ??
+          (invoice as unknown as { parent?: { subscription_details?: { subscription?: string | { id: string } } } })
+            .parent?.subscription_details?.subscription;
+        if (invoiceSub) {
+          const subId = typeof invoiceSub === "string" ? invoiceSub : invoiceSub.id;
           const sub = await stripe.subscriptions.retrieve(subId);
           await syncSubscription(sub);
         }
