@@ -1,6 +1,7 @@
 import Stripe from "npm:stripe@17.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { ALL_PRICE_IDS } from "../_shared/stripePriceMap.ts";
+import { safeOrigin, safeReturnUrl } from "../_shared/safeUrl.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -105,13 +106,28 @@ Deno.serve(async (req) => {
       await supabaseAdmin.from("profiles").update({ stripe_customer_id: customerId }).eq("id", userId);
     }
 
-    const origin = req.headers.get("origin") ?? "https://muzicalist.com";
+    // One live subscription per customer: a second checkout would bill the customer twice.
+    if (profile?.stripe_customer_id && customerId === profile.stripe_customer_id) {
+      const existingSubs = await stripe.subscriptions.list({ customer: customerId, status: "all", limit: 20 });
+      const live = existingSubs.data.some((sub) => ["active", "trialing", "past_due", "unpaid"].includes(sub.status));
+      if (live) {
+        return new Response(
+          JSON.stringify({
+            error: "You already have an active subscription. Use Manage subscription to change or cancel it.",
+            already_subscribed: true,
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+    }
+
+    const origin = safeOrigin(req.headers.get("origin"));
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       customer: customerId,
       line_items: [{ price: price_id, quantity: 1 }],
-      success_url: success_url ?? `${origin}/dashboard?checkout=success`,
-      cancel_url: cancel_url ?? `${origin}/plans?checkout=cancelled`,
+      success_url: safeReturnUrl(success_url, `${origin}/dashboard?checkout=success`),
+      cancel_url: safeReturnUrl(cancel_url, `${origin}/plans?checkout=cancelled`),
       metadata: { user_id: userId },
       subscription_data: { metadata: { user_id: userId } },
       allow_promotion_codes: true,
@@ -125,13 +141,7 @@ Deno.serve(async (req) => {
     });
   } catch (err: any) {
     console.error("create-checkout error:", err);
-    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY") ?? "";
-    const keyMode = stripeKey.startsWith("sk_live_") ? "live" : stripeKey.startsWith("sk_test_") ? "test" : "unknown";
-    let message = err?.message || "Checkout failed";
-    if (err?.code === "resource_missing" || /No such price/i.test(message)) {
-      message = `Stripe price not found in ${keyMode} mode. The price IDs in stripePriceMap.ts must match your Stripe account (and same mode as STRIPE_SECRET_KEY).`;
-    }
-    return new Response(JSON.stringify({ error: message, code: err?.code, mode: keyMode }), {
+    return new Response(JSON.stringify({ error: "Could not start checkout. Please try again." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

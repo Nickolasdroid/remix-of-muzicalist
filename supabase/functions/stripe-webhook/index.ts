@@ -3,6 +3,7 @@ import Stripe from "npm:stripe@17.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 import { getPlanFromPriceId } from "../_shared/stripePriceMap.ts";
 import { notifyAdminPaidSubscription } from "../_shared/adminNotify.ts";
+import { shouldDowngradeOnDeleted } from "../_shared/subscriptionRules.ts";
 
 
 const corsHeaders = {
@@ -33,7 +34,19 @@ async function findProfileIdByCustomer(customerId: string): Promise<string | nul
   return data?.id ?? null;
 }
 
-async function syncSubscription(subscription: Stripe.Subscription, fallbackProfileId?: string) {
+// Events can arrive out of order, so the subscription is always re-read from Stripe: what the
+// profile stores is Stripe's current state, not the state at the time of the event.
+async function latestSubscription(fromEvent: Stripe.Subscription): Promise<Stripe.Subscription> {
+  try {
+    return await stripe.subscriptions.retrieve(fromEvent.id);
+  } catch (e) {
+    console.warn("Could not re-read subscription, using the event payload", fromEvent.id, e);
+    return fromEvent;
+  }
+}
+
+async function syncSubscription(eventSubscription: Stripe.Subscription, fallbackProfileId?: string) {
+  const subscription = await latestSubscription(eventSubscription);
   const customerId = typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id;
   let profileId = fallbackProfileId ?? (await findProfileIdByCustomer(customerId));
 
@@ -282,13 +295,22 @@ Deno.serve(async (req) => {
         const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
         const profileId = await findProfileIdByCustomer(customerId);
         if (profileId) {
-          await supabase.from("profiles").update({
-            plan: "Free",
-            billing: null,
-            subscription_status: "canceled",
-            subscription_cancel_at_period_end: false,
-            stripe_subscription_id: sub.id,
-          }).eq("id", profileId);
+          const { data: current } = await supabase
+            .from("profiles")
+            .select("stripe_subscription_id")
+            .eq("id", profileId)
+            .maybeSingle();
+          if (shouldDowngradeOnDeleted(current?.stripe_subscription_id, sub.id)) {
+            await supabase.from("profiles").update({
+              plan: "Free",
+              billing: null,
+              subscription_status: "canceled",
+              subscription_cancel_at_period_end: false,
+              stripe_subscription_id: sub.id,
+            }).eq("id", profileId);
+          } else {
+            console.log("Ignoring deletion of an older subscription", sub.id, "current:", current?.stripe_subscription_id);
+          }
         }
         break;
       }
@@ -309,13 +331,17 @@ Deno.serve(async (req) => {
       }
 
       case "invoice.payment_failed": {
+        // Do not write "past_due" blindly: re-read the subscription so the stored status is Stripe's
+        // current one (the payment may already have been retried successfully, or the subscription ended).
         const invoice = event.data.object as Stripe.Invoice;
-        const customerId = typeof invoice.customer === "string" ? invoice.customer : invoice.customer?.id;
-        if (customerId) {
-          const profileId = await findProfileIdByCustomer(customerId);
-          if (profileId) {
-            await supabase.from("profiles").update({ subscription_status: "past_due" }).eq("id", profileId);
-          }
+        const failedSub =
+          invoice.subscription ??
+          (invoice as unknown as { parent?: { subscription_details?: { subscription?: string | { id: string } } } })
+            .parent?.subscription_details?.subscription;
+        if (failedSub) {
+          const subId = typeof failedSub === "string" ? failedSub : failedSub.id;
+          const sub = await stripe.subscriptions.retrieve(subId);
+          await syncSubscription(sub);
         }
         break;
       }
@@ -341,7 +367,7 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error("Webhook handler error:", err);
-    return new Response(JSON.stringify({ error: (err as Error).message }), {
+    return new Response(JSON.stringify({ error: "Webhook handler failed" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

@@ -1,4 +1,5 @@
 import Stripe from "npm:stripe@17.5.0";
+import { safeOrigin, safeReturnUrl } from "../_shared/safeUrl.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
@@ -59,10 +60,11 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "No active subscription found. Please subscribe first." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 
-    const origin = req.headers.get("origin") ?? "https://muzicalist.com";
+    const body = await req.json().catch(() => ({}));
+    const origin = safeOrigin(req.headers.get("origin"));
     const portal = await stripe.billingPortal.sessions.create({
       customer: customerId,
-      return_url: `${origin}/dashboard`,
+      return_url: safeReturnUrl(body?.return_url, `${origin}/dashboard`),
     });
 
     return new Response(JSON.stringify({ url: portal.url }), {
@@ -70,7 +72,7 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error("customer-portal error:", err);
-    return new Response(JSON.stringify({ error: (err as Error).message }), {
+    return new Response(JSON.stringify({ error: "Could not open the billing portal. Please try again." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
