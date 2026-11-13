@@ -11,6 +11,7 @@ import AvailabilityBlock from "@/components/post/AvailabilityBlock";
 import { postMediaItems } from "@/lib/postMedia";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import Navigation from "@/components/Navigation";
+import FeedSidebar from "@/components/feed/FeedSidebar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -593,7 +594,9 @@ const Feed = () => {
       <Navigation mobileHideOnScroll />
       
       <div className={`container mx-auto sm:px-4 pt-[60px] ${currentUserId ? 'md:pt-2' : 'md:pt-20'} pb-0 px-0`}>
-        <div ref={contentRef} className="max-w-[500px] mx-auto space-y-2 sm:space-y-3">
+        {/* Wide screens: the feed plus a column on the right (next booking, artists to follow, collaborations) */}
+        <div className="xl:flex xl:items-start xl:justify-center xl:gap-12">
+        <div ref={contentRef} className="max-w-[500px] mx-auto space-y-2 sm:space-y-3 xl:mx-0 xl:w-[500px] xl:shrink-0">
           <h1 className="sr-only">Musical Community Feed</h1>
 
           <StoriesBar currentUserId={currentUserId} canPublish={canCreateStories} openComposerSignal={storySignal} />
@@ -823,6 +826,10 @@ const Feed = () => {
               />
             )
           )}
+        </div>
+        <div className="sticky top-4 hidden w-[300px] shrink-0 pt-4 xl:block">
+          <FeedSidebar currentUserId={currentUserId} viewer={viewer} />
+        </div>
         </div>
       </div>
 
