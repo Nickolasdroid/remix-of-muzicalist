@@ -235,7 +235,7 @@ const Search = () => {
 
   const content = (
     <div className="min-h-screen min-w-0 flex-1 bg-background px-4 pb-24 pt-16 md:min-h-[calc(100vh-80px)] md:rounded-lg md:px-8 md:pb-12 md:pt-4">
-      <div className="mx-auto max-w-5xl">
+      <div className="max-w-[1400px]">
         <h1 className="sr-only">Search</h1>
 
         {!hasQuery ? (
