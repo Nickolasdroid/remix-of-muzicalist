@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import { prepareImageForUpload } from "@/lib/imageResize";
 
 /**
  * Upload a file to Supabase Storage with reliable progress tracking via XHR.
@@ -22,6 +23,9 @@ export async function uploadFileWithProgress(
   const { data: sessionData } = await supabase.auth.getSession();
   const accessToken = sessionData.session?.access_token ?? anonKey;
 
+  // Photos are shrunk before upload; videos and other files go as they are.
+  const body = file.type.startsWith("image/") ? await prepareImageForUpload(file) : file;
+
   const url = `${supabaseUrl}/storage/v1/object/${bucket}/${path}`;
 
   // Show progress immediately so the user sees the bar even before the first event.
@@ -33,7 +37,7 @@ export async function uploadFileWithProgress(
     xhr.setRequestHeader("Authorization", `Bearer ${accessToken}`);
     xhr.setRequestHeader("apikey", anonKey);
     xhr.setRequestHeader("x-upsert", "false");
-    xhr.setRequestHeader("Cache-Control", "3600");
+    xhr.setRequestHeader("Cache-Control", "max-age=86400");
     // Intentionally do NOT set Content-Type — the browser sets the correct type
     // for the raw File body, which keeps progress events firing reliably.
 
@@ -76,7 +80,7 @@ export async function uploadFileWithProgress(
     xhr.onerror = () => reject(new Error("Network error during upload"));
     xhr.onabort = () => reject(new Error("Upload aborted"));
 
-    xhr.send(file);
+    xhr.send(body);
   });
 
   const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(path);

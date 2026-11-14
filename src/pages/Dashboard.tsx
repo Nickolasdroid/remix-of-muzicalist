@@ -88,6 +88,8 @@ import OverLimitBanner from "@/components/OverLimitBanner";
 import { CreationModalShell, UsagePill, CreationSection, FieldLabel } from "@/components/dashboard/CreationModal";
 import { SectionShell, SectionHeader, SectionHeaderWithUsage, SectionStats, SectionStatCard, SectionEmptyState } from "@/components/dashboard/SectionLayout";
 import { uploadFileWithProgress } from "@/lib/uploadWithProgress";
+import { prepareImageForUpload, resizeImage } from "@/lib/imageResize";
+import { readMediaPaths, removeStoragePaths, storagePathFromUrl } from "@/lib/storagePath";
 import { Progress } from "@/components/ui/progress";
 import LocationAutocomplete from "@/components/LocationAutocomplete";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -862,13 +864,13 @@ const Dashboard = () => {
     if (!imageSrc || !croppedAreaPixels || !user) return;
     setIsSaving(true);
     try {
-      const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+      const croppedBlob = await resizeImage(await getCroppedImg(imageSrc, croppedAreaPixels), 640);
       const fileName = `${user.id}/avatar.jpg`;
       const {
         error: uploadError
       } = await supabase.storage.from("avatars").upload(fileName, croppedBlob, {
         contentType: "image/jpeg",
-        cacheControl: "0",
+        cacheControl: "300",
         upsert: true
       });
       if (uploadError) throw uploadError;
@@ -927,11 +929,11 @@ const Dashboard = () => {
     if (!coverImageSrc || !coverCroppedAreaPixels || !user) return;
     setIsUploadingCover(true);
     try {
-      const croppedBlob = await getCroppedImg(coverImageSrc, coverCroppedAreaPixels);
+      const croppedBlob = await resizeImage(await getCroppedImg(coverImageSrc, coverCroppedAreaPixels), 1600);
       const fileName = `${user.id}/cover.jpg`;
       const { error: uploadError } = await supabase.storage.from("avatars").upload(fileName, croppedBlob, {
         contentType: "image/jpeg",
-        cacheControl: "0",
+        cacheControl: "300",
         upsert: true,
       });
       if (uploadError) throw uploadError;
@@ -1116,10 +1118,12 @@ const Dashboard = () => {
   const handleDeleteAnnouncement = async (id: string) => {
     setIsSaving(true);
     try {
+      const mediaPaths = await readMediaPaths('announcements', id);
       const {
         error
       } = await supabase.from('announcements').delete().eq('id', id);
       if (error) throw error;
+      await removeStoragePaths(mediaPaths);
       // Free the slot for the current billing period.
       await (supabase as any).from('consumed_ad_slots').delete().eq('announcement_id', id);
       await loadAnnouncements();
@@ -1162,10 +1166,12 @@ const Dashboard = () => {
   const handleDeletePost = async (id: string) => {
     setIsSaving(true);
     try {
+      const mediaPaths = await readMediaPaths('posts', id);
       const {
         error
       } = await supabase.from('posts').delete().eq('id', id);
       if (error) throw error;
+      await removeStoragePaths(mediaPaths);
       // Free the slot for the current billing period.
       await (supabase as any).from('consumed_ad_slots').delete().eq('announcement_id', id).eq('kind', 'post');
       await loadPosts();
@@ -1226,7 +1232,7 @@ const Dashboard = () => {
       const fileName = `${user.id}/gallery/${Date.now()}_${sanitizedName}`;
       const {
         error: uploadError
-      } = await supabase.storage.from('avatars').upload(fileName, file);
+      } = await supabase.storage.from('avatars').upload(fileName, await prepareImageForUpload(file), { cacheControl: '86400' });
       if (uploadError) throw uploadError;
       const {
         data: {
@@ -1287,7 +1293,7 @@ const Dashboard = () => {
       const fileName = `${user.id}/gallery/videos/${Date.now()}_${sanitizedName}`;
       const {
         error: uploadError
-      } = await supabase.storage.from('avatars').upload(fileName, file);
+      } = await supabase.storage.from('avatars').upload(fileName, await prepareImageForUpload(file), { cacheControl: '86400' });
       if (uploadError) throw uploadError;
       const {
         data: {
@@ -1359,8 +1365,8 @@ const Dashboard = () => {
     setIsSaving(true);
     try {
       // Check if it's an uploaded file (stored in our storage bucket)
-      if (url.includes('supabase.co/storage')) {
-        const filePath = url.split('/').slice(-4).join('/');
+      const filePath = storagePathFromUrl(url);
+      if (filePath) {
         await supabase.storage.from('avatars').remove([filePath]);
       }
       const {

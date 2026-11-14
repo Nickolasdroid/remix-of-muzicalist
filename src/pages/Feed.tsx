@@ -47,6 +47,7 @@ import AnnouncementList from "@/components/opportunities/AnnouncementList";
 import { canPost, canPublishPosts } from "@/lib/planLimits";
 import { fetchCollabStatuses, isOpenToCollabs } from "@/lib/collabStatus";
 import CreateChooser, { type CreateChoice } from "@/components/composer/CreateChooser";
+import { readMediaPaths, removeStoragePaths } from "@/lib/storagePath";
 
 const POSTS_PER_PAGE = 10;
 
@@ -494,8 +495,10 @@ const Feed = () => {
 
   const handleDeletePost = async (postId: string) => {
     try {
+      const mediaPaths = await readMediaPaths('posts', postId);
       const { error } = await supabase.from('posts').delete().eq('id', postId);
       if (error) throw error;
+      await removeStoragePaths(mediaPaths);
       setFeedItems(items => items.filter(item => item.id !== postId));
       toast({ title: "Post deleted", description: "Your post has been deleted." });
     } catch (error) {
@@ -508,8 +511,10 @@ const Feed = () => {
 
   const handleDeleteAnnouncement = async (announcementId: string) => {
     try {
+      const mediaPaths = await readMediaPaths('announcements', announcementId);
       const { error } = await supabase.from('announcements').delete().eq('id', announcementId);
       if (error) throw error;
+      await removeStoragePaths(mediaPaths);
       setFeedItems(items => items.filter(item => item.id !== announcementId));
       toast({ title: "Announcement deleted", description: "Your announcement has been deleted." });
     } catch (error) {

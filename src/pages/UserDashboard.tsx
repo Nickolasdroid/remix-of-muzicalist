@@ -1,3 +1,4 @@
+import { prepareImageForUpload, resizeImage } from "@/lib/imageResize";
 import { PROFILE_PANEL } from "@/lib/profileLayout";
 import { useState, useEffect } from "react";
 import { usePageTitle } from "@/hooks/usePageTitle";
@@ -268,14 +269,14 @@ const UserDashboard = () => {
     if (!imageSrc || !croppedAreaPixels || !user) return;
     setIsSaving(true);
     try {
-      const croppedBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+      const croppedBlob = await resizeImage(await getCroppedImg(imageSrc, croppedAreaPixels), 640);
       const fileName = `${user.id}/avatar.jpg`;
       
       const { error: uploadError } = await supabase.storage
         .from("avatars")
         .upload(fileName, croppedBlob, {
           contentType: "image/jpeg",
-          cacheControl: "0",
+          cacheControl: "300",
           upsert: true
         });
       if (uploadError) throw uploadError;
@@ -316,7 +317,7 @@ const UserDashboard = () => {
     setIsSaving(true);
     try {
       const fileName = `${user.id}/announcements/${Date.now()}_${sanitizeFileName(file.name)}`;
-      const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, file);
+      const { error: uploadError } = await supabase.storage.from('avatars').upload(fileName, await prepareImageForUpload(file), { cacheControl: '86400' });
       if (uploadError) throw uploadError;
       
       const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(fileName);
