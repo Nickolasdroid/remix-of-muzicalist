@@ -13,6 +13,7 @@ import MetaPixel from "./components/MetaPixel";
 import CookieConsentBanner from "./components/CookieConsentBanner";
 import OfflineBanner from "./components/OfflineBanner";
 import ChunkErrorBoundary from "./components/ChunkErrorBoundary";
+import NativeBridge from "./components/NativeBridge";
 import { Capacitor } from "@capacitor/core";
 import { lazyWithPreload } from "@/lib/lazyWithPreload";
 import OnboardingGate from "@/components/OnboardingGate";
@@ -130,6 +131,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter future={{ v7_startTransition: true }}>
         <ScrollToTop />
+        <NativeBridge />
         <MetaPixel />
         <CookieConsentBanner />
         <OfflineBanner />

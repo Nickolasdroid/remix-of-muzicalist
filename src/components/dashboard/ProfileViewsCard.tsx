@@ -4,6 +4,7 @@ import { Eye, BarChart3, Lock, TrendingUp, TrendingDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { isFree, isPremium } from "@/lib/planLimits";
 import { fetchMyProfileViews, viewsChangePct, type ProfileViewStats } from "@/lib/profileViews";
+import { canManagePlans } from "@/lib/native";
 
 /**
  * Profile views over the last 30 days: Standard and Premium.
@@ -36,9 +37,11 @@ const ProfileViewsCard = ({ plan }: { plan?: string | null }) => {
               <p className="text-xs text-muted-foreground">See how many people visit your profile with Standard or Premium.</p>
             </div>
           </div>
-          <Button size="sm" onClick={() => navigate("/my-plan")} className="self-start bg-accent text-accent-foreground hover:bg-accent/90">
-            Upgrade
-          </Button>
+          {canManagePlans() && (
+            <Button size="sm" onClick={() => navigate("/my-plan")} className="self-start bg-accent text-accent-foreground hover:bg-accent/90">
+              Upgrade
+            </Button>
+          )}
         </div>
       </div>
     );
@@ -82,9 +85,11 @@ const ProfileViewsCard = ({ plan }: { plan?: string | null }) => {
         ) : (
           <div className="flex flex-col gap-2 md:items-end">
             <p className="text-xs text-muted-foreground md:text-right">See how views turn into booking requests with Premium.</p>
-            <Button size="sm" onClick={() => navigate("/plans")} className="self-start bg-accent text-accent-foreground hover:bg-accent/90">
-              Upgrade
-            </Button>
+            {canManagePlans() && (
+              <Button size="sm" onClick={() => navigate("/plans")} className="self-start bg-accent text-accent-foreground hover:bg-accent/90">
+                Upgrade
+              </Button>
+            )}
           </div>
         )}
       </div>

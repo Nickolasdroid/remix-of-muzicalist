@@ -5,6 +5,7 @@
 
 import { MUZICALIST_LOGO_DATA_URI } from "@/lib/contractLogo";
 import { eventTypeRo } from "@/lib/eventTypes";
+import { openHtmlDocument } from "@/lib/openHtmlDocument";
 
 export type EntityType = "individual" | "pfa" | "ii" | "if" | "srl" | "other_company";
 
@@ -281,11 +282,5 @@ ${clauses
 </body></html>`;
 };
 
-export const openContractWindow = (c: BookingContract, opts: { preview?: boolean } = {}) => {
-  const w = window.open("", "_blank");
-  if (!w) return false;
-  w.document.open();
-  w.document.write(renderContractHtml(c, opts));
-  w.document.close();
-  return true;
-};
+export const openContractWindow = (c: BookingContract, opts: { preview?: boolean } = {}) =>
+  openHtmlDocument(renderContractHtml(c, opts), `Contract-${c.id.slice(0, 8)}${opts.preview ? "-previzualizare" : ""}`);

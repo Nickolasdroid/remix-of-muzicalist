@@ -4,6 +4,7 @@
 
 import { MUZICALIST_LOGO_DATA_URI } from "@/lib/contractLogo";
 import { eventTypeRo } from "@/lib/eventTypes";
+import { openHtmlDocument } from "@/lib/openHtmlDocument";
 
 export type BookingStatus = "pending" | "offered" | "accepted" | "rejected" | string;
 
@@ -191,10 +192,5 @@ export const printBookingConfirmation = (
 <button onclick="window.print()">${escapeHtml(L.print)}</button>
 </body></html>`;
 
-  const w = window.open("", "_blank");
-  if (!w) return false;
-  w.document.open();
-  w.document.write(html);
-  w.document.close();
-  return true;
+  return openHtmlDocument(html, `${L.title}-${ref}`);
 };

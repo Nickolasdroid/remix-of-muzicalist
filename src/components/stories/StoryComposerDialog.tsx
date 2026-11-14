@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "@/hooks/use-toast";
 import { StoryPlanError, publishStory } from "@/lib/stories";
+import { canManagePlans } from "@/lib/native";
 
 interface StoryComposerDialogProps {
   open: boolean;
@@ -94,7 +95,9 @@ const StoryComposerDialog = ({ open, userId, onOpenChange, onPublished }: StoryC
         {planBlocked ? (
           <div className="space-y-3 text-center py-4">
             <p className="text-sm text-muted-foreground">Stories are available on the Standard and Premium plans.</p>
-            <Button asChild><Link to="/my-plan" onClick={() => onOpenChange(false)}>See plans</Link></Button>
+            {canManagePlans() && (
+              <Button asChild><Link to="/my-plan" onClick={() => onOpenChange(false)}>See plans</Link></Button>
+            )}
           </div>
         ) : (
           <>

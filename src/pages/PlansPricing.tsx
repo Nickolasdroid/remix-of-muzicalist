@@ -12,6 +12,8 @@ import { knownUserId } from "@/lib/knownUser";
 import { subscriptionPlans as plans, formatPlanPrice } from "@/lib/subscriptionPlans";
 import { startCheckout, openCustomerPortal } from "@/lib/checkout";
 import { setPlanIntent, clearPlanIntent } from "@/lib/planIntent";
+import { appOrigin } from "@/lib/native";
+import { canManagePlans } from "@/lib/native";
 
 const PlansPricing = () => {
   const navigate = useNavigate();
@@ -44,7 +46,7 @@ const PlansPricing = () => {
     }
     // Paid plan upgrade
     setLoadingPlan(planId);
-    const origin = window.location.origin;
+    const origin = appOrigin();
     const ok = await startCheckout({
       plan: planId,
       billing: isAnnual ? 'yearly' : 'monthly',
@@ -152,7 +154,7 @@ const PlansPricing = () => {
                       : null
                   }
                   action={
-                    !showAction ? null : (
+                    !showAction || !canManagePlans() ? null : (
                       <Button
                         disabled={loadingPlan !== null}
                         onClick={() => handleClick(plan.id, isDowngrade)}

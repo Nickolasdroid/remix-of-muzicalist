@@ -1,11 +1,12 @@
 import { toast } from "@/hooks/use-toast";
+import { appOrigin } from "@/lib/native";
 
 export async function sharePost(opts: {
   profileId: string;
   stageName?: string | null;
   type?: "post" | "announcement";
 }) {
-  const url = `${window.location.origin}/artist/${opts.profileId}`;
+  const url = `${appOrigin()}/artist/${opts.profileId}`;
   const title = opts.stageName ? `${opts.stageName} on Muzicalist` : "Muzicalist";
   const text =
     opts.type === "announcement"

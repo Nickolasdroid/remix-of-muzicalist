@@ -1,14 +1,21 @@
-import { defineConfig } from "vite";
+import { defineConfig, type Plugin } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 
 // https://vitejs.dev/config/
-export default defineConfig(() => ({
+// The Android app lays the page out inside the system bars (status bar on top, buttons below)
+// instead of under them, so headers are never covered. The website keeps viewport-fit=cover.
+const nativeViewport = (mode: string): Plugin => ({
+  name: "native-viewport",
+  transformIndexHtml: (html) => (mode === "native" ? html.replace("viewport-fit=cover", "viewport-fit=auto") : html),
+});
+
+export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
   },
-  plugins: [react()],
+  plugins: [react(), nativeViewport(mode)],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

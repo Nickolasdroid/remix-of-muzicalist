@@ -13,6 +13,7 @@ import SEO from "@/components/SEO";
 import { trackPixelEvent } from "@/components/MetaPixel";
 import { cn } from "@/lib/utils";
 import { peekPlanIntent } from "@/lib/planIntent";
+import { appOrigin } from "@/lib/native";
 
 export type AccountType = "artist" | "user";
 
@@ -127,7 +128,7 @@ const Register = () => {
       // Native Supabase OAuth: the browser is redirected to Google, then back to the app.
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: window.location.origin },
+        options: { redirectTo: appOrigin() },
       });
       if (error) {
         toast.error(error.message || "Google sign-up failed.");
@@ -154,7 +155,7 @@ const Register = () => {
         email: email.trim(),
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/login`,
+          emailRedirectTo: `${appOrigin()}/login`,
           data: {
             account_type: accountType,
             first_name: first,

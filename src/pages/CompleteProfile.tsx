@@ -19,6 +19,7 @@ import { getMaxPhoneLength, getPhonePrefix, validatePhoneNumber } from "@/lib/co
 import { getCountryRegions, getDivisionName } from "@/lib/countryAdminDivisions";
 import { getOnboardingState } from "@/lib/onboarding";
 import { cn } from "@/lib/utils";
+import { appOrigin } from "@/lib/native";
 
 const SPECIALIZATIONS = [
   { value: "Singer", label: "Singer" },
@@ -181,7 +182,7 @@ const CompleteProfile = () => {
       // A paid plan picked before signing up: go straight to payment
       const intent = takePlanIntent();
       if (intent) {
-        const origin = window.location.origin;
+        const origin = appOrigin();
         const ok = await startCheckout({
           plan: intent.plan,
           billing: intent.billing,

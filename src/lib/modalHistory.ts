@@ -112,3 +112,6 @@ export function useModalOpenState(
   useCloseOnBack(isOpen && manageHistory, () => setOpen(false));
   return [isOpen, setOpen] as const;
 }
+
+/** True while a window/sheet opened with useCloseOnBack is on top of the current page. */
+export const isModalOpen = (): boolean => typeof window !== "undefined" && currentDepth() > 0;

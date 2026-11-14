@@ -11,6 +11,7 @@ import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import logo from "@/assets/logo.webp";
 import AuthShell, { authButtonClass, authInputClass } from "@/components/AuthShell";
 import SEO from "@/components/SEO";
+import { appOrigin } from "@/lib/native";
 
 const Login = () => {
   const { toast } = useToast();
@@ -31,7 +32,7 @@ const Login = () => {
       // Native Supabase OAuth: the browser is redirected to Google, then back to the app.
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
-        options: { redirectTo: window.location.origin },
+        options: { redirectTo: appOrigin() },
       });
       if (error) {
         toast({
@@ -82,11 +83,11 @@ const Login = () => {
       }
 
       if (role === 'admin') {
-        navigate('/admin/dashboard');
+        navigate('/admin/dashboard', { replace: true });
       } else if (role === 'user') {
-        navigate('/user-dashboard');
+        navigate('/user-dashboard', { replace: true });
       } else {
-        navigate('/dashboard');
+        navigate('/dashboard', { replace: true });
       }
     };
     checkAuth();
@@ -145,11 +146,11 @@ const Login = () => {
       });
 
       if ((roleData?.user_type as string) === 'admin') {
-        navigate('/admin/dashboard');
+        navigate('/admin/dashboard', { replace: true });
       } else if (roleData?.user_type === 'user') {
-        navigate('/user-dashboard');
+        navigate('/user-dashboard', { replace: true });
       } else {
-        navigate('/dashboard');
+        navigate('/dashboard', { replace: true });
       }
     } catch (error: any) {
       const message: string = error?.message || "";
@@ -258,7 +259,7 @@ const Login = () => {
           onBeforeSignIn={() => {
             try { localStorage.removeItem("signup_intent"); } catch { /* storage unavailable */ }
           }}
-            onSignedIn={() => navigate("/")}
+            onSignedIn={() => navigate("/", { replace: true })}
             onError={(message) => toast({ title: "Google sign-in failed", description: message, variant: "destructive" })}
             fallback={
               <button

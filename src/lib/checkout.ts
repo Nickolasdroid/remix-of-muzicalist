@@ -2,6 +2,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { PRICE_BY_PLAN, type Billing } from "@/lib/stripePrices";
 import { stagePendingPurchase } from "@/components/MetaPixel";
+import { canManagePlans } from "@/lib/native";
+
+const NOT_IN_APP = "Plans can't be changed in the app.";
 
 type PaidPlan = "Standard" | "Premium";
 
@@ -12,6 +15,10 @@ export async function startCheckout(opts: {
   cancelUrl?: string;
   userId?: string;
 }): Promise<boolean> {
+  if (!canManagePlans()) {
+    toast.error(NOT_IN_APP);
+    return false;
+  }
   const price_id = PRICE_BY_PLAN[opts.plan]?.[opts.billing];
   if (!price_id) {
     toast.error("Invalid plan selection");
@@ -48,6 +55,10 @@ export async function startCheckout(opts: {
 }
 
 export async function openCustomerPortal(returnUrl?: string): Promise<boolean> {
+  if (!canManagePlans()) {
+    toast.error(NOT_IN_APP);
+    return false;
+  }
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) {
     toast.error("Please sign in to continue");

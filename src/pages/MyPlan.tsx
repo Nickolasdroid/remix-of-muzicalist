@@ -24,6 +24,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { appOrigin } from "@/lib/native";
+import { canManagePlans } from "@/lib/native";
 
 const MyPlan = () => {
   usePageTitle("My Plan");
@@ -67,7 +69,7 @@ const MyPlan = () => {
       return;
     }
     setActionLoading(planId);
-    const origin = window.location.origin;
+    const origin = appOrigin();
     const ok = await startCheckout({
       plan: planId,
       billing: isAnnual ? 'yearly' : 'monthly',
@@ -237,7 +239,7 @@ const MyPlan = () => {
                         : null
                     }
                     action={
-                      isCurrentPlan || (onTrial && plan.id === "Free") ? null : (
+                      isCurrentPlan || (onTrial && plan.id === "Free") || !canManagePlans() ? null : (
                         <Button
                           disabled={actionLoading !== null}
                           onClick={() => handlePlanAction(plan.id, isDowngrade)}

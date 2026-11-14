@@ -11,6 +11,7 @@ import PasswordStrengthIndicator, { getPasswordScore } from "@/components/Passwo
 import AuthShell, { authButtonClass, authInputClass } from "@/components/AuthShell";
 import SEO from "@/components/SEO";
 import { RECOVERY_ERROR_KEY, RECOVERY_KEY } from "@/lib/recoveryCapture";
+import { appOrigin } from "@/lib/native";
 
 const ResetPassword = () => {
   const { toast } = useToast();
@@ -72,7 +73,7 @@ const ResetPassword = () => {
     setIsLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
+        redirectTo: `${appOrigin()}/reset-password`,
       });
       if (error) throw error;
 

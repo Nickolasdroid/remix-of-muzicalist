@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { GOOGLE_WEB_CLIENT_ID, createNonce, loadGoogleIdentity } from "@/lib/googleIdentity";
+import { isNativeApp } from "@/lib/native";
 
 type Props = {
   /** Wording on Google's button. */
@@ -22,9 +23,40 @@ const GoogleSignInButton = ({ text, onBeforeSignIn, onSignedIn, onError, fallbac
   const [mode, setMode] = useState<"loading" | "google" | "fallback">(GOOGLE_WEB_CLIENT_ID ? "loading" : "fallback");
   const handlers = useRef({ onBeforeSignIn, onSignedIn, onError });
   handlers.current = { onBeforeSignIn, onSignedIn, onError };
+  const native = isNativeApp();
+  const [busy, setBusy] = useState(false);
+
+  // Android app: the system account sheet, no web page
+  const signInNative = async () => {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const { nativeGoogleLogin, GoogleCancelled } = await import("@/lib/nativeGoogle");
+      let creds: { idToken: string; nonce: string };
+      try {
+        creds = await nativeGoogleLogin();
+      } catch (e) {
+        if (e instanceof GoogleCancelled) return;
+        throw e;
+      }
+      handlers.current.onBeforeSignIn?.();
+      const { error } = await supabase.auth.signInWithIdToken({
+        provider: "google",
+        token: creds.idToken,
+        nonce: creds.nonce,
+      });
+      if (error) handlers.current.onError(error.message || "Google sign-in failed.");
+      else handlers.current.onSignedIn();
+    } catch (e) {
+      console.error("native google sign-in failed", e);
+      handlers.current.onError("Google sign-in failed. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  };
 
   useEffect(() => {
-    if (!GOOGLE_WEB_CLIENT_ID) return;
+    if (native || !GOOGLE_WEB_CLIENT_ID) return;
     let cancelled = false;
 
     (async () => {
@@ -75,7 +107,21 @@ const GoogleSignInButton = ({ text, onBeforeSignIn, onSignedIn, onError, fallbac
     return () => {
       cancelled = true;
     };
-  }, [text]);
+  }, [text, native]);
+
+  if (native) {
+    return (
+      <button
+        type="button"
+        onClick={signInNative}
+        disabled={busy}
+        className="mx-auto flex h-11 w-full max-w-[400px] items-center justify-center gap-3 rounded-full border border-[#727272] text-base font-bold text-foreground transition-colors hover:border-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70 disabled:opacity-60"
+      >
+        <GoogleLogo />
+        <span>Continue with Google</span>
+      </button>
+    );
+  }
 
   return (
     <>
