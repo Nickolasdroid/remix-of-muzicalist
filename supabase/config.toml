@@ -3,9 +3,6 @@ project_id = "fpqvupbqoqsalrfahvab"
 [functions.stripe-webhook]
 verify_jwt = false
 
-[functions.upload-artist-avatar]
-verify_jwt = false
-
 [functions.create-checkout]
 verify_jwt = false
 

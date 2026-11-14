@@ -98,6 +98,6 @@ Deno.serve(async (req) => {
     return degraded(null);
   } catch (e) {
     console.error("translate-locale error", e);
-    return json({ error: e instanceof Error ? e.message : String(e) }, 500);
+    return json({ error: "Translation lookup failed" }, 500);
   }
 });

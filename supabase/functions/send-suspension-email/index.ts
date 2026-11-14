@@ -205,7 +205,8 @@ Deno.serve(async (req) => {
     });
   } catch (e) {
     console.error("send-suspension-email error", e);
-    return new Response(JSON.stringify({ error: (e as Error).message }), {
+    console.error("send-suspension-email failed:", e);
+    return new Response(JSON.stringify({ error: "Could not send the email." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

@@ -192,7 +192,8 @@ Deno.serve(async (req) => {
     { _campaign_id: campaignId },
   );
   if (lockError) {
-    return json({ error: "Failed to acquire campaign lock", details: lockError.message }, 500);
+    console.error("send-email-campaign: lock failed", lockError.message);
+    return json({ error: "Failed to acquire campaign lock" }, 500);
   }
   const campaign = Array.isArray(lockedRows) ? lockedRows[0] : lockedRows;
   if (!campaign) {

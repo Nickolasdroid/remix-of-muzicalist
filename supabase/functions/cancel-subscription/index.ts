@@ -87,7 +87,8 @@ Deno.serve(async (req) => {
     );
   } catch (err) {
     console.error("cancel-subscription error:", err);
-    return new Response(JSON.stringify({ error: (err as Error).message }), {
+    console.error("cancel-subscription failed:", err);
+    return new Response(JSON.stringify({ error: "Could not cancel the subscription. Please try again." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

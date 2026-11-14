@@ -104,7 +104,8 @@ Deno.serve(async (req) => {
     // Delete from auth (this also invalidates all refresh tokens / sessions)
     const { error: delErr } = await admin.auth.admin.deleteUser(targetId);
     if (delErr) {
-      return new Response(JSON.stringify({ error: delErr.message }), {
+      console.error("delete-my-account failed:", delErr);
+      return new Response(JSON.stringify({ error: "Could not delete the account. Please try again or contact support." }), {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -114,7 +115,8 @@ Deno.serve(async (req) => {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
-    return new Response(JSON.stringify({ error: (e as Error).message }), {
+    console.error("delete-my-account failed:", e);
+    return new Response(JSON.stringify({ error: "Could not delete the account. Please try again or contact support." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

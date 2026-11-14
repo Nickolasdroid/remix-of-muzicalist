@@ -112,7 +112,8 @@ Deno.serve(async (req) => {
     );
   } catch (err) {
     console.error("get-payment-method error:", err);
-    return new Response(JSON.stringify({ error: (err as Error).message }), {
+    console.error("get-payment-method failed:", err);
+    return new Response(JSON.stringify({ error: "Could not load the payment method." }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
